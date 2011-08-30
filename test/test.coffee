@@ -38,3 +38,11 @@ exports['Stylus is served as CSS'] = (test) ->
     '''
     test.equals body, expectedBody
     test.done()
+
+exports['Requests for directories are ignored'] = (test) ->
+  test.expect 2
+
+  request 'http://localhost:3588/', (err, res, body) ->
+    test.ok !err
+    test.equals body, 'Cannot GET /'
+    test.done()

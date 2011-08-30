@@ -12,6 +12,7 @@ module.exports = (options = {}) ->
   (req, res, next) ->
     return next() unless req.method is 'GET'
     targetPath = path.join src, parse(req.url).pathname
+    return next() if targetPath.slice(-1) is '/'  # ignore directory requests
     fs.stat targetPath, (err, stats) ->
       # if the file exists, serve it
       return serveRaw req, res, next, {stats, targetPath} unless err
@@ -33,6 +34,7 @@ serveRaw = (req, res, next, {stats, targetPath}) ->
 serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
   srcPath = targetPath.replace(compiler.match, ".#{ext}")
   fs.stat srcPath, (err, stats) ->
+    next() if err is 'ENOENT'  # no file, no problem!
     next err if err
     if cache[targetPath]?.mtime is stats.mtime
       return res.end cache.str
