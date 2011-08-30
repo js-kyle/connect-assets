@@ -39,6 +39,21 @@ exports['Stylus is served as CSS'] = (test) ->
     test.equals body, expectedBody
     test.done()
 
+exports['Stylus imports work as expected'] = (test) ->
+  test.expect 2
+
+  request 'http://localhost:3588/css/button.css', (err, res, body) ->
+    test.ok !err
+    expectedBody = '''
+    .button {
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }\n
+    '''
+    test.equals body, expectedBody
+    test.done()
+
 exports['Requests for directories are ignored'] = (test) ->
   test.expect 2
 
