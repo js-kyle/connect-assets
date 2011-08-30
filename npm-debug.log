@@ -1,0 +1,306 @@
+info it worked if it ends with ok
+verbose cli [ 'node', '/usr/local/bin/npm', 'publish' ]
+info using npm@1.0.6
+info using node@v0.4.9
+verbose /usr/local/bin/node node symlink
+verbose config file /Users/trevor/.npmrc
+verbose config file /usr/local/etc/npmrc
+verbose publish [ '.' ]
+silly testEngine { author: 
+silly testEngine    { name: 'Trevor Burnham',
+silly testEngine      url: 'http://trevorburnham.com' },
+silly testEngine   name: 'connect-assets',
+silly testEngine   description: 'A Rails-like asset pipeline for Connect',
+silly testEngine   version: '1.0.0-beta2',
+silly testEngine   homepage: 'http://github.com/TrevorBurnham/connect-assets',
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/TrevorBurnham/connect-assets.git' },
+silly testEngine   main: 'lib/assets.js',
+silly testEngine   dependencies: {},
+silly testEngine   devDependencies: 
+silly testEngine    { 'coffee-script': '1.1.2',
+silly testEngine      connect: '1.6.4',
+silly testEngine      nodeunit: '0.5.4',
+silly testEngine      stylus: '0.15.1',
+silly testEngine      request: '2.1.1',
+silly testEngine      'watch-tree': '0.1.1' },
+silly testEngine   _id: 'connect-assets@1.0.0-beta2',
+silly testEngine   engines: { node: '*' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.6',
+silly testEngine   _nodeVersion: 'v0.4.9',
+silly testEngine   _defaultsLoaded: true }
+verbose caching package.json
+verbose loadDefaults connect-assets@1.0.0-beta2
+verbose pack /Users/trevor/Code/connect-assets /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/tmp.tgz
+silly testEngine { author: 
+silly testEngine    { name: 'Trevor Burnham',
+silly testEngine      url: 'http://trevorburnham.com' },
+silly testEngine   name: 'connect-assets',
+silly testEngine   description: 'A Rails-like asset pipeline for Connect',
+silly testEngine   version: '1.0.0-beta2',
+silly testEngine   homepage: 'http://github.com/TrevorBurnham/connect-assets',
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/TrevorBurnham/connect-assets.git' },
+silly testEngine   main: 'lib/assets.js',
+silly testEngine   dependencies: {},
+silly testEngine   devDependencies: 
+silly testEngine    { 'coffee-script': '1.1.2',
+silly testEngine      connect: '1.6.4',
+silly testEngine      nodeunit: '0.5.4',
+silly testEngine      stylus: '0.15.1',
+silly testEngine      request: '2.1.1',
+silly testEngine      'watch-tree': '0.1.1' },
+silly testEngine   _id: 'connect-assets@1.0.0-beta2',
+silly testEngine   engines: { node: '*' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.6',
+silly testEngine   _nodeVersion: 'v0.4.9',
+silly testEngine   _defaultsLoaded: true,
+silly testEngine   path: '/Users/trevor/Code/connect-assets' }
+verbose caching /Users/trevor/Code/connect-assets/package.json
+verbose loadDefaults connect-assets@1.0.0-beta2
+verbose mkdir done: /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394 755
+verbose mkdir'ed /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394
+verbose tar about to write tar and gzip it.
+silly tar args [ '-cvf',
+silly tar args   '-',
+silly tar args   'connect-assets/.gitignore',
+silly tar args   'connect-assets/Cakefile',
+silly tar args   'connect-assets/package.json',
+silly tar args   'connect-assets/README.mdown',
+silly tar args   'connect-assets/docs/assets.html',
+silly tar args   'connect-assets/docs/docco.css',
+silly tar args   'connect-assets/lib/assets.js',
+silly tar args   'connect-assets/src/assets.coffee',
+silly tar args   'connect-assets/test/test.coffee',
+silly tar args   'connect-assets/test/assets/css/style.styl',
+silly tar args   'connect-assets/test/assets/js/dependency.js',
+silly tar args   'connect-assets/test/assets/js/script.coffee' ]
+verbose success tar -cvf - <file list elided>
+verbose success gzip "--stdout"
+verbose mkdir done: /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm 755
+verbose unpack_ uid, gid [ undefined, undefined ]
+verbose unpackTarget /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/package
+silly gunzTarPerm modes [ '755', '644' ]
+verbose success gzip "--decompress" "--stdout" "/var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/tmp.tgz"
+verbose success tar "-mvxpf" "-" "--no-same-owner" "-C" "/var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm"
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/.gitignore
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/Cakefile
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/package.json
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/README.mdown
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/docs/
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/docs/assets.html
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/docs/docco.css
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/lib/
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/lib/assets.js
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/src/
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/src/assets.coffee
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/test/
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/test/test.coffee
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/test/assets/
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/test/assets/css/
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/test/assets/css/style.styl
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/test/assets/js/
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/test/assets/js/dependency.js
+silly asyncMap in gTP /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets/test/assets/js/script.coffee
+verbose gunzed /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets
+verbose rm'ed /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/package
+verbose renamed [ '/var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/___package.npm/connect-assets',
+verbose renamed   '/var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/package' ]
+silly testEngine { author: 
+silly testEngine    { name: 'Trevor Burnham',
+silly testEngine      url: 'http://trevorburnham.com' },
+silly testEngine   name: 'connect-assets',
+silly testEngine   description: 'A Rails-like asset pipeline for Connect',
+silly testEngine   version: '1.0.0-beta2',
+silly testEngine   homepage: 'http://github.com/TrevorBurnham/connect-assets',
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/TrevorBurnham/connect-assets.git' },
+silly testEngine   main: 'lib/assets.js',
+silly testEngine   dependencies: {},
+silly testEngine   devDependencies: 
+silly testEngine    { 'coffee-script': '1.1.2',
+silly testEngine      connect: '1.6.4',
+silly testEngine      nodeunit: '0.5.4',
+silly testEngine      stylus: '0.15.1',
+silly testEngine      request: '2.1.1',
+silly testEngine      'watch-tree': '0.1.1' },
+silly testEngine   _id: 'connect-assets@1.0.0-beta2',
+silly testEngine   engines: { node: '*' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.6',
+silly testEngine   _nodeVersion: 'v0.4.9',
+silly testEngine   _defaultsLoaded: true,
+silly testEngine   path: '/var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/package' }
+verbose caching /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/package/package.json
+verbose loadDefaults connect-assets@1.0.0-beta2
+verbose tarball contents [ 'package' ]
+verbose from cache /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/package/package.json
+verbose pack /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/package /Users/trevor/.npm/connect-assets/1.0.0-beta2/package.tgz
+verbose from cache /var/folders/zr/t1dlz5r97lb10hvd4crdgtt80000gn/T/npm-1314740402060/1314740402060-0.4202508598100394/contents/package/package.json
+verbose mkdir done: /Users/trevor/.npm/connect-assets/1.0.0-beta2 755
+verbose mkdir'ed /Users/trevor/.npm/connect-assets/1.0.0-beta2
+verbose tar about to write tar and gzip it.
+silly tar args [ '-cvf',
+silly tar args   '-',
+silly tar args   'package/.gitignore',
+silly tar args   'package/Cakefile',
+silly tar args   'package/package.json',
+silly tar args   'package/README.mdown',
+silly tar args   'package/docs/assets.html',
+silly tar args   'package/docs/docco.css',
+silly tar args   'package/lib/assets.js',
+silly tar args   'package/src/assets.coffee',
+silly tar args   'package/test/test.coffee',
+silly tar args   'package/test/assets/css/style.styl',
+silly tar args   'package/test/assets/js/dependency.js',
+silly tar args   'package/test/assets/js/script.coffee' ]
+verbose success tar -cvf - <file list elided>
+verbose success gzip "--stdout"
+verbose mkdir done: /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm 755
+verbose unpack_ uid, gid [ undefined, undefined ]
+verbose unpackTarget /Users/trevor/.npm/connect-assets/1.0.0-beta2/package
+silly gunzTarPerm modes [ '755', '644' ]
+verbose success gzip "--decompress" "--stdout" "/Users/trevor/.npm/connect-assets/1.0.0-beta2/package.tgz"
+verbose success tar "-mvxpf" "-" "--no-same-owner" "-C" "/Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm"
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/.gitignore
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/Cakefile
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/package.json
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/README.mdown
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/docs/
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/docs/assets.html
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/docs/docco.css
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/lib/
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/lib/assets.js
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/src/
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/src/assets.coffee
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/test/
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/test/test.coffee
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/test/assets/
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/test/assets/css/
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/test/assets/css/style.styl
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/test/assets/js/
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/test/assets/js/dependency.js
+silly asyncMap in gTP /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package/test/assets/js/script.coffee
+verbose gunzed /Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package
+verbose rm'ed /Users/trevor/.npm/connect-assets/1.0.0-beta2/package
+verbose renamed [ '/Users/trevor/.npm/connect-assets/1.0.0-beta2/___package.npm/package',
+verbose renamed   '/Users/trevor/.npm/connect-assets/1.0.0-beta2/package' ]
+silly testEngine { author: 
+silly testEngine    { name: 'Trevor Burnham',
+silly testEngine      url: 'http://trevorburnham.com' },
+silly testEngine   name: 'connect-assets',
+silly testEngine   description: 'A Rails-like asset pipeline for Connect',
+silly testEngine   version: '1.0.0-beta2',
+silly testEngine   homepage: 'http://github.com/TrevorBurnham/connect-assets',
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/TrevorBurnham/connect-assets.git' },
+silly testEngine   main: 'lib/assets.js',
+silly testEngine   dependencies: {},
+silly testEngine   devDependencies: 
+silly testEngine    { 'coffee-script': '1.1.2',
+silly testEngine      connect: '1.6.4',
+silly testEngine      nodeunit: '0.5.4',
+silly testEngine      stylus: '0.15.1',
+silly testEngine      request: '2.1.1',
+silly testEngine      'watch-tree': '0.1.1' },
+silly testEngine   _id: 'connect-assets@1.0.0-beta2',
+silly testEngine   engines: { node: '*' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.6',
+silly testEngine   _nodeVersion: 'v0.4.9',
+silly testEngine   _defaultsLoaded: true,
+silly testEngine   dist: 
+silly testEngine    { shasum: 'c48d6882f289a0e7f7d574bf531f359073cb5746',
+silly testEngine      tarball: 'http://registry.npmjs.org/connect-assets/-/connect-assets-1.0.0-beta2.tgz' },
+silly testEngine   scripts: {} }
+verbose caching /Users/trevor/.npm/connect-assets/1.0.0-beta2/package/package.json
+verbose loadDefaults connect-assets@1.0.0-beta2
+silly updated sha bytes 7956
+info shasum c48d6882f289a0e7f7d574bf531f359073cb5746
+info shasum /Users/trevor/.npm/connect-assets/1.0.0-beta2/package.tgz
+verbose from cache /Users/trevor/.npm/connect-assets/1.0.0-beta2/package/package.json
+verbose chmod /Users/trevor/.npm/connect-assets/1.0.0-beta2/package.json 644
+verbose chmod /Users/trevor/.npm/connect-assets/1.0.0-beta2/package.tgz 644
+silly publish { author: 
+silly publish    { name: 'Trevor Burnham',
+silly publish      url: 'http://trevorburnham.com' },
+silly publish   name: 'connect-assets',
+silly publish   description: 'A Rails-like asset pipeline for Connect',
+silly publish   version: '1.0.0-beta2',
+silly publish   homepage: 'http://github.com/TrevorBurnham/connect-assets',
+silly publish   repository: 
+silly publish    { type: 'git',
+silly publish      url: 'git://github.com/TrevorBurnham/connect-assets.git' },
+silly publish   main: 'lib/assets.js',
+silly publish   dependencies: {},
+silly publish   devDependencies: 
+silly publish    { 'coffee-script': '1.1.2',
+silly publish      connect: '1.6.4',
+silly publish      nodeunit: '0.5.4',
+silly publish      stylus: '0.15.1',
+silly publish      request: '2.1.1',
+silly publish      'watch-tree': '0.1.1' },
+silly publish   _id: 'connect-assets@1.0.0-beta2',
+silly publish   engines: { node: '*' },
+silly publish   _engineSupported: true,
+silly publish   _npmVersion: '1.0.6',
+silly publish   _nodeVersion: 'v0.4.9',
+silly publish   _defaultsLoaded: true,
+silly publish   dist: 
+silly publish    { shasum: 'c48d6882f289a0e7f7d574bf531f359073cb5746',
+silly publish      tarball: 'http://registry.npmjs.org/connect-assets/-/connect-assets-1.0.0-beta2.tgz' },
+silly publish   scripts: {} }
+info prepublish connect-assets@1.0.0-beta2
+verbose PUT connect-assets
+verbose raw, before any munging connect-assets
+verbose url resolving [ 'http://registry.npmjs.org/', './connect-assets' ]
+verbose url resolved http://registry.npmjs.org/connect-assets
+verbose url parsed { protocol: 'http:',
+verbose url parsed   slashes: true,
+verbose url parsed   host: 'registry.npmjs.org',
+verbose url parsed   hostname: 'registry.npmjs.org',
+verbose url parsed   href: 'http://registry.npmjs.org/connect-assets',
+verbose url parsed   pathname: '/connect-assets' }
+WARN Sending authorization over insecure channel.
+silly writing json { _id: 'connect-assets',
+silly writing json   name: 'connect-assets',
+silly writing json   description: 'A Rails-like asset pipeline for Connect',
+silly writing json   'dist-tags': {},
+silly writing json   versions: {},
+silly writing json   maintainers: 
+silly writing json    [ { name: 'TrevorBurnham',
+silly writing json        email: 'trevorburnham@gmail.com' } ] }
+verbose response http://registry.npmjs.org/connect-assets
+silly chunk {"error":"conflict","reason":"Document update conflict."}
+silly chunk 
+verbose GET connect-assets
+verbose raw, before any munging connect-assets
+verbose url resolving [ 'http://registry.npmjs.org/', './connect-assets' ]
+verbose url resolved http://registry.npmjs.org/connect-assets
+verbose url parsed { protocol: 'http:',
+verbose url parsed   slashes: true,
+verbose url parsed   host: 'registry.npmjs.org',
+verbose url parsed   hostname: 'registry.npmjs.org',
+verbose url parsed   href: 'http://registry.npmjs.org/connect-assets',
+verbose url parsed   pathname: '/connect-assets' }
+verbose response http://registry.npmjs.org/connect-assets
+silly chunk {"_id":"connect-assets","_rev":"5-5d49f9a52b351e2e248658064045ceab","name":"connect-assets","description":"A Rails-like asset pipeline for Connect","dist-tags":{"latest":"1.0.0-beta2"},"versions":{"1.0.0-beta1":{"author":{"name":"Trevor Burnham","url":"http://trevorburnham.com"},"name":"connect-assets","description":"A Rails-like asset pipeline for Connect","version":"1.0.0-beta1","homepage":"http://github.com/TrevorBurnham/connect-assets","repository":{"type":"git","url":"git://github.com/TrevorBurnham/connect-assets.git"},"main":"lib/assets.js","dependencies":{},"devDependencies":{"coffee-script":"1.1.2","connect":"1.6.4","nodeunit":"0.5.4","stylus":"0.15.1","request":"2.1.1","watch-tree":"0.1.1"},"_id":"connect-assets@1.0.0-beta1","engines":{"node":"*"},"_engineSupported":true,"_npmVersion":"1.0.6","_nodeVersion":"v0.4.9","_defaultsLoaded":true,"dist":{"shasum":"92d211e301f05327eb9546423b6df39c8415ea6b","tarball":"http://registry.npmjs.org/connect-assets/-/connect-assets-1.0.0-beta1.tgz"},"scripts":{},"maintainers":[{"name":"TrevorBurnham","email":"trevorburnham@gmail.com"}],"directories":{}},"1.0.0-beta2":{"author":{"name":"Trevor Burnham","url":"http://trevorburnham.com"},"name":"connect-assets","description":"A Rails-like asset pipe
+silly chunk line for Connect","version":"1.0.0-beta2","homepage":"http://github.com/TrevorBurnham/connect-assets","repository":{"type":"git","url":"git://github.com/TrevorBurnham/connect-assets.git"},"main":"lib/assets.js","dependencies":{},"devDependencies":{"coffee-script":"1.1.2","connect":"1.6.4","nodeunit":"0.5.4","stylus":"0.15.1","request":"2.1.1","watch-tree":"0.1.1"},"_id":"connect-assets@1.0.0-beta2","engines":{"node":"*"},"_engineSupported":true,"_npmVersion":"1.0.6","_nodeVersion":"v0.4.9","_defaultsLoaded":true,"dist":{"shasum":"57ead1fc2c3e692d4133d3b506ae4a2257183984","tarball":"http://registry.npmjs.org/connect-assets/-/connect-assets-1.0.0-beta2.tgz"},"scripts":{},"maintainers":[{"name":"TrevorBurnham","email":"trevorburnham@gmail.com"}],"directories":{}}},"maintainers":[{"name":"TrevorBurnham","email":"trevorburnham@gmail.com"}],"time":{"1.0.0-beta1":"2011-08-30T20:40:20.712Z","1.0.0-beta2":"2011-08-30T21:00:16.169Z"},"author":{"name":"Trevor Burnham","url":"http://trevorburnham.com"},"repository":{"type":"git","url":"git://github.com/TrevorBurnham/connect-assets.git"}}
+info Already published connect-assets@1.0.0-beta2
+verbose uploading bin dists []
+ERR! publish fail Cannot publish over existing version.
+ERR! publish fail Bump the 'version' field, set the --force flag, or
+ERR! publish fail     npm unpublish 'connect-assets@1.0.0-beta2'
+ERR! publish fail and try again
+ERR! 
+ERR! System Darwin 11.1.0
+ERR! command "node" "/usr/local/bin/npm" "publish"
+verbose exit [ 1, true ]
