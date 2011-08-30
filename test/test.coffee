@@ -46,3 +46,19 @@ exports['Requests for directories are ignored'] = (test) ->
     test.ok !err
     test.equals body, 'Cannot GET /'
     test.done()
+
+exports['Requests for nonexistent compile targets are ignored'] = (test) ->
+  test.expect 2
+
+  request 'http://localhost:3588/404.css', (err, res, body) ->
+    test.ok !err
+    test.equals body, 'Cannot GET /404.css'
+    test.done()
+
+exports['Requests for nonexistent raw files are ignored'] = (test) ->
+  test.expect 2
+
+  request 'http://localhost:3588/foo.bar', (err, res, body) ->
+    test.ok !err
+    test.equals body, 'Cannot GET /foo.bar'
+    test.done()

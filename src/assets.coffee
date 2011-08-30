@@ -27,19 +27,19 @@ serveRaw = (req, res, next, {stats, targetPath}) ->
   if cache[targetPath]?.mtime is stats.mtime
     return res.end cache.str
   fs.readFile targetPath, 'utf8', (err, str) ->
-    next err if err
+    return next err if err
     cache[targetPath] = {mtime: stats.mtime, str}
     res.end str
 
 serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
   srcPath = targetPath.replace(compiler.match, ".#{ext}")
   fs.stat srcPath, (err, stats) ->
-    next() if err is 'ENOENT'  # no file, no problem!
-    next err if err
+    return next() if err?.code is 'ENOENT'  # no file, no problem!
+    return next err if err
     if cache[targetPath]?.mtime is stats.mtime
       return res.end cache.str
     compiler.compile srcPath, (err, str) ->
-      next err if err
+      return next err if err
       cache[targetPath] = {mtime: stats.mtime, str}
       res.end str
 
