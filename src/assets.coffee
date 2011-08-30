@@ -59,4 +59,4 @@ compilers =
     compile: (filepath, callback) ->
       libs.stylus or= require 'stylus'
       fs.readFile filepath, 'utf8', (err, str) ->
-        libs.stylus.render str, filename: path.basename(filepath), callback
+        libs.stylus.render str, filename: filepath, callback
