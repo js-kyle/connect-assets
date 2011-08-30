@@ -1,0 +1,20 @@
+{ "name": "async_testing"
+, "description": "A simple Node testing library."
+, "version": "0.3.2"
+, "author": "Benjamin Thomas"
+, "main": "./index"
+, "directories": {"lib":"./lib"}
+, "bin": { "node-async-test": "./bin/node-async-test.js" }
+, "repository":
+  { "type": "git"
+  , "url": "http://github.com/bentomas/node-async-testing.git"
+  }
+, "bugs": { "web": "http://github.com/bentomas/node-async-testing/issues" }
+, "licenses":
+  [ { "type": "MIT"
+    , "url": "http://github.com/bentomas/node-async-testing/blob/master/LICENSE"
+    }
+  ]
+, "dependencies": {}
+}
+

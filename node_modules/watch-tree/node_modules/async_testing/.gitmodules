@@ -1,0 +1,3 @@
+[submodule "lib/web-runner/public/client"]
+	path = lib/web-runner/public/client
+	url = http://github.com/LearnBoost/Socket.IO.git

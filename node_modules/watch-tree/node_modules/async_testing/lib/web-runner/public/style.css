@@ -1,0 +1,176 @@
+body {
+  background: #CCC;
+  color: #333;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+}
+
+#container {
+  background: #FFF;
+  box-shadow: 2px 2px 4px #666666; -moz-box-shadow: 2px 2px 4px #666666; -webkit-box-shadow: 2px 2px 4px #666666;
+  margin: auto;
+  margin-top: 100px;
+  margin-bottom: 100px;
+  padding: 0;
+  width: 600px;
+}
+
+h2 {
+  background: #777;
+  color: #FFF;
+  font-size: 18px;
+  margin: 0;
+  padding: 8px 30px;
+  position: relative;
+}
+
+.run-all-button {
+  background: #CCC;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; color: #FFF;
+  color: #333;
+  cursor: pointer;
+  display: block;
+  font-size: 13px;
+  font-weight: normal;
+  padding: 3px 8px;
+  position: absolute;
+  right: 30px;
+  top: 8px;
+}
+
+#suites-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+#suites-list > li {
+  border-top: 1px solid #888;
+  font-size: 14px;
+  padding: 15px 30px 15px 30px;
+  position: relative;
+}
+#suites-list > .success { background: url(success.png) no-repeat 9px 18px; }
+#suites-list > .failure { background: url(failure.png) no-repeat 9px 17px; }
+#suites-list > .error { background: url(error.png) no-repeat 9px 17px; }
+#suites-list > .running { background: url(running.gif) no-repeat 8px 15px; }
+#suites-list > li .name {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#suites-list > li .run-button {
+  background: #777;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; color: #FFF;
+  cursor: pointer;
+  display: block;
+  font-size: 13px;
+  padding: 3px 8px;
+  position: absolute;
+  right: 30px;
+  top: 15px;
+}
+#suites-list > .queued .run-button ,
+#suites-list > .running .run-button {
+  background: transparent;
+  color: #333;
+  cursor: default;
+}
+#suites-list > .compile-error .run-button {
+  background: transparent;
+  color: #F00;
+  cursor: default;
+}
+#suites-list > .compile-error .name {
+  cursor: default;
+  font-weight: normal;
+}
+
+#suites-list > li label {
+  display: none;
+  margin-top: 10px;
+}
+#suites-list > .open label {
+  display: block;
+}
+#suites-list > .running label ,
+#suites-list > .queued label {
+  color: #AAA;
+}
+
+.tests-list {
+  border-top: 1px solid #DDD;
+  display: none;
+  list-style-type: none;
+  margin: 10px 0 -5px;
+  padding: 9px 0 0;
+}
+.open .tests-list {
+  display: block;
+}
+
+.tests-list li {
+  font-weight: normal;
+  font-size: 12px;
+  padding: 5px 5px 5px 25px;
+  position: relative;
+}
+.tests-list li:hover {
+  background-color: #EEE;
+}
+.tests-list .name {
+  display: block;
+  overflow: hidden;
+  white-space: pre;
+  width: 100%;
+}
+.tests-list .success { background: url(success.png) no-repeat 4px 7px; }
+.tests-list .failure { background: url(failure.png) no-repeat 4px 7px; }
+.tests-list .error { background: url(error.png) no-repeat 4px 7px; }
+.tests-list .running { background: url(running.gif) no-repeat 2px 5px; }
+
+.tests-list .result {
+  border-top: 1px dotted #CCC;
+  display: none;
+  margin: 10px 0 0;
+  padding: 8px 0 5px;
+  overflow: auto;
+  white-space: pre;
+}
+.tests-list p.result {
+  padding-top: 10px;
+  padding-bottom: 4px;
+}
+.tests-list .open .result {
+  display: block;
+}
+
+.tests-list .test-func {
+  border-top: 1px dotted #CCC;
+  display: none;
+  margin: 5px 0 2px;
+  padding: 8px 0;
+  overflow: auto;
+  white-space: pre;
+}
+.tests-list .open .test-func {
+  display: block;
+}
+
+.tests-list .summary {
+  color: #BBB;
+  font-weight: normal;
+  height: 20px;
+  margin-left: 15px;
+}
+
+.done {
+  font-size: 11px;
+  color: #BBB;
+  cursor: pointer;
+  margin-left: 15px;
+  text-transform: lowercase;
+}
+
+.cancel {
+  color: red;
+  cursor: pointer;
+}

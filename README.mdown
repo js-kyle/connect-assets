@@ -1,0 +1,58 @@
+# connect-assets
+
+Transparent file compilation and dependency management for Node's [connect](https://github.com/senchalabs/connect) framework in the spirit of the Rails 3.1 asset pipeline.
+
+## What?
+
+**connect-assets** can:
+
+1. Serve `.coffee` ([CoffeeScript](http://coffeescript.org)) files as compiled `.js`
+1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css`
+1. Serve `.js` and `.css` files directly from the same directory, if you want.
+
+(Support for more file formats coming...)
+
+While other Connect middlewares can do this, **connect-assets** is unique in that it stores the compiled output in memory rather than writing it to the disk. (Why? Because I *loathe* redundant git diffs.)
+
+## How?
+
+First, install it in your project's directory:
+
+    npm install connect-assets
+
+Also install any specific compilers you'll need, e.g.:
+
+    npm install coffee-script
+    npm install stylus
+
+Then add this line to your app's configuration:
+
+    app.use require('connect-assets')()
+
+Now create an `assets` directory in your project and throw all your `.coffee` and `.styl` files in there. Bam! Files get served like so: `js/script.coffee` is compiled and served when you go to `http://yourapp/js/script.js`; `css/style.styl` is compiled and served at `http://yourapp/css/style.css`. **It just works.**
+
+## Options
+
+If you like, you can pass any of these options to the function returned by `require('connect-assets')`:
+
+* `src` (defaults to `'assets'`): The directory assets will be read from
+
+...And that's it.
+
+## TODO
+
+The 1.0 release just does the file-serving described above. In 2.0, **connect-assets** will also provide a way to concatenate and minify these files for production (à la Sprockets).
+
+## Credits
+
+Heavily inspired by Connect's [compiler](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/compiler.js) and [static](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/static.js) middlewares. The Cakefile is adapted from sstephenson's work (e.g. [pow](https://github.com/sstephenson/eco/blob/master/Cakefile)).
+
+## License
+
+©2011 Trevor Burnham and available under the [MIT license](http://www.opensource.org/licenses/mit-license.php):
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

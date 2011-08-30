@@ -1,0 +1,21 @@
+{
+  "author": "Trevor Burnham (http://trevorburnham.com)",
+  "name": "connect-assets",
+  "description": "A Rails-like asset pipeline for Connect",
+  "version": "1.0.0-beta1",
+  "homepage": "http://github.com/TrevorBurnham/connect-assets",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TrevorBurnham/connect-assets.git"
+  },
+  "main": "lib/assets.js",
+  "dependencies": {},
+  "devDependencies": {
+    "coffee-script": "1.1.2",
+    "connect": "1.6.4",
+    "nodeunit": "0.5.4",
+    "stylus": "0.15.1",
+    "request": "2.1.1",
+    "watch-tree": "0.1.1"
+  }
+}
