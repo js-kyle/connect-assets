@@ -1,6 +1,7 @@
 # [http://github.com/TrevorBurnham/connect-assets](http://github.com/TrevorBurnham/connect-assets)
 
 fs      = require 'fs'
+mime    = require 'mime'
 path    = require 'path'
 {parse} = require 'url'
 
@@ -29,7 +30,7 @@ serveRaw = (req, res, next, {stats, targetPath}) ->
   fs.readFile targetPath, 'utf8', (err, str) ->
     return next err if err
     cache[targetPath] = {mtime: stats.mtime, str}
-    res.end str
+    sendStr res, str, {stats, targetPath}
 
 serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
   srcPath = targetPath.replace(compiler.match, ".#{ext}")
@@ -41,7 +42,11 @@ serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
     compiler.compile srcPath, (err, str) ->
       return next err if err
       cache[targetPath] = {mtime: stats.mtime, str}
-      res.end str
+      sendStr res, str, {stats, targetPath}
+
+sendStr = (res, str, {stats, targetPath}) ->
+  res.setHeader 'Content-Type', mime.lookup(targetPath)
+  res.end str
 
 compilers =
   coffee:

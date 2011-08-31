@@ -9,7 +9,9 @@
     "url": "git://github.com/TrevorBurnham/connect-assets.git"
   },
   "main": "lib/assets.js",
-  "dependencies": {},
+  "dependencies": {
+    "mime": "1.2.2"
+  },
   "devDependencies": {
     "coffee-script": "1.1.2",
     "connect": "1.6.4",

@@ -5,10 +5,11 @@ app.use require('../lib/assets.js')()
 app.listen 3588
 
 exports['CoffeeScript is served as JavaScript'] = (test) ->
-  test.expect 2
+  test.expect 3
 
   request 'http://localhost:3588/js/script.js', (err, res, body) ->
     test.ok !err
+    test.equals res.headers['content-type'], 'application/javascript'
     expectedBody = '''
     (function() {
       console.log(\'Howdy\');
@@ -18,18 +19,20 @@ exports['CoffeeScript is served as JavaScript'] = (test) ->
     test.done()
 
 exports['Raw JavaScript is served directly'] = (test) ->
-  test.expect 2
+  test.expect 3
 
   request 'http://localhost:3588/js/dependency.js', (err, res, body) ->
     test.ok !err
     test.equals body, '// Admit it: You need me.'
+    test.equals res.headers['content-type'], 'application/javascript'
     test.done()
 
 exports['Stylus is served as CSS'] = (test) ->
-  test.expect 2
+  test.expect 3
 
   request 'http://localhost:3588/css/style.css', (err, res, body) ->
     test.ok !err
+    test.equals res.headers['content-type'], 'text/css'
     expectedBody = '''
     textarea,
     input {
