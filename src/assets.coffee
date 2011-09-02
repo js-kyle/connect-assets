@@ -63,5 +63,12 @@ compilers =
     match: /\.css$/
     compile: (filepath, callback) ->
       libs.stylus or= require 'stylus'
+      libs.nib ?= safe_require 'nib', (-> ->)
       fs.readFile filepath, 'utf8', (err, str) ->
-        libs.stylus.render str, filename: filepath, callback
+        libs.stylus(str).use(libs.nib()).set('filename', filepath).render(callback)
+
+safe_require = (m, alt)->
+    try
+        require m
+    catch err
+        alt
