@@ -37,7 +37,7 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
       tests = spawn "coffee", ["-e", "{reporters} = require 'nodeunit'; reporters.default.run ['.']"], cwd: 'test'
       tests.stdout.on 'data', (data) -> print data.toString()
       tests.stderr.on 'data', (data) -> print data.toString()
-      tests.on 'exit', (status) -> callback?() if status is 0
+      invoke 'docs'  # lest I forget
     testWatcher = watchTree 'test', 'sample-rate': 5
     testWatcher.on 'fileModified', runTests
     libWatcher = watchTree 'src', 'sample-rate': 5
