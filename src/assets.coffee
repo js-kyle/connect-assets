@@ -48,7 +48,7 @@ sendStr = (res, str, {stats, targetPath}) ->
   res.setHeader 'Content-Type', mime.lookup(targetPath)
   res.end str
 
-compilers =
+exports.compilers = compilers =
   coffee:
     match: /\.js$/
     compile: (filepath, callback) ->
