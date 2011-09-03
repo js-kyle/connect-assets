@@ -83,21 +83,21 @@ exports.compilers = compilers =
 
 createHelpers = (context) ->
   explicitPath = /^\/|^\.|:/
+  expandPath = (filePath, ext, root) ->
+    unless filePath.match explicitPath
+      filePath = "#{root}/#{filePath}"
+    if filePath.indexOf(ext, filePath.length - ext.length) is -1
+      filePath += ext
+    filePath
 
-  cssExt = /\.css$/
+  cssExt = '.css'
   context.css = (cssPath) ->
-    unless cssPath.match explicitPath
-      cssPath = "#{context.css.root}/#{cssPath}"
-    unless cssPath.match cssExt
-      cssPath += '.css'
+    cssPath = expandPath cssPath, cssExt, context.css.root
     "<link rel='stylesheet' href='#{cssPath}'>"
   context.css.root = '/css'
 
-  jsExt = /\.js$/
+  jsExt = '.js'
   context.js = (jsPath) ->
-    unless jsPath.match explicitPath
-      jsPath = "#{context.js.root}/#{jsPath}"
-    unless jsPath.match jsExt
-      jsPath += '.js'
+    jsPath = expandPath jsPath, jsExt, context.js.root
     "<script src='#{jsPath}'></script>"
   context.js.root = '/js'
