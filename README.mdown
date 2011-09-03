@@ -9,7 +9,7 @@ Written in CoffeeScript by the author of [CoffeeScript: Accelerated JavaScript D
 **connect-assets** can:
 
 1. Serve `.coffee` ([CoffeeScript](http://coffeescript.org)) files as compiled `.js`
-1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css`
+1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css` (with [nib](https://github.com/visionmedia/nib) baked in when available)
 1. Serve `.js` and `.css` files directly from the same directory, if you want.
 
 (Support for more file formats coming...)
@@ -48,6 +48,8 @@ The 1.0 release just does the file-serving described above. In 2.0, **connect-as
 ## Credits
 
 Heavily inspired by Connect's [compiler](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/compiler.js) and [static](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/static.js) middlewares. The Cakefile is adapted from sstephenson's work (e.g. [pow](https://github.com/sstephenson/eco/blob/master/Cakefile)).
+
+Contributors: [hasenj](https://github.com/hasenj), [TrevorBurnham](https://github.com/TrevorBurnham/).
 
 ## License
 
