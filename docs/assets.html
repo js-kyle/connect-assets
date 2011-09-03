@@ -66,14 +66,24 @@
         <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="nx">filepath</span><span class="p">)</span>
                         <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span><span class="p">())</span>
                         <span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Helper functions for templates</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">createHelpers = </span><span class="nf">(context) -&gt;</span>
-  <span class="nv">explicitPath = </span><span class="sr">/^\/|^\./</span>
+  <span class="nv">explicitPath = </span><span class="sr">/^\/|^\.|:/</span>
+
   <span class="nv">cssExt = </span><span class="sr">/\.css$/</span>
   <span class="nv">context.css = </span><span class="nf">(cssPath) -&gt;</span>
     <span class="nx">unless</span> <span class="nx">cssPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">explicitPath</span>
-      <span class="nv">cssPath = </span><span class="nx">context</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">root</span> <span class="o">+</span> <span class="nx">cssPath</span>
+      <span class="nv">cssPath = </span><span class="s2">&quot;#{context.css.root}/#{cssPath}&quot;</span>
     <span class="nx">unless</span> <span class="nx">cssPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">cssExt</span>
-      <span class="nv">cssPath = </span><span class="nx">cssPath</span> <span class="o">+</span> <span class="s1">&#39;.css&#39;</span>
+      <span class="nx">cssPath</span> <span class="o">+=</span> <span class="s1">&#39;.css&#39;</span>
     <span class="s2">&quot;&lt;link rel=&#39;stylesheet&#39; href=&#39;#{cssPath}&#39;&gt;&quot;</span>
-  <span class="nv">context.css.root = </span><span class="s1">&#39;/css/&#39;</span>
+  <span class="nv">context.css.root = </span><span class="s1">&#39;/css&#39;</span>
+
+  <span class="nv">jsExt = </span><span class="sr">/\.js$/</span>
+  <span class="nv">context.js = </span><span class="nf">(jsPath) -&gt;</span>
+    <span class="nx">unless</span> <span class="nx">jsPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">explicitPath</span>
+      <span class="nv">jsPath = </span><span class="s2">&quot;#{context.js.root}/#{jsPath}&quot;</span>
+    <span class="nx">unless</span> <span class="nx">jsPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">jsExt</span>
+      <span class="nx">jsPath</span> <span class="o">+=</span> <span class="s1">&#39;.js&#39;</span>
+    <span class="s2">&quot;&lt;script src=&#39;#{jsPath}&#39;&gt;&lt;/script&gt;&quot;</span>
+  <span class="nv">context.js.root = </span><span class="s1">&#39;/js&#39;</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

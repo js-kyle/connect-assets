@@ -82,12 +82,22 @@ exports.compilers = compilers =
 # ## Helper functions for templates
 
 createHelpers = (context) ->
-  explicitPath = /^\/|^\./
+  explicitPath = /^\/|^\.|:/
+
   cssExt = /\.css$/
   context.css = (cssPath) ->
     unless cssPath.match explicitPath
-      cssPath = context.css.root + cssPath
+      cssPath = "#{context.css.root}/#{cssPath}"
     unless cssPath.match cssExt
-      cssPath = cssPath + '.css'
+      cssPath += '.css'
     "<link rel='stylesheet' href='#{cssPath}'>"
-  context.css.root = '/css/'
+  context.css.root = '/css'
+
+  jsExt = /\.js$/
+  context.js = (jsPath) ->
+    unless jsPath.match explicitPath
+      jsPath = "#{context.js.root}/#{jsPath}"
+    unless jsPath.match jsExt
+      jsPath += '.js'
+    "<script src='#{jsPath}'></script>"
+  context.js.root = '/js'

@@ -97,10 +97,18 @@ exports['Requests for nonexistent raw files are ignored'] = (test) ->
     test.equals body, 'Cannot GET /foo.bar'
     test.done()
 
-exports['css helper function provides correct hrefs'] = (test) ->
+exports['css helper function provides correct href'] = (test) ->
   cssTag = "<link rel='stylesheet' href='/css/style.css'>"
   test.equals css('/css/style.css'), cssTag
   test.equals css('style.css'), cssTag
   test.equals css('style'), cssTag
   test.equals css('../style'), "<link rel='stylesheet' href='../style.css'>"
+  test.done()
+
+exports['js helper function provides correct src'] = (test) ->
+  jsTag = "<script src='/js/script.js'></script>"
+  test.equals js('/js/script.js'), jsTag
+  test.equals js('script.js'), jsTag
+  test.equals js('script'), jsTag
+  test.equals js('http://code.jquery.com/jquery-1.6.2'), "<script src='http://code.jquery.com/jquery-1.6.2.js'></script>"
   test.done()
