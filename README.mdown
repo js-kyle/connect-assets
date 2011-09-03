@@ -6,15 +6,13 @@ Written in CoffeeScript by the author of [CoffeeScript: Accelerated JavaScript D
 
 ## What?
 
-**connect-assets** can:
+connect-assets can:
 
 1. Serve `.coffee` ([CoffeeScript](http://coffeescript.org)) files as compiled `.js`
 1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css` (with [nib](https://github.com/visionmedia/nib) baked in when available)
 1. Serve `.js` and `.css` files directly from the same directory, if you want.
 
-(Support for more file formats coming...)
-
-While other Connect middlewares can do this, **connect-assets** is unique in that it stores the compiled output in memory rather than writing it to the disk. (Why? Because I *loathe* redundant git diffs.)
+To keep your project clean and avoid redundant git diffs, connect-assets stores the compiled output in memory rather than writing it to the disk.
 
 ## How?
 
@@ -26,24 +24,51 @@ Also install any specific compilers you'll need, e.g.:
 
     npm install coffee-script
     npm install stylus
+    npm install nib
 
 Then add this line to your app's configuration:
 
     app.use require('connect-assets')()
 
-Now create an `assets` directory in your project and throw all your `.coffee` and `.styl` files in there. Bam! Files get served like so: `js/script.coffee` is compiled and served when you go to `http://yourapp/js/script.js`; `css/style.styl` is compiled and served at `http://yourapp/css/style.css`. **It just works.**
+### Serving and compiling assets
+
+Create an `assets` directory in your project and throw all your `.coffee` and `.styl` files in there. Bam! Files get served like so: `assets/js/script.coffee` is compiled and served when you go to `http://yourapp/js/script.js`; `assets/css/style.styl` is compiled and served at `http://yourapp/css/style.css`.
+
+### Succinct markup functions
+
+connect-assets provides a couple of helper functions for use in your markup. In a [Jade template](http://jade-lang.com/), for instance, you might write
+
+    link(rel='stylesheet', href='/css/normalize.css')
+    script(src='/js/jquery.js')
+
+But with connect-assets, you can just write
+
+    != css('normalize')
+    != js('jquery')
+
+(where `!= is Jade's syntax for running JS and putting its output directly in the markup). These functions don't do anything special; they just emit the strings
+
+    <link rel='stylesheet' href='/css/normalize.css'>
+
+and
+
+    <script src='/js/jquery-1.6.2.js'></script>
 
 ## Options
 
 If you like, you can pass any of these options to the function returned by `require('connect-assets')`:
 
 * `src` (defaults to `'assets'`): The directory assets will be read from
+* `helperContext` (defaults to `global`): The object the `css` and `js` helper functions will attach to
 
-...And that's it.
+You can also set the "root path" on the `css` and `js` helper functions (by default, `/css` and `/js`), e.g.
+
+    css.root = '/stylesheets'
+    js.root  = '/javascripts'
 
 ## TODO
 
-The 1.0 release just does the file-serving described above. In 2.0, **connect-assets** will also provide a way to concatenate and minify these files for production (à la Sprockets).
+The goal for 2.0 is to provide Sprockets-style concatenation and minification. Stay tuned.
 
 ## Credits
 
