@@ -96,3 +96,11 @@ exports['Requests for nonexistent raw files are ignored'] = (test) ->
     test.ok !err
     test.equals body, 'Cannot GET /foo.bar'
     test.done()
+
+exports['css helper function provides correct hrefs'] = (test) ->
+  cssTag = "<link rel='stylesheet' href='/css/style.css'>"
+  test.equals css('/css/style.css'), cssTag
+  test.equals css('style.css'), cssTag
+  test.equals css('style'), cssTag
+  test.equals css('../style'), "<link rel='stylesheet' href='../style.css'>"
+  test.done()

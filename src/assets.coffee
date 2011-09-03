@@ -9,7 +9,17 @@ cache = {}
 libs = {}
 
 module.exports = (options = {}) ->
-  src = options.src ? 'assets'
+  options.src ?= 'assets'
+  options.helperContext ?= global
+  if options.helperContext?
+    createHelpers options.helperContext
+  if options.src?
+    assetsMiddleware options
+
+# ## Asset serving and compilation
+
+assetsMiddleware = (options) ->
+  src = options.src
   (req, res, next) ->
     return next() unless req.method is 'GET'
     targetPath = path.join src, parse(req.url).pathname
@@ -68,3 +78,16 @@ exports.compilers = compilers =
         libs.stylus(str).set('filename', filepath)
                         .use(libs.nib())
                         .render(callback)
+
+# ## Helper functions for templates
+
+createHelpers = (context) ->
+  explicitPath = /^\/|^\./
+  cssExt = /\.css$/
+  context.css = (cssPath) ->
+    unless cssPath.match explicitPath
+      cssPath = context.css.root + cssPath
+    unless cssPath.match cssExt
+      cssPath = cssPath + '.css'
+    "<link rel='stylesheet' href='#{cssPath}'>"
+  context.css.root = '/css/'
