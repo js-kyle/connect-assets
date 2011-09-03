@@ -57,6 +57,22 @@ exports['Stylus imports work as expected'] = (test) ->
     test.equals body, expectedBody
     test.done()
 
+exports['nib is supported when available'] = (test) ->
+  test.expect 2
+
+  request 'http://localhost:3588/css/gradient.css', (err, res, body) ->
+    test.ok !err
+    expectedBody = '''
+    .striped {
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ff0), color-stop(1, #00f));
+      background: -webkit-linear-gradient(top, #ff0 0%, #00f 100%);
+      background: -moz-linear-gradient(top, #ff0 0%, #00f 100%);
+      background: linear-gradient(top, #ff0 0%, #00f 100%);
+    }\n
+    '''
+    test.equals body, expectedBody
+    test.done()
+
 exports['Requests for directories are ignored'] = (test) ->
   test.expect 2
 

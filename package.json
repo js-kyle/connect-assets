@@ -15,6 +15,7 @@
   "devDependencies": {
     "coffee-script": "1.1.2",
     "connect": "1.6.4",
+    "nib": "0.2.0",
     "nodeunit": "0.5.4",
     "stylus": "0.15.1",
     "request": "2.1.1",
