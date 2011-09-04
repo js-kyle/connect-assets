@@ -10,7 +10,8 @@
   },
   "main": "lib/assets.js",
   "dependencies": {
-    "mime": "1.2.2"
+    "mime": "1.2.2",
+    "uglify-js": "1.0.7"
   },
   "devDependencies": {
     "coffee-script": "1.1.2",
