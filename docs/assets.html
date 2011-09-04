@@ -63,8 +63,23 @@
       <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span> <span class="nx">filepath</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="nf">(err, str) -&gt;</span>
         <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="nx">filepath</span><span class="p">)</span>
                         <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span><span class="p">())</span>
-                        <span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Helper functions for templates</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">EXPLICIT_PATH = </span><span class="sr">/^\/|^\.|:/</span>
+                        <span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Helper functions for templates</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">HEADER = </span><span class="err">///</span>
+<span class="p">(</span><span class="o">?:</span>
+  <span class="p">(</span><span class="err">\</span><span class="c1">#\#\# .* \#\#\#\n?) |</span>
+  <span class="p">(</span><span class="err">\\</span><span class="o">/</span><span class="err">\\</span><span class="o">/</span> <span class="p">.</span><span class="o">*</span> <span class="err">\</span><span class="nx">n</span><span class="o">?</span><span class="p">)</span> <span class="o">|</span>
+  <span class="p">(</span><span class="err">\</span><span class="c1"># .* \n?)</span>
+<span class="p">)</span><span class="o">+</span>
+<span class="err">///</span>
+
+<span class="nv">DIRECTIVE = </span><span class="err">///</span>
+<span class="o">^</span><span class="p">[</span><span class="err">\</span><span class="nx">W</span><span class="p">]</span> <span class="o">*=</span> <span class="err">\</span><span class="nx">s</span><span class="o">*</span> <span class="p">(</span><span class="err">\</span><span class="nx">w</span><span class="o">+</span><span class="p">.</span><span class="o">*?</span><span class="p">)</span> <span class="p">(</span><span class="err">\</span><span class="o">*</span><span class="err">\\</span><span class="o">/</span><span class="p">)</span><span class="o">?</span><span class="nx">$</span>
+<span class="err">///gm</span>
+
+<span class="nv">EXPLICIT_PATH = </span><span class="sr">/^\/|^\.|:/</span>
 <span class="nv">REMOTE_PATH = </span><span class="sr">/\/\//</span>
+
+<span class="nv">relPath = </span><span class="nf">(root, fullPath) -&gt;</span>
+  <span class="nx">fullPath</span><span class="p">.</span><span class="nx">slice</span> <span class="nx">root</span><span class="p">.</span><span class="nx">length</span>
 
 <span class="nv">createHelpers = </span><span class="nf">(options) -&gt;</span>
   <span class="nv">context = </span><span class="nx">options</span><span class="p">.</span><span class="nx">helperContext</span>
@@ -86,28 +101,25 @@
     <span class="nv">jsPath = </span><span class="nx">expandPath</span> <span class="nx">jsPath</span><span class="p">,</span> <span class="nx">jsExt</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">js</span><span class="p">.</span><span class="nx">root</span>
     <span class="k">if</span> <span class="nx">context</span><span class="p">.</span><span class="nx">js</span><span class="p">.</span><span class="nx">concatenate</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>TODO</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="s2">&quot;&lt;script src=&#39;#{jsPath}&#39;&gt;&lt;/script&gt;&quot;</span>
     <span class="k">else</span>
+      <span class="nv">generateTags = </span><span class="nf">(filePath) -&gt;</span>
+        <span class="k">if</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
+          <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;&lt;script src=&#39;#{filePath}&#39;&gt;&lt;/script&gt;&quot;</span><span class="p">]</span>
+        <span class="nv">tags = </span><span class="p">[]</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>generate tags of dependencies</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">for</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
+          <span class="nv">tags = </span><span class="nx">tags</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">generateTags</span><span class="p">(</span><span class="nx">depPath</span><span class="p">)</span>
+        <span class="nx">tags</span><span class="p">.</span><span class="nx">push</span> <span class="s2">&quot;&lt;script src=&#39;#{relPath options.src, filePath}&#39;&gt;&lt;/script&gt;&quot;</span>
+        <span class="nx">tags</span>
       <span class="nv">dependencyTags = </span><span class="s1">&#39;&#39;</span>
-      <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span> <span class="o">and</span> <span class="o">!</span><span class="nx">jsPath</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">REMOTE_PATH</span><span class="p">)</span>
-        <span class="nv">assetPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">jsPath</span>
-        <span class="k">if</span> <span class="nx">updateDependenciesSync</span> <span class="nx">assetPath</span><span class="p">,</span> <span class="nx">jsPath</span>
-          <span class="nv">dependencyTags = </span><span class="p">(</span><span class="k">for</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">assetPath</span><span class="p">]</span>
-            <span class="s2">&quot;&lt;script src=&#39;#{depPath}&#39;&gt;&lt;/script&gt;&quot;</span>
-          <span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;\n&#39;</span>
-      <span class="s2">&quot;#{dependencyTags}&lt;script src=&#39;#{jsPath}&#39;&gt;&lt;/script&gt;&quot;</span>
+      <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="o">?</span> <span class="o">and</span> <span class="o">!</span><span class="nx">jsPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
+        <span class="nv">filePath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">jsPath</span>
+        <span class="nx">updateDependenciesSync</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nx">jsPath</span>
+        <span class="nx">generateTags</span><span class="p">(</span><span class="nx">filePath</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">)</span>
+      <span class="k">else</span>
+        <span class="s2">&quot;&lt;script src=&#39;#{jsPath}&#39;&gt;&lt;/script&gt;&quot;</span>
   <span class="nv">context.js.root = </span><span class="s1">&#39;/js&#39;</span>
-  <span class="nv">context.js.concatenate = </span><span class="o">!!</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PRODUCTION</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h2>Dependency management</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">HEADER = </span><span class="err">///</span>
-<span class="p">(</span><span class="o">?:</span>
-  <span class="p">(</span><span class="err">\</span><span class="c1">#\#\# .* \#\#\#\n?) |</span>
-  <span class="p">(</span><span class="err">\\</span><span class="o">/</span><span class="err">\\</span><span class="o">/</span> <span class="p">.</span><span class="o">*</span> <span class="err">\</span><span class="nx">n</span><span class="o">?</span><span class="p">)</span><span class="o">+</span> <span class="o">|</span>
-  <span class="p">(</span><span class="err">\</span><span class="c1"># .* \n?)+</span>
-<span class="p">)</span><span class="o">+</span>
-<span class="err">///</span>
+  <span class="nv">context.js.concatenate = </span><span class="o">!!</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PRODUCTION</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>Dependency management</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">updateDependenciesSync = </span><span class="nf">(filePath) -&gt;</span>
+  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">?=</span> <span class="p">[]</span>
+  <span class="k">return</span> <span class="k">if</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
 
-<span class="nv">DIRECTIVE = </span><span class="err">///</span>
-<span class="o">^</span><span class="p">[</span><span class="err">\</span><span class="nx">W</span><span class="p">]</span><span class="o">*=</span><span class="err">\</span><span class="nx">s</span><span class="o">*</span><span class="p">(</span><span class="err">\</span><span class="nx">w</span><span class="o">+</span><span class="p">.</span><span class="o">*?</span><span class="p">)(</span><span class="err">\</span><span class="o">*</span><span class="err">\\</span><span class="o">/</span><span class="p">)</span><span class="o">?</span><span class="nx">$</span>
-<span class="err">///m</span>
-
-<span class="nv">updateDependenciesSync = </span><span class="nf">(filePath, hrefPath) -&gt;</span>
   <span class="nv">processFile = </span><span class="nf">(filePath) -&gt;</span>
     <span class="nv">stats = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">filePath</span>
     <span class="k">return</span> <span class="kc">null</span> <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span> <span class="o">is</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span>
@@ -124,8 +136,10 @@
         <span class="nv">directives = </span><span class="nx">processFile</span> <span class="nx">fallbackPath</span>
         <span class="k">break</span>
 
-  <span class="k">return</span> <span class="nx">unless</span> <span class="nx">directives</span><span class="o">?</span>  <span class="c1"># no file found, or no changes since last time</span>
-  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="k">if</span> <span class="nx">directives</span><span class="o">?</span>
+    <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="k">else</span>
+    <span class="k">return</span> <span class="c1"># no file found, or no changes since last time</span>
 
   <span class="k">for</span> <span class="nx">directive</span> <span class="k">in</span> <span class="nx">directives</span>
     <span class="nv">words = </span><span class="nx">directive</span><span class="p">.</span><span class="nx">split</span> <span class="sr">/\s+/</span>
@@ -135,13 +149,14 @@
           <span class="nv">depPath = </span><span class="nx">depPath</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/&#39;&quot;/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
           <span class="k">if</span> <span class="nx">depPath</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">is</span> <span class="o">-</span><span class="mi">1</span> <span class="k">then</span> <span class="nx">depPath</span> <span class="o">+=</span> <span class="s1">&#39;.js&#39;</span>
           <span class="nx">unless</span> <span class="nx">depPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
-            <span class="nv">depPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">hrefPath</span><span class="p">,</span> <span class="s1">&#39;../&#39;</span><span class="p">,</span> <span class="nx">depPath</span>
+            <span class="nv">depPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">filePath</span><span class="p">,</span> <span class="s1">&#39;../&#39;</span><span class="p">,</span> <span class="nx">depPath</span>
+          <span class="nx">updateDependenciesSync</span> <span class="nx">depPath</span>
           <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">push</span> <span class="nx">depPath</span>
 
   <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
 
 <span class="nv">directivesInCode = </span><span class="nf">(code) -&gt;</span>
-  <span class="k">for</span> <span class="nx">header</span> <span class="k">in</span> <span class="nx">HEADER</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">code</span><span class="p">)</span> <span class="k">when</span> <span class="nx">header</span><span class="o">?</span>
-    <span class="nx">DIRECTIVE</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">header</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+  <span class="nv">header = </span><span class="nx">HEADER</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">code</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+  <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">while</span> <span class="nv">match = </span><span class="nx">DIRECTIVE</span><span class="p">.</span><span class="nx">exec</span> <span class="nx">header</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

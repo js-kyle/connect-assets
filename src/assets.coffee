@@ -79,8 +79,23 @@ exports.compilers = compilers =
 
 # ## Helper functions for templates
 
+HEADER = ///
+(?:
+  (\#\#\# .* \#\#\#\n?) |
+  (\\/\\/ .* \n?) |
+  (\# .* \n?)
+)+
+///
+
+DIRECTIVE = ///
+^[\W] *= \s* (\w+.*?) (\*\\/)?$
+///gm
+
 EXPLICIT_PATH = /^\/|^\.|:/
 REMOTE_PATH = /\/\//
+
+relPath = (root, fullPath) ->
+  fullPath.slice root.length
 
 createHelpers = (options) ->
   context = options.helperContext
@@ -104,32 +119,31 @@ createHelpers = (options) ->
       #TODO
       "<script src='#{jsPath}'></script>"
     else
+      generateTags = (filePath) ->
+        if filePath.match REMOTE_PATH
+          return ["<script src='#{filePath}'></script>"]
+        tags = []
+        # generate tags of dependencies
+        for depPath in dependencies[filePath]
+          tags = tags.concat generateTags(depPath)
+        tags.push "<script src='#{relPath options.src, filePath}'></script>"
+        tags
       dependencyTags = ''
-      if options.src and !jsPath.match(REMOTE_PATH)
-        assetPath = path.join options.src, jsPath
-        if updateDependenciesSync assetPath, jsPath
-          dependencyTags = (for depPath in dependencies[assetPath]
-            "<script src='#{depPath}'></script>"
-          ).join('\n') + '\n'
-      "#{dependencyTags}<script src='#{jsPath}'></script>"
+      if options.src? and !jsPath.match REMOTE_PATH
+        filePath = path.join options.src, jsPath
+        updateDependenciesSync filePath, jsPath
+        generateTags(filePath).join('\n')
+      else
+        "<script src='#{jsPath}'></script>"
   context.js.root = '/js'
   context.js.concatenate = !!process.env.PRODUCTION
 
 # ## Dependency management
 
-HEADER = ///
-(?:
-  (\#\#\# .* \#\#\#\n?) |
-  (\\/\\/ .* \n?)+ |
-  (\# .* \n?)+
-)+
-///
+updateDependenciesSync = (filePath) ->
+  dependencies[filePath] ?= []
+  return if filePath.match REMOTE_PATH
 
-DIRECTIVE = ///
-^[\W]*=\s*(\w+.*?)(\*\\/)?$
-///m
-
-updateDependenciesSync = (filePath, hrefPath) ->
   processFile = (filePath) ->
     stats = fs.statSync filePath
     return null if cache[filePath]?.mtime is stats.mtime
@@ -146,8 +160,10 @@ updateDependenciesSync = (filePath, hrefPath) ->
         directives = processFile fallbackPath
         break
 
-  return unless directives?  # no file found, or no changes since last time
-  dependencies[filePath] = []
+  if directives?
+    dependencies[filePath] = []
+  else
+    return # no file found, or no changes since last time
 
   for directive in directives
     words = directive.split /\s+/
@@ -157,11 +173,12 @@ updateDependenciesSync = (filePath, hrefPath) ->
           depPath = depPath.replace /'"/g, ''
           if depPath.indexOf('.') is -1 then depPath += '.js'
           unless depPath.match EXPLICIT_PATH
-            depPath = path.join hrefPath, '../', depPath
+            depPath = path.join filePath, '../', depPath
+          updateDependenciesSync depPath
           dependencies[filePath].push depPath
 
   dependencies[filePath]
 
 directivesInCode = (code) ->
-  for header in HEADER.exec(code) when header?
-    DIRECTIVE.exec(header)[1]
+  header = HEADER.exec(code)[0]
+  match[1] while match = DIRECTIVE.exec header

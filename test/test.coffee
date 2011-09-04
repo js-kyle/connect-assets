@@ -120,3 +120,12 @@ exports['Script files can `require` (in non-production mode)'] = (test) ->
   """
   test.equals js('dependent'), jsTags
   test.done()
+
+exports['Dependencies can be chained (in non-production mode)'] = (test) ->
+  jsTags = """<script src='/js/js-dependency.js'></script>
+  <script src='/js/coffee-dependency.js'></script>
+  <script src='/js/dependent.js'></script>
+  <script src='/js/chained-dependent.js'></script>
+  """
+  test.equals js('chained-dependent'), jsTags
+  test.done()
