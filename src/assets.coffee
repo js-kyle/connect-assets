@@ -37,10 +37,7 @@ assetsMiddleware = (options) ->
 serveRaw = (req, res, next, {stats, targetPath}) ->
   if cache[targetPath]?.mtime is stats.mtime
     return res.end cache.str
-  fs.readFile targetPath, 'utf8', (err, str) ->
-    return next err if err
-    cache[targetPath] = {mtime: stats.mtime, str}
-    sendStr res, str, {stats, targetPath}
+  fs.readFile targetPath, 'utf8', sendCallback(res, next, {stats, targetPath})
 
 serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
   srcPath = targetPath.replace(compiler.match, ".#{ext}")
@@ -49,14 +46,14 @@ serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
     return next err if err
     if cache[targetPath]?.mtime is stats.mtime
       return res.end cache.str
-    compiler.compile srcPath, (err, str) ->
-      return next err if err
-      cache[targetPath] = {mtime: stats.mtime, str}
-      sendStr res, str, {stats, targetPath}
+    compiler.compile srcPath, sendCallback(res, next, {stats, targetPath})
 
-sendStr = (res, str, {stats, targetPath}) ->
-  res.setHeader 'Content-Type', mime.lookup(targetPath)
-  res.end str
+sendCallback = (res, next, {stats, targetPath}) ->
+  (err, str) ->
+    return next err if err
+    cache[targetPath] = {mtime: stats.mtime, str}
+    res.setHeader 'Content-Type', mime.lookup(targetPath)
+    res.end str
 
 exports.compilers = compilers =
   coffee:
