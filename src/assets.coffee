@@ -7,12 +7,13 @@ path    = require 'path'
 
 cache = {}
 libs = {}
+dependencies = {}
 
 module.exports = (options = {}) ->
   options.src ?= 'assets'
   options.helperContext ?= global
   if options.helperContext?
-    createHelpers options.helperContext
+    createHelpers options
   if options.src?
     assetsMiddleware options
 
@@ -78,10 +79,13 @@ exports.compilers = compilers =
 
 # ## Helper functions for templates
 
-createHelpers = (context) ->
-  explicitPath = /^\/|^\.|:/
+EXPLICIT_PATH = /^\/|^\.|:/
+REMOTE_PATH = /\/\//
+
+createHelpers = (options) ->
+  context = options.helperContext
   expandPath = (filePath, ext, root) ->
-    unless filePath.match explicitPath
+    unless filePath.match EXPLICIT_PATH
       filePath = "#{root}/#{filePath}"
     if filePath.indexOf(ext, filePath.length - ext.length) is -1
       filePath += ext
@@ -96,5 +100,68 @@ createHelpers = (context) ->
   jsExt = '.js'
   context.js = (jsPath) ->
     jsPath = expandPath jsPath, jsExt, context.js.root
-    "<script src='#{jsPath}'></script>"
+    if context.js.concatenate
+      #TODO
+      "<script src='#{jsPath}'></script>"
+    else
+      dependencyTags = ''
+      if options.src and !jsPath.match(REMOTE_PATH)
+        assetPath = path.join options.src, jsPath
+        if updateDependenciesSync assetPath, jsPath
+          dependencyTags = (for depPath in dependencies[assetPath]
+            "<script src='#{depPath}'></script>"
+          ).join('\n') + '\n'
+      "#{dependencyTags}<script src='#{jsPath}'></script>"
   context.js.root = '/js'
+  context.js.concatenate = !!process.env.PRODUCTION
+
+# ## Dependency management
+
+HEADER = ///
+(?:
+  (\#\#\# .* \#\#\#\n?) |
+  (\\/\\/ .* \n?)+ |
+  (\# .* \n?)+
+)+
+///
+
+DIRECTIVE = ///
+^[\W]*=\s*(\w+.*?)(\*\\/)?$
+///m
+
+updateDependenciesSync = (filePath, hrefPath) ->
+  processFile = (filePath) ->
+    stats = fs.statSync filePath
+    return null if cache[filePath]?.mtime is stats.mtime
+    str = fs.readFileSync(filePath, 'utf8')
+    cache[filePath] = {mtime: stats.mtime, str}
+    directivesInCode str
+
+  try
+    directives = processFile filePath
+  catch e
+    for ext, compiler of compilers when compiler.match.test(filePath)
+      try
+        fallbackPath = filePath.replace(compiler.match, ".#{ext}")
+        directives = processFile fallbackPath
+        break
+
+  return unless directives?  # no file found, or no changes since last time
+  dependencies[filePath] = []
+
+  for directive in directives
+    words = directive.split /\s+/
+    switch words[0]
+      when 'require'
+        for depPath in words[1..]
+          depPath = depPath.replace /'"/g, ''
+          if depPath.indexOf('.') is -1 then depPath += '.js'
+          unless depPath.match EXPLICIT_PATH
+            depPath = path.join hrefPath, '../', depPath
+          dependencies[filePath].push depPath
+
+  dependencies[filePath]
+
+directivesInCode = (code) ->
+  for header in HEADER.exec(code) when header?
+    DIRECTIVE.exec(header)[1]

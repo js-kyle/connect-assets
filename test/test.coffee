@@ -21,7 +21,7 @@ exports['CoffeeScript is served as JavaScript'] = (test) ->
 exports['Raw JavaScript is served directly'] = (test) ->
   test.expect 3
 
-  request 'http://localhost:3588/js/dependency.js', (err, res, body) ->
+  request 'http://localhost:3588/js/js-dependency.js', (err, res, body) ->
     test.ok !err
     test.equals body, '// Admit it: You need me.'
     test.equals res.headers['content-type'], 'application/javascript'
@@ -111,4 +111,12 @@ exports['js helper function provides correct src'] = (test) ->
   test.equals js('script.js'), jsTag
   test.equals js('script'), jsTag
   test.equals js('http://code.jquery.com/jquery-1.6.2'), "<script src='http://code.jquery.com/jquery-1.6.2.js'></script>"
+  test.done()
+
+exports['Script files can `require` (in non-production mode)'] = (test) ->
+  jsTags = """<script src='/js/js-dependency.js'></script>
+  <script src='/js/coffee-dependency.js'></script>
+  <script src='/js/dependent.js'></script>
+  """
+  test.equals js('dependent'), jsTags
   test.done()

@@ -72,7 +72,7 @@ The goal for 2.0 is to provide Sprockets-style concatenation and minification. S
 
 ## Credits
 
-Heavily inspired by Connect's [compiler](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/compiler.js) and [static](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/static.js) middlewares. The Cakefile is adapted from sstephenson's work (e.g. [pow](https://github.com/sstephenson/eco/blob/master/Cakefile)).
+Borrows heavily from Connect's [compiler](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/compiler.js) and [static](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/static.js) middlewares, and of course sstephenson's [Sprockets](https://github.com/sstephenson/sprockets).
 
 Contributors: [hasenj](https://github.com/hasenj), [TrevorBurnham](https://github.com/TrevorBurnham/).
 
