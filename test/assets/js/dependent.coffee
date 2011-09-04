@@ -1,2 +1,2 @@
 #= require js-dependency
-#= require coffee-dependency
+#= require 'coffee-dependency'

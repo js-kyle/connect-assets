@@ -146,7 +146,7 @@
     <span class="k">switch</span> <span class="nx">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
       <span class="k">when</span> <span class="s1">&#39;require&#39;</span>
         <span class="k">for</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">words</span><span class="p">[</span><span class="mi">1</span><span class="p">..]</span>
-          <span class="nv">depPath = </span><span class="nx">depPath</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/&#39;&quot;/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+          <span class="nv">depPath = </span><span class="nx">depPath</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/[&#39;&quot;]/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
           <span class="k">if</span> <span class="nx">depPath</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">is</span> <span class="o">-</span><span class="mi">1</span> <span class="k">then</span> <span class="nx">depPath</span> <span class="o">+=</span> <span class="s1">&#39;.js&#39;</span>
           <span class="nx">unless</span> <span class="nx">depPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
             <span class="nv">depPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">filePath</span><span class="p">,</span> <span class="s1">&#39;../&#39;</span><span class="p">,</span> <span class="nx">depPath</span>
