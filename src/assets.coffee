@@ -163,7 +163,7 @@ updateDependenciesSync = (filePath) ->
       when 'require'
         for depPath in words[1..]
           depPath = depPath.replace /['"]/g, ''
-          if depPath.indexOf('.') is -1 then depPath += '.js'
+          if path.extname(depPath) isnt '.js' then depPath += '.js'
           unless depPath.match EXPLICIT_PATH
             depPath = path.join filePath, '../', depPath
           updateDependenciesSync depPath
