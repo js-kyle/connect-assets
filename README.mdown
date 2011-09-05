@@ -34,7 +34,7 @@ Then add this line to your app's configuration:
 
 Create an `assets` directory in your project and throw all your `.coffee` and `.styl` files in there. Bam! Files get served like so: `assets/js/script.coffee` is compiled and served when you go to `http://yourapp/js/script.js`; `assets/css/style.styl` is compiled and served at `http://yourapp/css/style.css`.
 
-### Succinct markup functions
+### Markup functions
 
 connect-assets provides a couple of helper functions for use in your markup. In a [Jade template](http://jade-lang.com/), for instance, you might write
 
@@ -46,13 +46,22 @@ But with connect-assets, you can just write
     != css('normalize')
     != js('jquery')
 
-(where `!= is Jade's syntax for running JS and putting its output directly in the markup). These functions don't do anything special; they just emit the strings
+(where `!= is Jade's syntax for running JS and putting its output directly in the markup). The `css` function just emits a string like
 
     <link rel='stylesheet' href='/css/normalize.css'>
 
-and
+The `js` function, on the other hand, is more powerful...
 
-    <script src='/js/jquery-1.6.2.js'></script>
+### Sprockets-style concatenation
+
+You can indicate dependencies in your CoffeeScript files using the Sprockets-style syntax
+
+    #= require dependency
+
+(or `//= require dependency` in JavaScript). When you do so, and point the `js` function at that file, two things can happen:
+
+1. By default, you'll get multiple `<script>` tags out, in an order that gives you all of your dependencies.
+2. If you're in production mode (`process.env.NODE_ENV == 'production'`), you'll just get a single tag, wich will point to a single JavaScript file that encompasses the target's entire dependency graph—compiled, concatenated, and minified (with [UglifyJS](https://github.com/mishoo/UglifyJS)).
 
 ## Options
 
@@ -68,7 +77,12 @@ You can also set the "root path" on the `css` and `js` helper functions (by defa
 
 ## TODO
 
-The goal for 2.0 is to provide Sprockets-style concatenation and minification. Stay tuned.
+* Sprockets' `require_tree` ought to be supported.
+* Although dependencies can be chained, the code doesn't currently handle cyclic dependencies properly. (You won't get an infinite loop, but you won't get an error message either.)
+* Error-handling in general needs to be improved. Like, a lot.
+* Code needs to be better structured and made more extensible.
+
+This is still a young project, and feedback of all kinds is much appreciated.
 
 ## Credits
 
