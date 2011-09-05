@@ -4,6 +4,7 @@ fs      = require 'fs'
 mime    = require 'mime'
 path    = require 'path'
 {parse} = require 'url'
+uglify  = require 'uglify-js'
 
 cache = {}
 libs = {}
@@ -25,6 +26,9 @@ assetsMiddleware = (options) ->
     return next() unless req.method is 'GET'
     targetPath = path.join src, parse(req.url).pathname
     return next() if targetPath.slice(-1) is '/'  # ignore directory requests
+    cachedTarget = cache[targetPath]
+    if cachedTarget and (!cachedTarget.mtime)  # memory content
+      return sendCallback(res, next, {targetPath}) null, cachedTarget.str
     fs.stat targetPath, (err, stats) ->
       # if the file exists, serve it
       return serveRaw req, res, next, {stats, targetPath} unless err
@@ -52,28 +56,31 @@ serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
 sendCallback = (res, next, {stats, targetPath}) ->
   (err, str) ->
     return next err if err
-    cache[targetPath] = {mtime: stats.mtime, str}
+    if stats then cache[targetPath] = {mtime: stats.mtime, str}
     res.setHeader 'Content-Type', mime.lookup(targetPath)
     res.end str
 
 exports.compilers = compilers =
   coffee:
     match: /\.js$/
-    compile: (filepath, callback) ->
+    compile: (filePath, callback) ->
       libs.CoffeeScript or= require 'coffee-script'
-      fs.readFile filepath, 'utf8', (err, str) ->
+      fs.readFile filePath, 'utf8', (err, str) ->
         return callback err if err
         try
           callback null, libs.CoffeeScript.compile str
         catch e
           callback e
+    compileStr: (code) ->
+      libs.CoffeeScript or= require 'coffee-script'
+      libs.CoffeeScript.compile code
   styl:
     match: /\.css$/
-    compile: (filepath, callback) ->
+    compile: (filePath, callback) ->
       libs.stylus or= require 'stylus'
       libs.nib or= try require 'nib' catch e then (-> ->)
-      fs.readFile filepath, 'utf8', (err, str) ->
-        libs.stylus(str).set('filename', filepath)
+      fs.readFile filePath, 'utf8', (err, str) ->
+        libs.stylus(str).set('filename', filePath)
                         .use(libs.nib())
                         .render(callback)
 
@@ -97,6 +104,9 @@ REMOTE_PATH = /\/\//
 relPath = (root, fullPath) ->
   fullPath.slice root.length
 
+productionPath = (devPath) ->
+  devPath.replace /\.js$/, '.complete.js'
+
 createHelpers = (options) ->
   context = options.helperContext
   expandPath = (filePath, ext, root) ->
@@ -116,27 +126,24 @@ createHelpers = (options) ->
   context.js = (jsPath) ->
     jsPath = expandPath jsPath, jsExt, context.js.root
     if context.js.concatenate
-      #TODO
-      "<script src='#{jsPath}'></script>"
+      if options.src? and !jsPath.match REMOTE_PATH
+        filePath = path.join options.src, jsPath
+        updateDependenciesSync filePath
+        str = concatenate filePath, options
+        str = minify str
+        cache[productionPath filePath] = {str}
+      tag = "<script src='#{productionPath jsPath}'></script>"
     else
-      generateTags = (filePath) ->
-        if filePath.match REMOTE_PATH
-          return ["<script src='#{filePath}'></script>"]
-        tags = []
-        # generate tags of dependencies
-        for depPath in dependencies[filePath]
-          tags = tags.concat generateTags(depPath)
-        tags.push "<script src='#{relPath options.src, filePath}'></script>"
-        tags
       dependencyTags = ''
       if options.src? and !jsPath.match REMOTE_PATH
         filePath = path.join options.src, jsPath
         updateDependenciesSync filePath, jsPath
-        generateTags(filePath).join('\n')
+        tag = generateTags(filePath, options).join('\n')
       else
-        "<script src='#{jsPath}'></script>"
+        tag = "<script src='#{jsPath}'></script>"
+    tag
   context.js.root = '/js'
-  context.js.concatenate = !!process.env.PRODUCTION
+  context.js.concatenate = process.env.NODE_ENV is 'production'
 
 # ## Dependency management
 
@@ -144,28 +151,13 @@ updateDependenciesSync = (filePath) ->
   dependencies[filePath] ?= []
   return if filePath.match REMOTE_PATH
 
-  processFile = (filePath) ->
-    stats = fs.statSync filePath
-    return null if cache[filePath]?.mtime is stats.mtime
-    str = fs.readFileSync(filePath, 'utf8')
-    cache[filePath] = {mtime: stats.mtime, str}
-    directivesInCode str
+  oldTime = cache[filePath]?.mtime
+  directivePath = filePath
+  readFileOrCompile filePath, (sourcePath) -> directivePath = sourcePath
+  return if cache[filePath].mtime is oldTime
 
-  try
-    directives = processFile filePath
-  catch e
-    for ext, compiler of compilers when compiler.match.test(filePath)
-      try
-        fallbackPath = filePath.replace(compiler.match, ".#{ext}")
-        directives = processFile fallbackPath
-        break
-
-  if directives?
-    dependencies[filePath] = []
-  else
-    return # no file found, or no changes since last time
-
-  for directive in directives
+  dependencies[filePath] = []
+  for directive in directivesInCode cache[directivePath].str
     words = directive.split /\s+/
     switch words[0]
       when 'require'
@@ -179,6 +171,51 @@ updateDependenciesSync = (filePath) ->
 
   dependencies[filePath]
 
+readFileOrCompile = (filePath, compileCallback) ->
+  try
+    stats = fs.statSync filePath
+    str = fs.readFileSync filePath, 'utf8'
+    cache[filePath] = {mtime: stats.mtime, str}
+  catch e
+    for ext, compiler of compilers when compiler.match.test(filePath)
+      try
+        sourcePath = filePath.replace(compiler.match, ".#{ext}")
+        stats = fs.statSync sourcePath
+        break if cache[sourcePath]?.mtime is stats.mtime
+        str = fs.readFileSync(sourcePath, 'utf8')
+        cache[sourcePath] = {mtime: stats.mtime, str}
+        str = compiler.compileStr str
+        cache[filePath] = {mtime: stats.mtime, str}
+        compileCallback sourcePath
+        break
+  throw new Error("File not found: #{filePath}") unless stats
+  stats
+
 directivesInCode = (code) ->
-  header = HEADER.exec(code)[0]
+  return [] unless match = HEADER.exec(code)
+  header = match[0]
   match[1] while match = DIRECTIVE.exec header
+
+generateTags = (filePath, options) ->
+  if filePath.match REMOTE_PATH
+    return ["<script src='#{filePath}'></script>"]
+  tags = []
+  # generate tags of dependencies
+  for depPath in dependencies[filePath]
+    tags = tags.concat generateTags(depPath, options)
+  tags.push "<script src='#{relPath options.src, filePath}'></script>"
+  tags
+
+concatenate = (filePath, options) ->
+  script = ''
+  for depPath in dependencies[filePath]
+    script += concatenate depPath, options
+  script += cache[filePath].str + '\n'
+
+minify = (js) ->
+  jsp = uglify.parser
+  pro = uglify.uglify
+  ast = jsp.parse js
+  ast = pro.ast_mangle ast
+  ast = pro.ast_squeeze ast
+  pro.gen_code ast

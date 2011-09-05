@@ -114,6 +114,7 @@ exports['js helper function provides correct src'] = (test) ->
   test.done()
 
 exports['Script files can `require` (in non-production mode)'] = (test) ->
+  js.concatenate = false
   jsTags = """<script src='/js/js-dependency.js'></script>
   <script src='/js/coffee-dependency.js'></script>
   <script src='/js/dependent.js'></script>
@@ -122,6 +123,7 @@ exports['Script files can `require` (in non-production mode)'] = (test) ->
   test.done()
 
 exports['Dependencies can be chained (in non-production mode)'] = (test) ->
+  js.concatenate = false
   jsTags = """<script src='/js/js-dependency.js'></script>
   <script src='/js/coffee-dependency.js'></script>
   <script src='/js/dependent.js'></script>
@@ -129,3 +131,17 @@ exports['Dependencies can be chained (in non-production mode)'] = (test) ->
   """
   test.equals js('chained-dependent'), jsTags
   test.done()
+
+exports['Dependencies are concatenated (in production mode)'] = (test) ->
+  js.concatenate = true
+  jsTag = "<script src='/js/dependent.complete.js'></script>"
+  test.equals js('dependent'), jsTag
+
+  request 'http://localhost:3588/js/dependent.complete.js', (err, res, body) ->
+    test.ok !err
+    test.equals res.headers['content-type'], 'application/javascript'
+    expectedBody = '''
+    (function(){this.proclamation="Everyone is counting on me!"}).call(this),function(){}.call(this)
+    '''
+    test.equals body, expectedBody
+    test.done()
