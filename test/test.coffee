@@ -148,6 +148,11 @@ exports['An error is thrown if a script requires itself directly'] = (test) ->
   test.throws -> js('narcissist')
   test.done()
 
+exports['An error is thrown if the dependency graph has cycles'] = (test) ->
+  js.concatenate = false
+  test.throws -> js('mindy')  # requires mork, which requires mindy...
+  test.done()
+
 exports['Dependencies are concatenated (in production mode)'] = (test) ->
   js.concatenate = true
   jsTag = "<script src='/js/dependent.complete.js'></script>"

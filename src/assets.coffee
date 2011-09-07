@@ -198,26 +198,30 @@ directivesInCode = (code) ->
   header = match[0]
   match[1] while match = DIRECTIVE.exec header
 
-traverseDependencies = (filePath, traversedPaths, callback) ->
-  for depPath in dependencies[filePath] when depPath not in traversedPaths
-    traversedPaths.push depPath
-    callback depPath
+# recurse through the dependency graph, avoiding duplicates and cycles
+collectDependencies = (filePath, traversedPaths = [], traversedBranch = []) ->
+  for depPath in dependencies[filePath].reverse()
+    if depPath in traversedBranch          # cycle
+        throw new Error("Cyclic dependency from #{filePath} to #{depPath}")
+    continue if depPath in traversedPaths  # duplicate
+    traversedPaths.unshift depPath
+    traversedBranch.unshift depPath
+    collectDependencies depPath, traversedPaths, traversedBranch.slice(0)
+  traversedPaths
 
-generateTags = (filePath, options, loadedDeps = []) ->
+generateTags = (filePath, options) ->
   if filePath.match REMOTE_PATH
     return ["<script src='#{filePath}'></script>"]
-  tags = []
-  # generate tags of dependencies
-  traverseDependencies filePath, loadedDeps, (depPath) ->
-    tags = tags.concat generateTags(depPath, options, loadedDeps)
+  tags = for depPath in collectDependencies(filePath)
+    "<script src='#{relPath options.src, depPath}'></script>"
   tags.push "<script src='#{relPath options.src, filePath}'></script>"
   tags
 
-concatenate = (filePath, options, loadedDeps = []) ->
+concatenate = (filePath, options) ->
   script = ''
-  traverseDependencies filePath, loadedDeps, (depPath) ->
-    script += concatenate depPath, options, loadedDeps
-  script += cache[filePath].str + '\n'
+  for depPath in collectDependencies(filePath)
+    script += cache[depPath].str + '\n'
+  script += cache[filePath].str
 
 minify = (js) ->
   jsp = uglify.parser
