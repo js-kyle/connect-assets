@@ -89,7 +89,7 @@ exports.compilers = compilers =
 HEADER = ///
 (?:
   (\#\#\# .* \#\#\#\n?) |
-  (\\/\\/ .* \n?) |
+  (// .* \n?) |
   (\# .* \n?)
 )+
 ///
@@ -166,6 +166,8 @@ updateDependenciesSync = (filePath) ->
           if path.extname(depPath) isnt '.js' then depPath += '.js'
           unless depPath.match EXPLICIT_PATH
             depPath = path.join filePath, '../', depPath
+          if depPath is filePath
+            throw new Error("Script tries to require itself: #{filePath}")
           updateDependenciesSync depPath
           dependencies[filePath].push depPath
 
@@ -196,20 +198,24 @@ directivesInCode = (code) ->
   header = match[0]
   match[1] while match = DIRECTIVE.exec header
 
+traverseDependencies = (filePath, traversedPaths, callback) ->
+  for depPath in dependencies[filePath] when depPath not in traversedPaths
+    traversedPaths.push depPath
+    callback depPath
+
 generateTags = (filePath, options, loadedDeps = []) ->
   if filePath.match REMOTE_PATH
     return ["<script src='#{filePath}'></script>"]
   tags = []
   # generate tags of dependencies
-  for depPath in dependencies[filePath] when depPath not in loadedDeps
-    loadedDeps.push depPath
+  traverseDependencies filePath, loadedDeps, (depPath) ->
     tags = tags.concat generateTags(depPath, options, loadedDeps)
   tags.push "<script src='#{relPath options.src, filePath}'></script>"
   tags
 
 concatenate = (filePath, options, loadedDeps = []) ->
   script = ''
-  for depPath in dependencies[filePath] when depPath not in loadedDeps
+  traverseDependencies filePath, loadedDeps, (depPath) ->
     script += concatenate depPath, options, loadedDeps
   script += cache[filePath].str + '\n'
 
