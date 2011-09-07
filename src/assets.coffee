@@ -196,20 +196,21 @@ directivesInCode = (code) ->
   header = match[0]
   match[1] while match = DIRECTIVE.exec header
 
-generateTags = (filePath, options) ->
+generateTags = (filePath, options, loadedDeps = []) ->
   if filePath.match REMOTE_PATH
     return ["<script src='#{filePath}'></script>"]
   tags = []
   # generate tags of dependencies
-  for depPath in dependencies[filePath]
-    tags = tags.concat generateTags(depPath, options)
+  for depPath in dependencies[filePath] when depPath not in loadedDeps
+    loadedDeps.push depPath
+    tags = tags.concat generateTags(depPath, options, loadedDeps)
   tags.push "<script src='#{relPath options.src, filePath}'></script>"
   tags
 
-concatenate = (filePath, options) ->
+concatenate = (filePath, options, loadedDeps = []) ->
   script = ''
-  for depPath in dependencies[filePath]
-    script += concatenate depPath, options
+  for depPath in dependencies[filePath] when depPath not in loadedDeps
+    script += concatenate depPath, options, loadedDeps
   script += cache[filePath].str + '\n'
 
 minify = (js) ->

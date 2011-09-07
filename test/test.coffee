@@ -134,6 +134,15 @@ exports['Dependencies can be chained (in non-production mode)'] = (test) ->
   test.equals js('chained-dependent'), jsTags
   test.done()
 
+exports['The same dependency will not be loaded twice'] = (test) ->
+  js.concatenate = false
+  jsTags = """<script src='/js/a.js'></script>
+  <script src='/js/b.js'></script>
+  <script src='/js/c.js'></script>
+  """
+  test.equals js('c'), jsTags
+  test.done()
+
 exports['Dependencies are concatenated (in production mode)'] = (test) ->
   js.concatenate = true
   jsTag = "<script src='/js/dependent.complete.js'></script>"
