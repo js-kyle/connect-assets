@@ -137,7 +137,7 @@ createHelpers = (options) ->
       dependencyTags = ''
       if options.src? and !jsPath.match REMOTE_PATH
         filePath = path.join options.src, jsPath
-        updateDependenciesSync filePath, jsPath
+        updateDependenciesSync filePath
         tag = generateTags(filePath, options).join('\n')
       else
         tag = "<script src='#{jsPath}'></script>"
@@ -147,22 +147,24 @@ createHelpers = (options) ->
 
 # ## Dependency management
 
-updateDependenciesSync = (filePath) ->
+updateDependenciesSync = (filePath, options) ->
   dependencies[filePath] ?= []
   return if filePath.match REMOTE_PATH
 
   oldTime = cache[filePath]?.mtime
   directivePath = filePath
   readFileOrCompile filePath, (sourcePath) -> directivePath = sourcePath
-  return if cache[filePath].mtime is oldTime
+  return if cache[filePath].mtime.getTime() is oldTime?.getTime()
+
+  jsCompilerExts = ".#{ext}" for ext, c of compilers when c.match '.js'
+  jsExtList = ['.js'].concat jsCompilerExts
 
   dependencies[filePath] = []
   for directive in directivesInCode cache[directivePath].str
-    words = directive.split /\s+/
+    words = directive.replace(/['"]/g, '').split /\s+/
     switch words[0]
       when 'require'
         for depPath in words[1..]
-          depPath = depPath.replace /['"]/g, ''
           if path.extname(depPath) isnt '.js' then depPath += '.js'
           unless depPath.match EXPLICIT_PATH
             depPath = path.join filePath, '../', depPath
@@ -170,6 +172,22 @@ updateDependenciesSync = (filePath) ->
             throw new Error("Script tries to require itself: #{filePath}")
           updateDependenciesSync depPath
           dependencies[filePath].push depPath
+      when 'require_tree'
+        requireTree = (parentDir, paths) ->
+          for p in paths
+            console.log parentDir, p
+            unless p.match EXPLICIT_PATH
+              p = path.join parentDir, p
+            continue if p is filePath
+            stats = fs.statSync p
+            if stats.isFile()
+              continue unless path.extname(p) in jsExtList
+              if path.extname(p) isnt '.js' then p = p.replace /[^.]+$/, 'js'
+              updateDependenciesSync p
+              dependencies[filePath].push p
+            else if stats.isDirectory()
+              requireTree p, fs.readdirSync(p)
+        requireTree path.dirname(filePath), words[1..]
 
   dependencies[filePath]
 
@@ -200,7 +218,7 @@ directivesInCode = (code) ->
 
 # recurse through the dependency graph, avoiding duplicates and cycles
 collectDependencies = (filePath, traversedPaths = [], traversedBranch = []) ->
-  for depPath in dependencies[filePath].reverse()
+  for depPath in dependencies[filePath].slice(0).reverse()
     if depPath in traversedBranch          # cycle
         throw new Error("Cyclic dependency from #{filePath} to #{depPath}")
     continue if depPath in traversedPaths  # duplicate

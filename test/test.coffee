@@ -123,6 +123,14 @@ exports['Script files can `require` (in non-production mode)'] = (test) ->
   test.equals js('dependent'), jsTags
   test.done()
 
+exports['Script files can `require_tree` a single folder'] = (test) ->
+  js.concatenate = false
+  jsTags = """<script src='/js/subdir/nested/hobbits.js'></script>
+  <script src='/js/tree-dependent.js'></script>
+  """
+  test.equals js('tree-dependent'), jsTags
+  test.done()
+
 exports['Dependencies can be chained (in non-production mode)'] = (test) ->
   js.concatenate = false
   jsTags = """<script src='/js/js-dependency.js'></script>
