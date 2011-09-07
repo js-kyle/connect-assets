@@ -78,8 +78,7 @@ You can also set the "root path" on the `css` and `js` helper functions (by defa
 ## TODO
 
 * Sprockets' `require_tree` ought to be supported.
-* Although dependencies can be chained, the code doesn't currently handle cyclic dependencies properly. (You won't get an infinite loop, but you won't get an error message either.)
-* Error-handling in general needs to be improved. Like, a lot.
+* Error-handling in general needs to be improved.
 * Code needs to be better structured and made more extensible.
 
 This is still a young project, and feedback of all kinds is much appreciated.
