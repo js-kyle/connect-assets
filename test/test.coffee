@@ -169,6 +169,11 @@ exports['An error is thrown if the dependency graph has cycles'] = (test) ->
   test.throws -> js('mindy')  # requires mork, which requires mindy...
   test.done()
 
+exports['An error is thrown if there is a require_tree cycle'] = (test) ->
+  js.concatenate = false
+  test.throws -> js('addicts/codependent')
+  test.done()
+
 exports['Dependencies are concatenated (in production mode)'] = (test) ->
   js.concatenate = true
   jsTag = "<script src='/js/dependent.complete.js'></script>"

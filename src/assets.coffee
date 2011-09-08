@@ -153,13 +153,12 @@ updateDependenciesSync = (filePath, options) ->
   oldTime = cache[filePath]?.mtime
   directivePath = filePath
   readFileOrCompile filePath, (sourcePath) -> directivePath = sourcePath
-  if cache[filePath].mtime.getTime() is oldTime?.getTime()
-    return if dependencies[filePath]
+  dependencies[filePath] ?= []
+  return if cache[filePath].mtime.getTime() is oldTime?.getTime()
 
   jsCompilerExts = ".#{ext}" for ext, c of compilers when c.match '.js'
   jsExtList = ['.js'].concat jsCompilerExts
 
-  localDependencies = []
   for directive in directivesInCode cache[directivePath].str
     words = directive.replace(/['"]/g, '').split /\s+/
     switch words[0]
@@ -171,7 +170,7 @@ updateDependenciesSync = (filePath, options) ->
           if depPath is filePath
             throw new Error("Script tries to require itself: #{filePath}")
           updateDependenciesSync depPath
-          localDependencies.push depPath
+          dependencies[filePath].push depPath
       when 'require_tree'
         requireTree = (parentDir, paths) ->
           for p in paths
@@ -183,12 +182,12 @@ updateDependenciesSync = (filePath, options) ->
               continue unless path.extname(p) in jsExtList
               if path.extname(p) isnt '.js' then p = p.replace /[^.]+$/, 'js'
               updateDependenciesSync p
-              localDependencies.push p
+              dependencies[filePath].push p
             else if stats.isDirectory()
               requireTree p, fs.readdirSync(p)
         requireTree path.dirname(filePath), words[1..]
 
-  dependencies[filePath] = localDependencies
+  dependencies[filePath]
 
 readFileOrCompile = (filePath, compileCallback) ->
   try
