@@ -182,6 +182,7 @@ updateDependenciesSync = (filePath, options) ->
             if stats.isFile()
               continue unless path.extname(p) in jsExtList
               if path.extname(p) isnt '.js' then p = p.replace /[^.]+$/, 'js'
+              continue if p is filePath
               continue if p in dependencies[filePath]
               updateDependenciesSync p
               dependencies[filePath].push p
@@ -218,6 +219,7 @@ directivesInCode = (code) ->
 
 # recurse through the dependency graph, avoiding duplicates and cycles
 collectDependencies = (filePath, traversedPaths = [], traversedBranch = []) ->
+  console.log traversedBranch
   for depPath in dependencies[filePath].slice(0).reverse()
     if depPath in traversedBranch          # cycle
         throw new Error("Cyclic dependency from #{filePath} to #{depPath}")

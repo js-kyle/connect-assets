@@ -131,12 +131,18 @@ exports['Script files can `require_tree` a single folder'] = (test) ->
   test.equals js('tree-dependent'), jsTags
   test.done()
 
-exports['Script files can `require_tree` their own folder'] = (test) ->
+exports['.js files can `require_tree` their own folder'] = (test) ->
   js.concatenate = false
   jsTags = """<script src='/js/subdir/nested/hobbits.js'></script>
   <script src='/js/subdir/subdir-dependent.js'></script>
   """
   test.equals js('subdir/subdir-dependent'), jsTags
+  test.done()
+
+exports['.coffee files can `require_tree` their own folder'] = (test) ->
+  js.concatenate = false
+  jsTag = "<script src='/js/starbucks/mocha.js'></script>"
+  test.equals js('starbucks/mocha'), jsTag
   test.done()
 
 exports['Dependencies can be chained (in non-production mode)'] = (test) ->
