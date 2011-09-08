@@ -102,7 +102,7 @@ exports['css helper function provides correct href'] = (test) ->
   test.equals css('/css/style.css'), cssTag
   test.equals css('style.css'), cssTag
   test.equals css('style'), cssTag
-  test.equals css('../style'), "<link rel='stylesheet' href='../style.css'>"
+  test.equals css('../style'), "<link rel='stylesheet' href='/style.css'>"
   test.done()
 
 exports['js helper function provides correct src'] = (test) ->
@@ -129,6 +129,14 @@ exports['Script files can `require_tree` a single folder'] = (test) ->
   <script src='/js/tree-dependent.js'></script>
   """
   test.equals js('tree-dependent'), jsTags
+  test.done()
+
+exports['Script files can `require_tree` their own folder'] = (test) ->
+  js.concatenate = false
+  jsTags = """<script src='/js/subdir/nested/hobbits.js'></script>
+  <script src='/js/subdir/subdir-dependent.js'></script>
+  """
+  test.equals js('subdir/subdir-dependent'), jsTags
   test.done()
 
 exports['Dependencies can be chained (in non-production mode)'] = (test) ->

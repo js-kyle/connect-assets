@@ -98,7 +98,7 @@ DIRECTIVE = ///
 ^[\W] *= \s* (\w+.*?) (\*\\/)?$
 ///gm
 
-EXPLICIT_PATH = /^\/|^\.|:/
+EXPLICIT_PATH = /^\/|:/
 REMOTE_PATH = /\/\//
 
 relPath = (root, fullPath) ->
@@ -111,7 +111,7 @@ createHelpers = (options) ->
   context = options.helperContext
   expandPath = (filePath, ext, root) ->
     unless filePath.match EXPLICIT_PATH
-      filePath = "#{root}/#{filePath}"
+      filePath = path.join root, filePath
     if filePath.indexOf(ext, filePath.length - ext.length) is -1
       filePath += ext
     filePath
@@ -148,18 +148,18 @@ createHelpers = (options) ->
 # ## Dependency management
 
 updateDependenciesSync = (filePath, options) ->
-  dependencies[filePath] ?= []
-  return if filePath.match REMOTE_PATH
+  return dependencies[filePath] = [] if filePath.match REMOTE_PATH
 
   oldTime = cache[filePath]?.mtime
   directivePath = filePath
   readFileOrCompile filePath, (sourcePath) -> directivePath = sourcePath
-  return if cache[filePath].mtime.getTime() is oldTime?.getTime()
+  if cache[filePath].mtime.getTime() is oldTime?.getTime()
+    return if dependencies[filePath]
 
   jsCompilerExts = ".#{ext}" for ext, c of compilers when c.match '.js'
   jsExtList = ['.js'].concat jsCompilerExts
 
-  dependencies[filePath] = []
+  localDependencies = []
   for directive in directivesInCode cache[directivePath].str
     words = directive.replace(/['"]/g, '').split /\s+/
     switch words[0]
@@ -171,11 +171,10 @@ updateDependenciesSync = (filePath, options) ->
           if depPath is filePath
             throw new Error("Script tries to require itself: #{filePath}")
           updateDependenciesSync depPath
-          dependencies[filePath].push depPath
+          localDependencies.push depPath
       when 'require_tree'
         requireTree = (parentDir, paths) ->
           for p in paths
-            console.log parentDir, p
             unless p.match EXPLICIT_PATH
               p = path.join parentDir, p
             continue if p is filePath
@@ -184,12 +183,12 @@ updateDependenciesSync = (filePath, options) ->
               continue unless path.extname(p) in jsExtList
               if path.extname(p) isnt '.js' then p = p.replace /[^.]+$/, 'js'
               updateDependenciesSync p
-              dependencies[filePath].push p
+              localDependencies.push p
             else if stats.isDirectory()
               requireTree p, fs.readdirSync(p)
         requireTree path.dirname(filePath), words[1..]
 
-  dependencies[filePath]
+  dependencies[filePath] = localDependencies
 
 readFileOrCompile = (filePath, compileCallback) ->
   try

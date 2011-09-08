@@ -82,7 +82,7 @@
 <span class="o">^</span><span class="p">[</span><span class="err">\</span><span class="nx">W</span><span class="p">]</span> <span class="o">*=</span> <span class="err">\</span><span class="nx">s</span><span class="o">*</span> <span class="p">(</span><span class="err">\</span><span class="nx">w</span><span class="o">+</span><span class="p">.</span><span class="o">*?</span><span class="p">)</span> <span class="p">(</span><span class="err">\</span><span class="o">*</span><span class="err">\\</span><span class="o">/</span><span class="p">)</span><span class="o">?</span><span class="nx">$</span>
 <span class="err">///gm</span>
 
-<span class="nv">EXPLICIT_PATH = </span><span class="sr">/^\/|^\.|:/</span>
+<span class="nv">EXPLICIT_PATH = </span><span class="sr">/^\/|:/</span>
 <span class="nv">REMOTE_PATH = </span><span class="sr">/\/\//</span>
 
 <span class="nv">relPath = </span><span class="nf">(root, fullPath) -&gt;</span>
@@ -95,7 +95,7 @@
   <span class="nv">context = </span><span class="nx">options</span><span class="p">.</span><span class="nx">helperContext</span>
   <span class="nv">expandPath = </span><span class="nf">(filePath, ext, root) -&gt;</span>
     <span class="nx">unless</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
-      <span class="nv">filePath = </span><span class="s2">&quot;#{root}/#{filePath}&quot;</span>
+      <span class="nv">filePath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">root</span><span class="p">,</span> <span class="nx">filePath</span>
     <span class="k">if</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">ext</span><span class="p">,</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">ext</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">is</span> <span class="o">-</span><span class="mi">1</span>
       <span class="nx">filePath</span> <span class="o">+=</span> <span class="nx">ext</span>
     <span class="nx">filePath</span>
@@ -128,18 +128,18 @@
     <span class="nx">tag</span>
   <span class="nv">context.js.root = </span><span class="s1">&#39;/js&#39;</span>
   <span class="nv">context.js.concatenate = </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">is</span> <span class="s1">&#39;production&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>Dependency management</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">updateDependenciesSync = </span><span class="nf">(filePath, options) -&gt;</span>
-  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">?=</span> <span class="p">[]</span>
-  <span class="k">return</span> <span class="k">if</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
+  <span class="k">return</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
 
   <span class="nv">oldTime = </span><span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
   <span class="nv">directivePath = </span><span class="nx">filePath</span>
   <span class="nx">readFileOrCompile</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nf">(sourcePath) -&gt;</span> <span class="nv">directivePath = </span><span class="nx">sourcePath</span>
-  <span class="k">return</span> <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">mtime</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">is</span> <span class="nx">oldTime</span><span class="o">?</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">mtime</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">is</span> <span class="nx">oldTime</span><span class="o">?</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span>
+    <span class="k">return</span> <span class="k">if</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
 
   <span class="nv">jsCompilerExts = </span><span class="s2">&quot;.#{ext}&quot;</span> <span class="k">for</span> <span class="nx">ext</span><span class="p">,</span> <span class="nx">c</span> <span class="k">of</span> <span class="nx">compilers</span> <span class="k">when</span> <span class="nx">c</span><span class="p">.</span><span class="nx">match</span> <span class="s1">&#39;.js&#39;</span>
   <span class="nv">jsExtList = </span><span class="p">[</span><span class="s1">&#39;.js&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">jsCompilerExts</span>
 
-  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="nv">localDependencies = </span><span class="p">[]</span>
   <span class="k">for</span> <span class="nx">directive</span> <span class="k">in</span> <span class="nx">directivesInCode</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">directivePath</span><span class="p">].</span><span class="nx">str</span>
     <span class="nv">words = </span><span class="nx">directive</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[&#39;&quot;]/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">split</span> <span class="sr">/\s+/</span>
     <span class="k">switch</span> <span class="nx">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -151,11 +151,10 @@
           <span class="k">if</span> <span class="nx">depPath</span> <span class="o">is</span> <span class="nx">filePath</span>
             <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Script tries to require itself: #{filePath}&quot;</span><span class="p">)</span>
           <span class="nx">updateDependenciesSync</span> <span class="nx">depPath</span>
-          <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">push</span> <span class="nx">depPath</span>
+          <span class="nx">localDependencies</span><span class="p">.</span><span class="nx">push</span> <span class="nx">depPath</span>
       <span class="k">when</span> <span class="s1">&#39;require_tree&#39;</span>
         <span class="nv">requireTree = </span><span class="nf">(parentDir, paths) -&gt;</span>
           <span class="k">for</span> <span class="nx">p</span> <span class="k">in</span> <span class="nx">paths</span>
-            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="nx">parentDir</span><span class="p">,</span> <span class="nx">p</span>
             <span class="nx">unless</span> <span class="nx">p</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
               <span class="nv">p = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">parentDir</span><span class="p">,</span> <span class="nx">p</span>
             <span class="k">continue</span> <span class="k">if</span> <span class="nx">p</span> <span class="o">is</span> <span class="nx">filePath</span>
@@ -164,12 +163,12 @@
               <span class="k">continue</span> <span class="nx">unless</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="k">in</span> <span class="nx">jsExtList</span>
               <span class="k">if</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="o">isnt</span> <span class="s1">&#39;.js&#39;</span> <span class="k">then</span> <span class="nv">p = </span><span class="nx">p</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/[^.]+$/</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span>
               <span class="nx">updateDependenciesSync</span> <span class="nx">p</span>
-              <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">push</span> <span class="nx">p</span>
+              <span class="nx">localDependencies</span><span class="p">.</span><span class="nx">push</span> <span class="nx">p</span>
             <span class="k">else</span> <span class="k">if</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">isDirectory</span><span class="p">()</span>
               <span class="nx">requireTree</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
         <span class="nx">requireTree</span> <span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">filePath</span><span class="p">),</span> <span class="nx">words</span><span class="p">[</span><span class="mi">1</span><span class="p">..]</span>
 
-  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
+  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">=</span> <span class="nx">localDependencies</span>
 
 <span class="nv">readFileOrCompile = </span><span class="nf">(filePath, compileCallback) -&gt;</span>
   <span class="k">try</span>
