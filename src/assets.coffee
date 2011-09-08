@@ -40,8 +40,8 @@ assetsMiddleware = (options) ->
       next()
 
 serveRaw = (req, res, next, {stats, targetPath}) ->
-  if cache[targetPath]?.mtime is stats.mtime
-    return res.end cache.str
+  if cache[targetPath]?.mtime
+    return res.end(cache.str) unless stats.mtime > cache[targetPath].mtime
   fs.readFile targetPath, 'utf8', sendCallback(res, next, {stats, targetPath})
 
 serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
@@ -49,8 +49,8 @@ serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
   fs.stat srcPath, (err, stats) ->
     return next() if err?.code is 'ENOENT'  # no file, no problem!
     return next err if err
-    if cache[targetPath]?.mtime is stats.mtime
-      return res.end cache.str
+    if cache[targetPath]?.mtime
+      return res.end(cache.str) unless stats.mtime > cache[targetPath].mtime
     compiler.compile srcPath, sendCallback(res, next, {stats, targetPath})
 
 sendCallback = (res, next, {stats, targetPath}) ->
@@ -147,18 +147,21 @@ createHelpers = (options) ->
 
 # ## Dependency management
 
-updateDependenciesSync = (filePath, options) ->
-  return dependencies[filePath] = [] if filePath.match REMOTE_PATH
+updateDependenciesSync = (filePath) ->
+  dependencies[filePath] ?= []
+  return if filePath.match REMOTE_PATH
 
   oldTime = cache[filePath]?.mtime
   directivePath = filePath
   readFileOrCompile filePath, (sourcePath) -> directivePath = sourcePath
-  dependencies[filePath] ?= []
-  return if cache[filePath].mtime.getTime() is oldTime?.getTime()
+  if cache[filePath].mtime.getTime() is oldTime?.getTime()
+    updateDependenciesSync(p) for p in dependencies[filePath]
+    return
 
   jsCompilerExts = ".#{ext}" for ext, c of compilers when c.match '.js'
   jsExtList = ['.js'].concat jsCompilerExts
 
+  dependencies[filePath] = []
   for directive in directivesInCode cache[directivePath].str
     words = directive.replace(/['"]/g, '').split /\s+/
     switch words[0]
@@ -195,6 +198,8 @@ updateDependenciesSync = (filePath, options) ->
 readFileOrCompile = (filePath, compileCallback) ->
   try
     stats = fs.statSync filePath
+    if cache[filePath]?.mtime
+      return stats unless stats.mtime > cache[filePath].mtime
     str = fs.readFileSync filePath, 'utf8'
     cache[filePath] = {mtime: stats.mtime, str}
   catch e
@@ -202,7 +207,10 @@ readFileOrCompile = (filePath, compileCallback) ->
       try
         sourcePath = filePath.replace(compiler.match, ".#{ext}")
         stats = fs.statSync sourcePath
-        break if cache[sourcePath]?.mtime is stats.mtime
+        if cache[sourcePath]?.mtime
+          unless stats.mtime > cache[sourcePath]?.mtime
+            compileCallback sourcePath
+            break
         str = fs.readFileSync(sourcePath, 'utf8')
         cache[sourcePath] = {mtime: stats.mtime, str}
         str = compiler.compileStr str

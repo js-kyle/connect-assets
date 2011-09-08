@@ -154,7 +154,6 @@ exports['`require` can be used on a file before `require_tree`'] = (test) ->
   <script src='/js/moon_units/evil.js'></script>
   <script src='/js/needs-evil.js'></script>
   """
-  console.log js('needs-evil')
   test.equals js('needs-evil'), jsTags
   test.done()
 
