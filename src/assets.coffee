@@ -169,6 +169,7 @@ updateDependenciesSync = (filePath, options) ->
             depPath = path.join filePath, '../', depPath
           if depPath is filePath
             throw new Error("Script tries to require itself: #{filePath}")
+          continue if depPath in dependencies[filePath]
           updateDependenciesSync depPath
           dependencies[filePath].push depPath
       when 'require_tree'
@@ -181,6 +182,7 @@ updateDependenciesSync = (filePath, options) ->
             if stats.isFile()
               continue unless path.extname(p) in jsExtList
               if path.extname(p) isnt '.js' then p = p.replace /[^.]+$/, 'js'
+              continue if p in dependencies[filePath]
               updateDependenciesSync p
               dependencies[filePath].push p
             else if stats.isDirectory()

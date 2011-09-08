@@ -149,6 +149,7 @@
             <span class="nv">depPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">filePath</span><span class="p">,</span> <span class="s1">&#39;../&#39;</span><span class="p">,</span> <span class="nx">depPath</span>
           <span class="k">if</span> <span class="nx">depPath</span> <span class="o">is</span> <span class="nx">filePath</span>
             <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Script tries to require itself: #{filePath}&quot;</span><span class="p">)</span>
+          <span class="k">continue</span> <span class="k">if</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
           <span class="nx">updateDependenciesSync</span> <span class="nx">depPath</span>
           <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">push</span> <span class="nx">depPath</span>
       <span class="k">when</span> <span class="s1">&#39;require_tree&#39;</span>
@@ -161,6 +162,7 @@
             <span class="k">if</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">isFile</span><span class="p">()</span>
               <span class="k">continue</span> <span class="nx">unless</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="k">in</span> <span class="nx">jsExtList</span>
               <span class="k">if</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="o">isnt</span> <span class="s1">&#39;.js&#39;</span> <span class="k">then</span> <span class="nv">p = </span><span class="nx">p</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/[^.]+$/</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span>
+              <span class="k">continue</span> <span class="k">if</span> <span class="nx">p</span> <span class="k">in</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
               <span class="nx">updateDependenciesSync</span> <span class="nx">p</span>
               <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">push</span> <span class="nx">p</span>
             <span class="k">else</span> <span class="k">if</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">isDirectory</span><span class="p">()</span>
