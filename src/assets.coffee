@@ -41,7 +41,9 @@ assetsMiddleware = (options) ->
 
 serveRaw = (req, res, next, {stats, targetPath}) ->
   if cache[targetPath]?.mtime
-    return res.end(cache.str) unless stats.mtime > cache[targetPath].mtime
+    unless stats.mtime > cache[targetPath].mtime
+      str = cache[targetPath].str
+      return sendFile res, next, {str, stats, targetPath}
   fs.readFile targetPath, 'utf8', sendCallback(res, next, {stats, targetPath})
 
 serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
@@ -50,12 +52,17 @@ serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
     return next() if err?.code is 'ENOENT'  # no file, no problem!
     return next err if err
     if cache[targetPath]?.mtime
-      return res.end(cache.str) unless stats.mtime > cache[targetPath].mtime
+      unless stats.mtime > cache[targetPath].mtime
+        str = cache[targetPath].str
+        return sendFile res, next, {str, stats, targetPath}
     compiler.compile srcPath, sendCallback(res, next, {stats, targetPath})
 
 sendCallback = (res, next, {stats, targetPath}) ->
   (err, str) ->
     return next err if err
+    sendFile res, next, {str, stats, targetPath}
+
+sendFile = (res, next, {str, stats, targetPath}) ->
     if stats then cache[targetPath] = {mtime: stats.mtime, str}
     res.setHeader 'Content-Type', mime.lookup(targetPath)
     res.end str
