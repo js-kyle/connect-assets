@@ -145,6 +145,19 @@ exports['.coffee files can `require_tree` their own folder'] = (test) ->
   test.equals js('starbucks/mocha'), jsTag
   test.done()
 
+exports['`require` can be used on a file before `require_tree`'] = (test) ->
+  js.concatenate = false
+  jsTags = """<script src='/js/moon_units/austin/texas.js'></script>
+  <script src='/js/moon_units/austin/powers.js'></script>
+  <script src='/js/moon_units/alpha.js'></script>
+  <script src='/js/moon_units/zappa.js'></script>
+  <script src='/js/moon_units/evil.js'></script>
+  <script src='/js/needs-evil.js'></script>
+  """
+  console.log js('needs-evil')
+  test.equals js('needs-evil'), jsTags
+  test.done()
+
 exports['Dependencies can be chained (in non-production mode)'] = (test) ->
   js.concatenate = false
   jsTags = """<script src='/js/js-dependency.js'></script>

@@ -219,7 +219,6 @@ directivesInCode = (code) ->
 
 # recurse through the dependency graph, avoiding duplicates and cycles
 collectDependencies = (filePath, traversedPaths = [], traversedBranch = []) ->
-  console.log traversedBranch
   for depPath in dependencies[filePath].slice(0).reverse()
     if depPath in traversedBranch          # cycle
         throw new Error("Cyclic dependency from #{filePath} to #{depPath}")
