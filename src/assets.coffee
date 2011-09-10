@@ -67,7 +67,7 @@ sendFile = (res, next, {str, stats, targetPath}) ->
     res.setHeader 'Content-Type', mime.lookup(targetPath)
     res.end str
 
-exports.compilers = compilers =
+module.exports.compilers = compilers =
   coffee:
     match: /\.js$/
     compile: (filePath, callback) ->
@@ -83,11 +83,13 @@ exports.compilers = compilers =
       libs.CoffeeScript.compile code
   styl:
     match: /\.css$/
+    compress: process.env.NODE_ENV is 'production'
     compile: (filePath, callback) ->
       libs.stylus or= require 'stylus'
       libs.nib or= try require 'nib' catch e then (-> ->)
       fs.readFile filePath, 'utf8', (err, str) ->
         libs.stylus(str).set('filename', filePath)
+                        .set('compress', compilers.styl.compress)
                         .use(libs.nib())
                         .render(callback)
 
