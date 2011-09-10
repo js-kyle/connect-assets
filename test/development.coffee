@@ -1,7 +1,9 @@
+process.env.NODE_ENV = 'development'
 request = require 'request'
 
 app = require('connect').createServer()
-app.use require('../lib/assets.js')()
+assets = require('../lib/assets.js')
+app.use assets()
 app.listen 3588
 
 exports['CoffeeScript is served as JavaScript'] = (test) ->
@@ -34,6 +36,7 @@ exports['Stylus is served as CSS'] = (test) ->
     test.ok !err
     test.equals res.headers['content-type'], 'text/css'
     expectedBody = '''
+    /* this comment should be visible in dev mode */
     textarea,
     input {
       border: 1px solid #eee;
@@ -191,17 +194,4 @@ exports['An error is thrown if there is a require_tree cycle'] = (test) ->
   js.concatenate = false
   test.throws -> js('addicts/codependent')
   test.done()
-
-exports['Dependencies are concatenated (in production mode)'] = (test) ->
-  js.concatenate = true
-  jsTag = "<script src='/js/dependent.complete.js'></script>"
-  test.equals js('dependent'), jsTag
-
-  request 'http://localhost:3588/js/dependent.complete.js', (err, res, body) ->
-    test.ok !err
-    test.equals res.headers['content-type'], 'application/javascript'
-    expectedBody = '''
-    (function(){this.proclamation="Everyone is counting on me!"}).call(this),alert("HEY"),function(){}.call(this)
-    '''
-    test.equals body, expectedBody
-    test.done()
+  app.close()

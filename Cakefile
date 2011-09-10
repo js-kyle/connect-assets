@@ -30,13 +30,18 @@ task 'watch', 'Recompile CoffeeScript source files when modified', ->
   build true
 
 task 'test', 'Run the test suite (and re-run if anything changes)', ->
-  tests = null
+  runningSuite = null
   build ->
     do runTests = ->
-      tests?.kill()
-      tests = spawn "coffee", ["-e", "{reporters} = require 'nodeunit'; reporters.default.run ['.']"], cwd: 'test'
-      tests.stdout.on 'data', (data) -> print data.toString()
-      tests.stderr.on 'data', (data) -> print data.toString()
+      runningSuite?.kill()
+      suiteNames = ['development', 'production']
+      suiteIndex = 0
+      do runNextTestSuite = ->
+        return unless suiteName = suiteNames[suiteIndex]
+        suite = spawn "coffee", ["-e", "{reporters} = require 'nodeunit'; reporters.default.run ['#{suiteName}.coffee']"], cwd: 'test'
+        suite.stdout.on 'data', (data) -> print data.toString()
+        suite.stderr.on 'data', (data) -> print data.toString()
+        suite.on 'exit', -> suiteIndex++; runNextTestSuite()
       invoke 'docs'  # lest I forget
     testWatcher = watchTree 'test', 'sample-rate': 5
     testWatcher.on 'fileModified', runTests
