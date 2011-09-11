@@ -105,7 +105,7 @@ exports['css helper function provides correct href'] = (test) ->
   test.equals css('/css/style.css'), cssTag
   test.equals css('style.css'), cssTag
   test.equals css('style'), cssTag
-  test.equals css('../style'), "<link rel='stylesheet' href='/style.css'>"
+  test.equals css('../style'), "<link rel='stylesheet' href='../style.css'>"
   test.equals css(url = 'http://raw.github.com/necolas/normalize.css/master/normalize'), "<link rel='stylesheet' href='#{url}.css'>"
   test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), "<link rel='stylesheet' href='#{url}'>"
   test.done()
