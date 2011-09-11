@@ -106,8 +106,8 @@ exports['css helper function provides correct href'] = (test) ->
   test.equals css('style.css'), cssTag
   test.equals css('style'), cssTag
   test.equals css('../style'), "<link rel='stylesheet' href='/style.css'>"
-  test.equals css('http://raw.github.com/necolas/normalize.css/master/normalize.css'), "<link rel='stylesheet' href='http://raw.github.com/necolas/normalize.css/master/normalize.css'>"
-  test.equals css('//raw.github.com/necolas/normalize.css/master/normalize.css'), "<link rel='stylesheet' href='//raw.github.com/necolas/normalize.css/master/normalize.css'>"
+  test.equals css(url = 'http://raw.github.com/necolas/normalize.css/master/normalize'), "<link rel='stylesheet' href='#{url}.css'>"
+  test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), "<link rel='stylesheet' href='#{url}'>"
   test.done()
 
 exports['js helper function provides correct src'] = (test) ->
@@ -115,8 +115,8 @@ exports['js helper function provides correct src'] = (test) ->
   test.equals js('/js/script.js'), jsTag
   test.equals js('script.js'), jsTag
   test.equals js('script'), jsTag
-  test.equals js('http://code.jquery.com/jquery-1.6.2'), "<script src='http://code.jquery.com/jquery-1.6.2.js'></script>"
-  test.equals js('//code.jquery.com/jquery-1.6.2'), "<script src='//code.jquery.com/jquery-1.6.2.js'></script>"
+  test.equals js(url = 'http://code.jquery.com/jquery-1.6.2'), "<script src='#{url}.js'></script>"
+  test.equals js(url = '//code.jquery.com/jquery-1.6.2.js'), "<script src='#{url}'></script>"
   test.done()
 
 exports['Script files can `require` (in non-production mode)'] = (test) ->
