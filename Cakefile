@@ -30,7 +30,7 @@ task 'watch', 'Recompile CoffeeScript source files when modified', ->
   build true
 
 task 'test', 'Run the test suite (and re-run if anything changes)', ->
-  runningSuite = null
+  suite = null
   build ->
     do runTests = ->
       runningSuite?.kill()
