@@ -33,7 +33,7 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
   suite = null
   build ->
     do runTests = ->
-      runningSuite?.kill()
+      suite?.kill()
       suiteNames = ['development', 'production']
       suiteIndex = 0
       do runNextTestSuite = ->

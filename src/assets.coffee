@@ -1,5 +1,6 @@
 # [http://github.com/TrevorBurnham/connect-assets](http://github.com/TrevorBurnham/connect-assets)
 
+crypto  = require 'crypto'
 fs      = require 'fs'
 mime    = require 'mime'
 path    = require 'path'
@@ -13,12 +14,16 @@ dependencies = {}
 module.exports = (options = {}) ->
   options.src ?= 'assets'
   options.helperContext ?= global
+  options.suffixGenerator ?=
+    if process.env.NODE_ENV is 'production' then md5Suffix else (-> '')
   if options.helperContext?
     createHelpers options
   if options.src?
     assetsMiddleware options
 
 # ## Asset serving and compilation
+
+module.exports.FAR_FUTURE_EXPIRES = "Wed, 01 Feb 2034 12:34:56 GMT"
 
 assetsMiddleware = (options) ->
   src = options.src
@@ -28,7 +33,8 @@ assetsMiddleware = (options) ->
     return next() if targetPath.slice(-1) is '/'  # ignore directory requests
     cachedTarget = cache[targetPath]
     if cachedTarget and (!cachedTarget.mtime)  # memory content
-      return sendCallback(res, next, {targetPath}) null, cachedTarget.str
+      {static, str} = cachedTarget
+      return sendFile(res, next, {static, str, targetPath})
     fs.stat targetPath, (err, stats) ->
       # if the file exists, serve it
       return serveRaw req, res, next, {stats, targetPath} unless err
@@ -57,41 +63,52 @@ serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
         return sendFile res, next, {str, stats, targetPath}
     compiler.compile srcPath, sendCallback(res, next, {stats, targetPath})
 
-sendCallback = (res, next, {stats, targetPath}) ->
+sendCallback = (res, next, {static, stats, targetPath}) ->
   (err, str) ->
     return next err if err
-    sendFile res, next, {str, stats, targetPath}
+    sendFile res, next, {str, static, stats, targetPath}
 
-sendFile = (res, next, {str, stats, targetPath}) ->
-    if stats then cache[targetPath] = {mtime: stats.mtime, str}
-    res.setHeader 'Content-Type', mime.lookup(targetPath)
-    res.end str
+sendFile = (res, next, {str, static, stats, targetPath}) ->
+  if stats then cache[targetPath] = {mtime: stats.mtime, str}
+  res.setHeader 'Content-Type', mime.lookup(targetPath)
+  res.setHeader 'Expires', module.exports.FAR_FUTURE_EXPIRES if static
+  res.end str
 
 module.exports.compilers = compilers =
   coffee:
     match: /\.js$/
     compile: (filePath, callback) ->
-      libs.CoffeeScript or= require 'coffee-script'
-      fs.readFile filePath, 'utf8', (err, str) ->
+      fs.readFile filePath, 'utf8', (err, coffee) ->
         return callback err if err
         try
-          callback null, libs.CoffeeScript.compile str
+          callback null, compilers.coffee.compileStr coffee, filePath
         catch e
           callback e
-    compileStr: (code) ->
+    compileStr: (coffee, filePath) ->
       libs.CoffeeScript or= require 'coffee-script'
-      libs.CoffeeScript.compile code
+      libs.CoffeeScript.compile coffee, {filename: filePath}
   styl:
     match: /\.css$/
     compress: process.env.NODE_ENV is 'production'
     compile: (filePath, callback) ->
+      fs.readFile filePath, 'utf8', (err, styl) ->
+        return callback err if err
+        try
+          callback null, compilers.styl.compileStr styl, filePath
+        catch e
+          callback e
+    compileStr: (styl, filePath) ->
+      result = ''
+      callback = (err, css) ->
+        throw err if err
+        result = css
       libs.stylus or= require 'stylus'
       libs.nib or= try require 'nib' catch e then (-> ->)
-      fs.readFile filePath, 'utf8', (err, str) ->
-        libs.stylus(str).set('filename', filePath)
-                        .set('compress', compilers.styl.compress)
-                        .use(libs.nib())
-                        .render(callback)
+      libs.stylus(styl).set('filename', filePath)
+                       .set('compress', compilers.styl.compress)
+                       .use(libs.nib())
+                       .render callback
+      result
 
 # ## Helper functions for templates
 
@@ -107,14 +124,15 @@ DIRECTIVE = ///
 ^[\W] *= \s* (\w+.*?) (\*\\/)?$
 ///gm
 
-EXPLICIT_PATH = /^\/|:/
+EXPLICIT_PATH = /^\/|^\.|:/
 REMOTE_PATH = /\/\//
 
 relPath = (root, fullPath) ->
   fullPath.slice root.length
 
-productionPath = (devPath) ->
-  devPath.replace /\.js$/, '.complete.js'
+productionJsPath = (filePath, str, options) ->
+  suffix = options.suffixGenerator filePath, str
+  filePath.replace /\.js$/, ".complete#{suffix}.js"
 
 createHelpers = (options) ->
   context = options.helperContext
@@ -127,29 +145,41 @@ createHelpers = (options) ->
 
   cssExt = '.css'
   context.css = (cssPath) ->
-    cssPath = expandPath cssPath, cssExt, context.css.root
-    "<link rel='stylesheet' href='#{cssPath}'>"
+    cssUrl = expandPath cssPath, cssExt, context.css.root
+    if options.src? and !cssPath.match EXPLICIT_PATH
+      filePath = path.join options.src, cssUrl
+      readFileOrCompile filePath
+      suffix = options.suffixGenerator filePath, cache[filePath].str
+      staticPath = cssUrl.replace /\.css$/, "#{suffix}.css"
+      if suffix isnt ''
+        cache[path.join options.src, staticPath] = {str: cache[filePath].str, static: true}
+      "<link rel='stylesheet' href='#{staticPath}'>"
+    else
+      "<link rel='stylesheet' href='#{cssUrl}'>"
   context.css.root = '/css'
 
   jsExt = '.js'
   context.js = (jsPath) ->
-    jsPath = expandPath jsPath, jsExt, context.js.root
+    jsUrl = expandPath jsPath, jsExt, context.js.root
     if context.js.concatenate
-      if options.src? and !jsPath.match REMOTE_PATH
-        filePath = path.join options.src, jsPath
+      if options.src? and !jsUrl.match REMOTE_PATH
+        filePath = path.join options.src, jsUrl
         updateDependenciesSync filePath
         str = concatenate filePath, options
         str = minify str
-        cache[productionPath filePath] = {str}
-      tag = "<script src='#{productionPath jsPath}'></script>"
+        packagePath = productionJsPath filePath, str, options
+        cache[packagePath] = {str, static: true}
+        tag = "<script src='#{relPath options.src, packagePath}'></script>"
+      else
+        tag = "<script src='#{jsUrl}'></script>"
     else
       dependencyTags = ''
-      if options.src? and !jsPath.match REMOTE_PATH
-        filePath = path.join options.src, jsPath
+      if options.src? and !jsUrl.match REMOTE_PATH
+        filePath = path.join options.src, jsUrl
         updateDependenciesSync filePath
         tag = generateTags(filePath, options).join('\n')
       else
-        tag = "<script src='#{jsPath}'></script>"
+        tag = "<script src='#{jsUrl}'></script>"
     tag
   context.js.root = '/js'
   context.js.concatenate = process.env.NODE_ENV is 'production'
@@ -187,8 +217,7 @@ updateDependenciesSync = (filePath) ->
       when 'require_tree'
         requireTree = (parentDir, paths) ->
           for p in paths
-            unless p.match EXPLICIT_PATH
-              p = path.join parentDir, p
+            p = path.join parentDir, p
             continue if p is filePath
             stats = fs.statSync p
             if stats.isFile()
@@ -218,14 +247,16 @@ readFileOrCompile = (filePath, compileCallback) ->
         stats = fs.statSync sourcePath
         if cache[sourcePath]?.mtime
           unless stats.mtime > cache[sourcePath]?.mtime
-            compileCallback sourcePath
+            compileCallback? sourcePath
             break
         str = fs.readFileSync(sourcePath, 'utf8')
         cache[sourcePath] = {mtime: stats.mtime, str}
-        str = compiler.compileStr str
-        cache[filePath] = {mtime: stats.mtime, str}
-        compileCallback sourcePath
-        break
+      catch ex
+        continue
+      str = compiler.compileStr str, sourcePath
+      cache[filePath] = {mtime: stats.mtime, str}
+      compileCallback? sourcePath
+      break
   throw new Error("File not found: #{filePath}") unless stats
   stats
 
@@ -248,9 +279,12 @@ collectDependencies = (filePath, traversedPaths = [], traversedBranch = []) ->
 generateTags = (filePath, options) ->
   if filePath.match REMOTE_PATH
     return ["<script src='#{filePath}'></script>"]
-  tags = for depPath in collectDependencies(filePath)
-    "<script src='#{relPath options.src, depPath}'></script>"
-  tags.push "<script src='#{relPath options.src, filePath}'></script>"
+  tags = for depPath in collectDependencies(filePath).concat [filePath]
+    outputPath = relPath options.src, depPath
+    suffix = options.suffixGenerator filePath, cache[filePath].str
+    if suffix isnt ''
+      cache["#{outputPath}#{suffix}"] = {str, static: true}
+    "<script src='#{outputPath}#{suffix}'></script>"
   tags
 
 concatenate = (filePath, options) ->
@@ -266,3 +300,9 @@ minify = (js) ->
   ast = pro.ast_mangle ast
   ast = pro.ast_squeeze ast
   pro.gen_code ast
+
+md5Suffix = (filePath, str) ->
+  hash = crypto.createHash('md5')
+  hash.update str
+  md5Hex = hash.digest 'hex'
+  "-#{md5Hex}"

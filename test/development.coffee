@@ -6,6 +6,15 @@ assets = require('../lib/assets.js')
 app.use assets()
 app.listen 3588
 
+exports['Raw JavaScript is served directly'] = (test) ->
+  test.expect 3
+
+  request 'http://localhost:3588/js/js-dependency.js', (err, res, body) ->
+    test.ok !err
+    test.equals body, '// Admit it: You need me.'
+    test.equals res.headers['content-type'], 'application/javascript'
+    test.done()
+
 exports['CoffeeScript is served as JavaScript'] = (test) ->
   test.expect 3
 
@@ -20,13 +29,13 @@ exports['CoffeeScript is served as JavaScript'] = (test) ->
     test.equals body, expectedBody
     test.done()
 
-exports['Raw JavaScript is served directly'] = (test) ->
+exports['Raw CSS is served directly'] = (test) ->
   test.expect 3
 
-  request 'http://localhost:3588/js/js-dependency.js', (err, res, body) ->
+  request 'http://localhost:3588/css/normalize.css', (err, res, body) ->
     test.ok !err
-    test.equals body, '// Admit it: You need me.'
-    test.equals res.headers['content-type'], 'application/javascript'
+    test.equals body, '/* Just act normal, dude. */'
+    test.equals res.headers['content-type'], 'text/css'
     test.done()
 
 exports['Stylus is served as CSS'] = (test) ->
