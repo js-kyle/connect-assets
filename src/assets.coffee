@@ -59,6 +59,8 @@ serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
     return next err if err
     if cache[targetPath]?.mtime
       unless stats.mtime > cache[targetPath].mtime
+        if compiler is compilers.styl  # @import-ed files may have changed
+          cache[targetPath].str = compiler.compileStr cache[srcPath].str, srcPath
         str = cache[targetPath].str
         return sendFile res, next, {str, stats, targetPath}
     compiler.compile srcPath, sendCallback(res, next, {stats, targetPath})
@@ -89,6 +91,7 @@ module.exports.compilers = compilers =
       libs.CoffeeScript.compile coffee, {filename: filePath}
   styl:
     match: /\.css$/
+    optionsMap: {}
     compress: process.env.NODE_ENV is 'production'
     compile: (filePath, callback) ->
       fs.readFile filePath, 'utf8', (err, styl) ->
@@ -98,16 +101,18 @@ module.exports.compilers = compilers =
         catch e
           callback e
     compileStr: (styl, filePath) ->
+      options = compilers.styl.optionsMap[filePath] ?=
+        filename: filePath
+        compress: compilers.styl.compress
       result = ''
       callback = (err, css) ->
         throw err if err
         result = css
       libs.stylus or= require 'stylus'
       libs.nib or= try require 'nib' catch e then (-> ->)
-      libs.stylus(styl).set('filename', filePath)
-                       .set('compress', compilers.styl.compress)
-                       .use(libs.nib())
-                       .render callback
+      libs.stylus(styl, options)
+          .use(libs.nib())
+          .render callback
       result
 
 # ## Helper functions for templates
@@ -247,6 +252,8 @@ readFileOrCompile = (filePath, compileCallback) ->
         stats = fs.statSync sourcePath
         if cache[sourcePath]?.mtime
           unless stats.mtime > cache[sourcePath]?.mtime
+            if compiler is compilers.styl  # @import-ed files may have changed
+              cache[filePath].str = compiler.compileStr cache[sourcePath].str, sourcePath
             compileCallback? sourcePath
             break
         str = fs.readFileSync(sourcePath, 'utf8')

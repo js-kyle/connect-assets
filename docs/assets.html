@@ -47,6 +47,8 @@
     <span class="k">return</span> <span class="nx">next</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
     <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
       <span class="nx">unless</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span> <span class="o">&gt;</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">].</span><span class="nx">mtime</span>
+        <span class="k">if</span> <span class="nx">compiler</span> <span class="o">is</span> <span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span>  <span class="c1"># @import-ed files may have changed</span>
+          <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">].</span><span class="nv">str = </span><span class="nx">compiler</span><span class="p">.</span><span class="nx">compileStr</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">srcPath</span><span class="p">].</span><span class="nx">str</span><span class="p">,</span> <span class="nx">srcPath</span>
         <span class="nv">str = </span><span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">].</span><span class="nx">str</span>
         <span class="k">return</span> <span class="nx">sendFile</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">str</span><span class="p">,</span> <span class="nx">stats</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">}</span>
     <span class="nx">compiler</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">srcPath</span><span class="p">,</span> <span class="nx">sendCallback</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">stats</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">})</span>
@@ -77,6 +79,7 @@
       <span class="nx">libs</span><span class="p">.</span><span class="nx">CoffeeScript</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">coffee</span><span class="p">,</span> <span class="p">{</span><span class="nv">filename: </span><span class="nx">filePath</span><span class="p">}</span>
   <span class="nv">styl:</span>
     <span class="nv">match: </span><span class="sr">/\.css$/</span>
+    <span class="nv">optionsMap: </span><span class="p">{}</span>
     <span class="nv">compress: </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">is</span> <span class="s1">&#39;production&#39;</span>
     <span class="nv">compile: </span><span class="nf">(filePath, callback) -&gt;</span>
       <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span> <span class="nx">filePath</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="nf">(err, styl) -&gt;</span>
@@ -86,16 +89,18 @@
         <span class="k">catch</span> <span class="nx">e</span>
           <span class="nx">callback</span> <span class="nx">e</span>
     <span class="nv">compileStr: </span><span class="nf">(styl, filePath) -&gt;</span>
+      <span class="nv">options = </span><span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span><span class="p">.</span><span class="nx">optionsMap</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">?=</span>
+        <span class="nv">filename: </span><span class="nx">filePath</span>
+        <span class="nv">compress: </span><span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span><span class="p">.</span><span class="nx">compress</span>
       <span class="nv">result = </span><span class="s1">&#39;&#39;</span>
       <span class="nv">callback = </span><span class="nf">(err, css) -&gt;</span>
         <span class="k">throw</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
         <span class="nv">result = </span><span class="nx">css</span>
       <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span> <span class="o">or=</span> <span class="nx">require</span> <span class="s1">&#39;stylus&#39;</span>
       <span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span> <span class="o">or=</span> <span class="k">try</span> <span class="nx">require</span> <span class="s1">&#39;nib&#39;</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="o">-&gt;</span><span class="p">)</span>
-      <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span><span class="p">(</span><span class="nx">styl</span><span class="p">).</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="nx">filePath</span><span class="p">)</span>
-                       <span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;compress&#39;</span><span class="p">,</span> <span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span><span class="p">.</span><span class="nx">compress</span><span class="p">)</span>
-                       <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span><span class="p">())</span>
-                       <span class="p">.</span><span class="nx">render</span> <span class="nx">callback</span>
+      <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span><span class="p">(</span><span class="nx">styl</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+          <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span><span class="p">())</span>
+          <span class="p">.</span><span class="nx">render</span> <span class="nx">callback</span>
       <span class="nx">result</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Helper functions for templates</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">HEADER = </span><span class="err">///</span>
 <span class="p">(</span><span class="o">?:</span>
   <span class="p">(</span><span class="err">\</span><span class="c1">#\#\# .* \#\#\#\n?) |</span>
@@ -227,6 +232,8 @@
         <span class="nv">stats = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">sourcePath</span>
         <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
           <span class="nx">unless</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span> <span class="o">&gt;</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
+            <span class="k">if</span> <span class="nx">compiler</span> <span class="o">is</span> <span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span>  <span class="c1"># @import-ed files may have changed</span>
+              <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nv">str = </span><span class="nx">compiler</span><span class="p">.</span><span class="nx">compileStr</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">].</span><span class="nx">str</span><span class="p">,</span> <span class="nx">sourcePath</span>
             <span class="nx">compileCallback</span><span class="o">?</span> <span class="nx">sourcePath</span>
             <span class="k">break</span>
         <span class="nv">str = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
