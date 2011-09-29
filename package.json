@@ -20,6 +20,7 @@
     "nodeunit": "0.5.4",
     "stylus": "0.15.1",
     "request": "2.1.1",
-    "watch-tree": "0.1.1"
+    "watch-tree": "0.1.1",
+    "hbs": ">= 1.0.1"
   }
 }
