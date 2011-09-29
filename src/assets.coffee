@@ -11,8 +11,11 @@ cache = {}
 libs = {}
 dependencies = {}
 
+srcDir = null
+
 module.exports = (options = {}) ->
   options.src ?= 'assets'
+  srcDir = options.src
   options.helperContext ?= global
   options.suffixGenerator ?=
     if process.env.NODE_ENV is 'production' then md5Suffix else (-> '')
@@ -40,10 +43,18 @@ assetsMiddleware = (options) ->
       return serveRaw req, res, next, {stats, targetPath} unless err
       # if the file doesn't exist, see if it can be compiled
       for ext, compiler of compilers
+        srcPath = targetPath.replace(compiler.match, ".#{ext}")
         if compiler.match.test targetPath
-          return serveCompiled req, res, next, {compiler, ext, targetPath}
+          if fileExistsSync srcPath
+            return serveCompiled req, res, next, {compiler, ext, targetPath, srcPath}
       # otherwise, pass the request up the Connect stack
       next()
+
+fileExistsSync = (f) ->
+  try 
+    fs.statSync(f).isFile()             
+  catch er
+    false
 
 serveRaw = (req, res, next, {stats, targetPath}) ->
   if cache[targetPath]?.mtime
@@ -52,8 +63,7 @@ serveRaw = (req, res, next, {stats, targetPath}) ->
       return sendFile res, next, {str, stats, targetPath}
   fs.readFile targetPath, 'utf8', sendCallback(res, next, {stats, targetPath})
 
-serveCompiled = (req, res, next, {compiler, ext, targetPath}) ->
-  srcPath = targetPath.replace(compiler.match, ".#{ext}")
+serveCompiled = (req, res, next, {compiler, ext, targetPath, srcPath}) ->
   fs.stat srcPath, (err, stats) ->
     return next() if err?.code is 'ENOENT'  # no file, no problem!
     return next err if err
@@ -114,7 +124,54 @@ module.exports.compilers = compilers =
           .use(libs.nib())
           .render callback
       result
+  hbs:
+    match: /\.js$/
+    compile: (filePath, callback) ->
+      fs.readFile filePath, 'utf8', (err, hbs) ->
+        return callback err if err
+        try
+          callback null, compilers.hbs.compileStr hbs, filePath
+        catch e
+          callback e
+    compileStr: (hbs, filePath) ->
+      libs.Hbs or= require 'hbs'        
+      jstTemplate = (name, str) ->  
+        """
+        (function() {
+           this.JST || (this.JST = {});
+           this.JST[\"#{name}\"] = #{str}
+         }).call(this);   
+         """
+         
+      handlebarsTemplate = (name, str) ->
+        """
+        function(context) {
+          return HandlebarsTemplates[\"#{name}\"](context);
+        };
+        this.HandlebarsTemplates || (this.HandlebarsTemplates = {});
+        this.HandlebarsTemplates[\"#{name}\"] = Handlebars.template(#{str});
+        """ 
+        
+      handlebarsPartial = (name, str) ->
+        """
+        (function() {
+          Handlebars.registerPartial(\"#{name}\", Handlebars.template(#{str}));
+        }).call(this);
+        """
+      
+      # remove file path
+      templateName = filePath.replace(new RegExp("^#{srcDir}#{js.root}/"), "")
+      templateName = templateName.replace(/\.hbs$/, "")
+      templateName = templateName.replace(/\.jst$/, "")
+      preCompiledHbs = libs.Hbs.handlebars.precompile(hbs)
 
+      # the regex gets the partial name which is any text after the last /_ and after file extensions have been stripped
+      if partialName = templateName.match(/\/_([^\/]*)$/)
+        handlebarsPartial(partialName[1],preCompiledHbs)
+      else          
+        hbsTemplate = handlebarsTemplate(templateName,preCompiledHbs)
+        jstTemplate(templateName,hbsTemplate)
+    
 # ## Helper functions for templates
 
 HEADER = ///
@@ -201,10 +258,10 @@ updateDependenciesSync = (filePath) ->
   if cache[filePath].mtime.getTime() is oldTime?.getTime()
     updateDependenciesSync(p) for p in dependencies[filePath]
     return
-
-  jsCompilerExts = ".#{ext}" for ext, c of compilers when c.match '.js'
-  jsExtList = ['.js'].concat jsCompilerExts
-
+    
+  jsExtList = ['.js']
+  jsExtList.push ".#{ext}" for ext, c of compilers when c.match '.js'
+  
   dependencies[filePath] = []
   for directive in directivesInCode cache[directivePath].str
     words = directive.replace(/['"]/g, '').split /\s+/
