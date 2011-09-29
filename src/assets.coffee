@@ -31,7 +31,7 @@ assetsMiddleware = (options) ->
     return next() unless req.method is 'GET'
     targetPath = path.join src, parse(req.url).pathname
     return next() if targetPath.slice(-1) is '/'  # ignore directory requests
-    cachedTarget = cache[targetPath]
+    cachedTarget = cache[stripSuffix targetPath]
     if cachedTarget and (!cachedTarget.mtime)  # memory content
       {static, str} = cachedTarget
       return sendFile(res, next, {static, str, targetPath})
@@ -135,10 +135,26 @@ REMOTE_PATH = /\/\//
 relPath = (root, fullPath) ->
   fullPath.slice root.length
 
-productionJsPath = (filePath, str, options) ->
-  suffix = options.suffixGenerator filePath, str
+productionJsPath = (filePath, suffix='') ->
   filePath.replace /\.js$/, ".complete#{suffix}.js"
 
+stripSuffix = (filePath) ->
+  filePath.replace /-[a-f0-9]*\.js$/, ".js"
+
+jsProductionUrl = (jsUrl, options) ->
+  filePath = path.join options.src, jsUrl
+  jsPath = productionJsPath filePath
+  cache[jsPath] ?= prepareJs filePath, options
+  productionJsPath filePath, cache[jsPath].suffix
+
+prepareJs = (filePath, options) ->
+  updateDependenciesSync filePath
+  str = concatenate filePath, options
+  str = minify str
+  suffix = options.suffixGenerator filePath, str
+  {str, static: true, suffix: suffix}
+
+  
 createHelpers = (options) ->
   context = options.helperContext
   expandPath = (filePath, ext, root) ->
@@ -168,12 +184,7 @@ createHelpers = (options) ->
     jsUrl = expandPath jsPath, jsExt, context.js.root
     if context.js.concatenate
       if options.src? and !jsUrl.match REMOTE_PATH
-        filePath = path.join options.src, jsUrl
-        updateDependenciesSync filePath
-        str = concatenate filePath, options
-        str = minify str
-        packagePath = productionJsPath filePath, str, options
-        cache[packagePath] = {str, static: true}
+        packagePath = jsProductionUrl jsUrl, options
         tag = "<script src='#{relPath options.src, packagePath}'></script>"
       else
         tag = "<script src='#{jsUrl}'></script>"
