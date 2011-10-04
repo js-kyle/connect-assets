@@ -25,12 +25,22 @@ module.exports = (options = {}) ->
 
   connectAssets = new ConnectAssets options
   connectAssets.createHelpers options
-  connectAssets.cache.middleware
+  connectAssets.middleware
 
 class ConnectAssets
   constructor: (@options) ->
     @cache = connectCache()
     @snockets = new Snockets src: @options.src
+
+  # Handle incoming requests
+  middleware: (req, res, next) =>
+    return next() unless req.method is 'GET'
+    route = stripMd5Hash parse(req.url).pathname
+    @cache.loadFile route, =>
+      if @cache.map[route]
+        @cache.serveBuffer req, res, next, {route}
+      else
+        next()
 
   # ## CSS and JS tag functions
   createHelpers: ->
@@ -97,16 +107,18 @@ class ConnectAssets
       sourcePath = stripExt(route) + ".#{ext}"
       try
         if @options.build
-          snocketsFlags = minify: @options.minifyBuilds, async: false
-          concatenation = @snockets.getConcatenation sourcePath, snocketsFlags
-          filename = @options.buildFilenamer route, concatenation
-          cacheFlags = expires: @options.buildsExpire
-          @cache.set filename, concatenation, cacheFlags
-          if @options.buildDir
-            buildPath = path.join process.cwd(), @options.buildDir, filename
-            mkdirRecursive path.dirname(buildPath), 0755, (err) ->
-              console.log err if err
-              fs.writeFile buildPath, concatenation
+          filename = @cache.map[normalizeRoute route]?.flags?.md5Filename
+          unless filename
+            snocketsFlags = minify: @options.minifyBuilds, async: false
+            concatenation = @snockets.getConcatenation sourcePath, snocketsFlags
+            filename = @options.buildFilenamer route, concatenation
+            cacheFlags = expires: @options.buildsExpire, md5Filename: filename
+            @cache.set route, concatenation, cacheFlags
+            if @options.buildDir
+              buildPath = path.join process.cwd(), @options.buildDir, filename
+              mkdirRecursive path.dirname(buildPath), 0755, (err) ->
+                console.log err if err
+                fs.writeFile buildPath, concatenation
           return ["/#{filename}"]
         else
           chain = @snockets.getCompiledChain sourcePath, async: false
@@ -171,6 +183,13 @@ mkdirRecursive = (dir, mode, callback) ->
     mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
       return callback err if err and err.errno isnt process.EEXIST
       fs.mkdir dir, mode, callback
+
+normalizeRoute = (route) ->
+  route = "/#{route}" unless route[0] is '/'
+  route
+
+stripMd5Hash = (filename) ->
+  filename.replace /-[a-f0-9]*\.js$/, ".js"
 
 exports.md5Filenamer = md5Filenamer = (filename, code) ->
   hash = crypto.createHash('md5')
