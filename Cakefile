@@ -34,7 +34,10 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
   build ->
     do runTests = ->
       suite?.kill()
-      suiteNames = ['development', 'production']
+      suiteNames = [
+        'DevelopmentIntegration'
+        'ProductionIntegration'
+      ]
       suiteIndex = 0
       do runNextTestSuite = ->
         return unless suiteName = suiteNames[suiteIndex]

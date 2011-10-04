@@ -1,0 +1,39 @@
+<!DOCTYPE html>  <html> <head>   <title>createHelpers.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="assets.html">                 assets.coffee               </a>                                           <a class="source" href="createHelpers.html">                 createHelpers.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               createHelpers.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nv">path = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
+
+<span class="nv">module.exports = createHelpers = </span><span class="nf">(options, suffixes) -&gt;</span>
+  <span class="nv">context = </span><span class="nx">options</span><span class="p">.</span><span class="nx">helperContext</span>
+  <span class="nv">expandRoute = </span><span class="nf">(shortRoute, ext, rootDir) -&gt;</span>
+    <span class="nx">unless</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
+      <span class="nv">shortRoute = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">rootDir</span><span class="p">,</span> <span class="nx">shortRoute</span>
+    <span class="k">if</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">ext</span><span class="p">,</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">ext</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">is</span> <span class="o">-</span><span class="mi">1</span>
+      <span class="nx">shortRoute</span> <span class="o">+=</span> <span class="nx">ext</span>
+    <span class="nx">shortRoute</span>
+
+  <span class="nv">cssExt = </span><span class="s1">&#39;.css&#39;</span>
+  <span class="nv">context.css = </span><span class="nf">(route) -&gt;</span>
+    <span class="nv">route = </span><span class="nx">expandRoute</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">cssExt</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">root</span>
+    <span class="k">if</span> <span class="nx">suffixes</span><span class="p">[</span><span class="nx">route</span><span class="p">]</span>
+      <span class="nv">route = </span><span class="nx">route</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\.css$/</span><span class="p">,</span> <span class="s2">&quot;#{suffixes[route]}.css&quot;</span>
+    <span class="s2">&quot;&lt;link rel=&#39;stylesheet&#39; href=&#39;#{route}&#39;&gt;&quot;</span>
+  <span class="nv">context.css.root = </span><span class="s1">&#39;/css&#39;</span>
+
+  <span class="nv">jsExt = </span><span class="s1">&#39;.js&#39;</span>
+  <span class="nv">context.js = </span><span class="nf">(route) -&gt;</span>
+    <span class="nv">route = </span><span class="nx">expandRoute</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">jsExt</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">js</span><span class="p">.</span><span class="nx">root</span>
+    <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="o">?</span> <span class="o">and</span> <span class="o">!</span><span class="nx">route</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span> <span class="o">and</span> <span class="o">!</span><span class="nx">context</span><span class="p">.</span><span class="nx">js</span><span class="p">.</span><span class="nx">concatenate</span>
+      <span class="nv">dependencyTags = </span><span class="s1">&#39;&#39;</span>
+      <span class="nv">filePath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">route</span>
+      <span class="nx">updateDependenciesSync</span> <span class="nx">filePath</span>
+      <span class="k">return</span> <span class="nx">generateTags</span><span class="p">(</span><span class="nx">filePath</span><span class="p">,</span> <span class="nx">options</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">)</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="nx">suffixes</span><span class="p">[</span><span class="nx">route</span><span class="p">]</span>
+      <span class="nv">route = </span><span class="nx">route</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s2">&quot;#{suffixes[route]}.js&quot;</span>
+    <span class="s2">&quot;&lt;script src=&#39;#{route}&#39;&gt;&lt;/script&gt;&quot;</span>
+  <span class="nv">context.js.root = </span><span class="s1">&#39;/js&#39;</span>
+  <span class="nv">context.js.concatenate = </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">is</span> <span class="s1">&#39;production&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Utility functions</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">relPath = </span><span class="nf">(root, fullPath) -&gt;</span>
+  <span class="nx">fullPath</span><span class="p">.</span><span class="nx">slice</span> <span class="nx">root</span><span class="p">.</span><span class="nx">length</span>
+
+<span class="nv">productionJsPath = </span><span class="nf">(filePath, str, options) -&gt;</span>
+  <span class="nv">suffix = </span><span class="nx">options</span><span class="p">.</span><span class="nx">suffixGenerator</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nx">str</span>
+  <span class="nx">filePath</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s2">&quot;.complete#{suffix}.js&quot;</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

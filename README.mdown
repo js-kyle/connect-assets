@@ -9,10 +9,10 @@ Written in CoffeeScript by the author of [CoffeeScript: Accelerated JavaScript D
 connect-assets can:
 
 1. Serve `.coffee` ([CoffeeScript](http://coffeescript.org)) files as compiled `.js`
+1. Concatenate `.coffee` and `.js` together using [Snockets](https://github.com/TrevorBurnham/snockets)
 1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css` (with [nib](https://github.com/visionmedia/nib) baked in when available)
-1. Serve `.js` and `.css` files directly from the same directory, if you want.
-
-To keep your project clean and avoid redundant git diffs, connect-assets stores the compiled output in memory rather than writing it to the disk.
+1. Serve files with an MD5 hash suffix and use a far-future expires header for maximum efficiency
+1. Avoid redundant git diffs by storing compiled `.js` and `.css` files in memory rather than writing them to the disk—except when you want them (e.g. for deployment to a CDN).
 
 ## How?
 
@@ -30,27 +30,19 @@ Then add this line to your app's configuration:
 
     app.use require('connect-assets')()
 
-### Serving and compiling assets
-
-Create an `assets` directory in your project and throw all your `.coffee` and `.styl` files in there. Bam! Files get served like so: `assets/js/script.coffee` is compiled and served when you go to `http://yourapp/js/script.js`; `assets/css/style.styl` is compiled and served at `http://yourapp/css/style.css`.
+Finally, create an `assets` directory in your project and throw all your `.coffee` and `.styl` files in there
 
 ### Markup functions
 
-connect-assets provides a couple of helper functions for use in your markup. In a [Jade template](http://jade-lang.com/), for instance, you might write
-
-    link(rel='stylesheet', href='/css/normalize.css')
-    script(src='/js/jquery.js')
-
-But with connect-assets, you can just write
+connect-assets provides two global functions named `js` and `css`. Use them in your views. They tell connect-assets to do any necessary compilation, then return the markup you need. For instance, in a [Jade template](http://jade-lang.com/), the code
 
     != css('normalize')
     != js('jquery')
 
-(where `!= is Jade's syntax for running JS and putting its output directly in the markup). The `css` function just emits a string like
+(where `!= is Jade's syntax for running JS and displaying its output) results in the markup
 
     <link rel='stylesheet' href='/css/normalize.css'>
-
-The `js` function, on the other hand, is more powerful...
+    <script src='/js/jquery.js'></script>
 
 ### Sprockets-style concatenation
 
@@ -61,11 +53,15 @@ You can indicate dependencies in your CoffeeScript files using the Sprockets-sty
 (or `//= require dependency` in JavaScript). When you do so, and point the `js` function at that file, two things can happen:
 
 1. By default, you'll get multiple `<script>` tags out, in an order that gives you all of your dependencies.
-2. If you're in production mode (`process.env.NODE_ENV == 'production'`), you'll just get a single tag, wich will point to a single JavaScript file that encompasses the target's entire dependency graph—compiled, concatenated, and minified (with [UglifyJS](https://github.com/mishoo/UglifyJS)).
+2. If you passed the `build: true` option to connect-assets (enabled by default when `process.env.NODE_ENV == 'production'`), you'll just get a single tag, wich will point to a JavaScript file that encompasses the target's entire dependency graph—compiled, concatenated, and minified (with [UglifyJS](https://github.com/mishoo/UglifyJS)).
 
 If you want to bring in a whole folder of scripts, use
 
     #= require_tree dir
+
+See [Snockets](http://github.com/TrevorBurnham/snockets) for more information.
+
+**Note:** CSS concatenation is not supported by connect-assets directly, because Stylus already does a fine job of this. Stylus is basically a superset of CSS, so just rename your `.css` files to `.styl` and learn about its [@import](http://learnboost.github.com/stylus/docs/import.html) syntax.
 
 ## Options
 
@@ -73,18 +69,28 @@ If you like, you can pass any of these options to the function returned by `requ
 
 * `src` (defaults to `'assets'`): The directory assets will be read from
 * `helperContext` (defaults to `global`): The object the `css` and `js` helper functions will attach to
+* ... see the source (`src/assets.coffee`) for more.
 
 You can also set the "root path" on the `css` and `js` helper functions (by default, `/css` and `/js`), e.g.
 
     css.root = '/stylesheets'
     js.root  = '/javascripts'
 
-## TODO
+To override these roots, start a path with `'/'`. So, for instance,
 
-* Error-handling needs to be improved.
-* Code needs to be better structured and made more extensible.
+    css('style.css')
 
-This is still a young project, and feedback of all kinds is much appreciated.
+generates
+
+    <link rel='stylesheet' href='/css/normalize.css'>
+
+while
+
+    css('/style.css')
+
+gives you
+
+    <link rel='stylesheet' href='/normalize.css'>
 
 ## Credits
 

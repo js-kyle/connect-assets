@@ -1,294 +1,162 @@
-<!DOCTYPE html>  <html> <head>   <title>assets.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               assets.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p><a href="http://github.com/TrevorBurnham/connect-assets">http://github.com/TrevorBurnham/connect-assets</a></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">crypto  = </span><span class="nx">require</span> <span class="s1">&#39;crypto&#39;</span>
-<span class="nv">fs      = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
-<span class="nv">mime    = </span><span class="nx">require</span> <span class="s1">&#39;mime&#39;</span>
-<span class="nv">path    = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
-<span class="p">{</span><span class="nx">parse</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;url&#39;</span>
-<span class="nv">uglify  = </span><span class="nx">require</span> <span class="s1">&#39;uglify-js&#39;</span>
+<!DOCTYPE html>  <html> <head>   <title>assets.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               assets.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p><a href="http://github.com/TrevorBurnham/connect-assets">connect-assets</a></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">connectCache  = </span><span class="nx">require</span> <span class="s1">&#39;connect-file-cache&#39;</span>
+<span class="nv">Snockets      = </span><span class="nx">require</span> <span class="s1">&#39;snockets&#39;</span>
 
-<span class="nv">cache = </span><span class="p">{}</span>
+<span class="nv">crypto        = </span><span class="nx">require</span> <span class="s1">&#39;crypto&#39;</span>
+<span class="nv">fs            = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
+<span class="nv">path          = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
+<span class="nv">_             = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
+<span class="p">{</span><span class="nx">parse</span><span class="p">}</span>       <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;url&#39;</span>
+
+<span class="nv">connectAssets = </span><span class="kc">null</span>
 <span class="nv">libs = </span><span class="p">{}</span>
-<span class="nv">dependencies = </span><span class="p">{}</span>
 
 <span class="nv">module.exports = </span><span class="nf">(options = {}) -&gt;</span>
   <span class="nx">options</span><span class="p">.</span><span class="nx">src</span> <span class="o">?=</span> <span class="s1">&#39;assets&#39;</span>
   <span class="nx">options</span><span class="p">.</span><span class="nx">helperContext</span> <span class="o">?=</span> <span class="nx">global</span>
-  <span class="nx">options</span><span class="p">.</span><span class="nx">suffixGenerator</span> <span class="o">?=</span>
-    <span class="k">if</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">is</span> <span class="s1">&#39;production&#39;</span> <span class="k">then</span> <span class="nx">md5Suffix</span> <span class="k">else</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-  <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">helperContext</span><span class="o">?</span>
-    <span class="nx">createHelpers</span> <span class="nx">options</span>
-  <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="o">?</span>
-    <span class="nx">assetsMiddleware</span> <span class="nx">options</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>Asset serving and compilation</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">module.exports.FAR_FUTURE_EXPIRES = </span><span class="s2">&quot;Wed, 01 Feb 2034 12:34:56 GMT&quot;</span>
+  <span class="k">if</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">is</span> <span class="s1">&#39;production&#39;</span>
+    <span class="nx">options</span><span class="p">.</span><span class="nx">build</span> <span class="o">?=</span> <span class="kc">true</span>
+    <span class="nx">cssCompilers</span><span class="p">.</span><span class="nx">styl</span><span class="p">.</span><span class="nx">compress</span> <span class="o">?=</span> <span class="kc">true</span>
+  <span class="nx">options</span><span class="p">.</span><span class="nx">buildDir</span> <span class="o">?=</span> <span class="s1">&#39;builtAssets&#39;</span>
+  <span class="nx">options</span><span class="p">.</span><span class="nx">buildFilenamer</span> <span class="o">?=</span> <span class="nx">md5Filenamer</span>
+  <span class="nx">options</span><span class="p">.</span><span class="nx">buildsExpire</span> <span class="o">?=</span> <span class="kc">false</span>
+  <span class="nx">options</span><span class="p">.</span><span class="nx">minifyBuilds</span> <span class="o">?=</span> <span class="kc">true</span>
 
-<span class="nv">assetsMiddleware = </span><span class="nf">(options) -&gt;</span>
-  <span class="nv">src = </span><span class="nx">options</span><span class="p">.</span><span class="nx">src</span>
-  <span class="nf">(req, res, next) -&gt;</span>
-    <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="nx">unless</span> <span class="nx">req</span><span class="p">.</span><span class="nx">method</span> <span class="o">is</span> <span class="s1">&#39;GET&#39;</span>
-    <span class="nv">targetPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">src</span><span class="p">,</span> <span class="nx">parse</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span>
-    <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">targetPath</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">is</span> <span class="s1">&#39;/&#39;</span>  <span class="c1"># ignore directory requests</span>
-    <span class="nv">cachedTarget = </span><span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nx">cachedTarget</span> <span class="o">and</span> <span class="p">(</span><span class="o">!</span><span class="nx">cachedTarget</span><span class="p">.</span><span class="nx">mtime</span><span class="p">)</span>  <span class="c1"># memory content</span>
-      <span class="p">{</span><span class="nx">static</span><span class="p">,</span> <span class="nx">str</span><span class="p">}</span> <span class="o">=</span> <span class="nx">cachedTarget</span>
-      <span class="k">return</span> <span class="nx">sendFile</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">static</span><span class="p">,</span> <span class="nx">str</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">})</span>
-    <span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span> <span class="nx">targetPath</span><span class="p">,</span> <span class="nf">(err, stats) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>if the file exists, serve it</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">return</span> <span class="nx">serveRaw</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">stats</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">}</span> <span class="nx">unless</span> <span class="nx">err</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>if the file doesn't exist, see if it can be compiled</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">for</span> <span class="nx">ext</span><span class="p">,</span> <span class="nx">compiler</span> <span class="k">of</span> <span class="nx">compilers</span>
-        <span class="k">if</span> <span class="nx">compiler</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">test</span> <span class="nx">targetPath</span>
-          <span class="k">return</span> <span class="nx">serveCompiled</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">compiler</span><span class="p">,</span> <span class="nx">ext</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>otherwise, pass the request up the Connect stack</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">next</span><span class="p">()</span>
+  <span class="nv">connectAssets = </span><span class="k">new</span> <span class="nx">ConnectAssets</span> <span class="nx">options</span>
+  <span class="nx">connectAssets</span><span class="p">.</span><span class="nx">createHelpers</span> <span class="nx">options</span>
+  <span class="nx">connectAssets</span><span class="p">.</span><span class="nx">cache</span><span class="p">.</span><span class="nx">middleware</span>
 
-<span class="nv">serveRaw = </span><span class="nf">(req, res, next, {stats, targetPath}) -&gt;</span>
-  <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
-    <span class="nx">unless</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span> <span class="o">&gt;</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">].</span><span class="nx">mtime</span>
-      <span class="nv">str = </span><span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">].</span><span class="nx">str</span>
-      <span class="k">return</span> <span class="nx">sendFile</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">str</span><span class="p">,</span> <span class="nx">stats</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">}</span>
-  <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span> <span class="nx">targetPath</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="nx">sendCallback</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">stats</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">})</span>
+<span class="k">class</span> <span class="nx">ConnectAssets</span>
+  <span class="nv">constructor: </span><span class="nf">(@options) -&gt;</span>
+    <span class="vi">@cache = </span><span class="nx">connectCache</span><span class="p">()</span>
+    <span class="vi">@snockets = </span><span class="k">new</span> <span class="nx">Snockets</span> <span class="nv">src: </span><span class="nx">@options</span><span class="p">.</span><span class="nx">src</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>CSS and JS tag functions</h2>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">createHelpers: </span><span class="o">-&gt;</span>
+    <span class="nv">context = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">helperContext</span>
+    <span class="nv">expandRoute = </span><span class="nf">(shortRoute, ext, rootDir) -&gt;</span>
+      <span class="k">if</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
+        <span class="nx">unless</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
+          <span class="k">if</span> <span class="nx">shortRoute</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s1">&#39;/&#39;</span> <span class="k">then</span> <span class="nv">shortRoute = </span><span class="nx">shortRoute</span><span class="p">[</span><span class="mi">1</span><span class="p">..]</span>
+      <span class="k">else</span>
+        <span class="nv">shortRoute = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">rootDir</span><span class="p">,</span> <span class="nx">shortRoute</span>
+      <span class="k">if</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">ext</span><span class="p">,</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">ext</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">is</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="nx">shortRoute</span> <span class="o">+=</span> <span class="nx">ext</span>
+      <span class="nx">shortRoute</span>
 
-<span class="nv">serveCompiled = </span><span class="nf">(req, res, next, {compiler, ext, targetPath}) -&gt;</span>
-  <span class="nv">srcPath = </span><span class="nx">targetPath</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">compiler</span><span class="p">.</span><span class="nx">match</span><span class="p">,</span> <span class="s2">&quot;.#{ext}&quot;</span><span class="p">)</span>
-  <span class="nx">fs</span><span class="p">.</span><span class="nx">stat</span> <span class="nx">srcPath</span><span class="p">,</span> <span class="nf">(err, stats) -&gt;</span>
-    <span class="k">return</span> <span class="nx">next</span><span class="p">()</span> <span class="k">if</span> <span class="nx">err</span><span class="o">?</span><span class="p">.</span><span class="nx">code</span> <span class="o">is</span> <span class="s1">&#39;ENOENT&#39;</span>  <span class="c1"># no file, no problem!</span>
-    <span class="k">return</span> <span class="nx">next</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
-    <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
-      <span class="nx">unless</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span> <span class="o">&gt;</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">].</span><span class="nx">mtime</span>
-        <span class="k">if</span> <span class="nx">compiler</span> <span class="o">is</span> <span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span>  <span class="c1"># @import-ed files may have changed</span>
-          <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">].</span><span class="nv">str = </span><span class="nx">compiler</span><span class="p">.</span><span class="nx">compileStr</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">srcPath</span><span class="p">].</span><span class="nx">str</span><span class="p">,</span> <span class="nx">srcPath</span>
-        <span class="nv">str = </span><span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">].</span><span class="nx">str</span>
-        <span class="k">return</span> <span class="nx">sendFile</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">str</span><span class="p">,</span> <span class="nx">stats</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">}</span>
-    <span class="nx">compiler</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">srcPath</span><span class="p">,</span> <span class="nx">sendCallback</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">stats</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">})</span>
+    <span class="nv">context.css = </span><span class="p">(</span><span class="nx">route</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nv">route = </span><span class="nx">expandRoute</span> <span class="nx">route</span><span class="p">,</span> <span class="s1">&#39;.css&#39;</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">root</span>
+      <span class="nx">unless</span> <span class="nx">route</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
+        <span class="nv">route = </span><span class="nx">@compileCSS</span> <span class="nx">route</span>
+      <span class="s2">&quot;&lt;link rel=&#39;stylesheet&#39; href=&#39;#{route}&#39;&gt;&quot;</span>
+    <span class="nv">context.css.root = </span><span class="s1">&#39;css&#39;</span>
 
-<span class="nv">sendCallback = </span><span class="nf">(res, next, {static, stats, targetPath}) -&gt;</span>
-  <span class="nf">(err, str) -&gt;</span>
-    <span class="k">return</span> <span class="nx">next</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
-    <span class="nx">sendFile</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">,</span> <span class="p">{</span><span class="nx">str</span><span class="p">,</span> <span class="nx">static</span><span class="p">,</span> <span class="nx">stats</span><span class="p">,</span> <span class="nx">targetPath</span><span class="p">}</span>
+    <span class="nv">context.js = </span><span class="p">(</span><span class="nx">route</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nv">route = </span><span class="nx">expandRoute</span> <span class="nx">route</span><span class="p">,</span> <span class="s1">&#39;.js&#39;</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">js</span><span class="p">.</span><span class="nx">root</span>
+      <span class="k">if</span> <span class="nx">route</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
+        <span class="nv">routes = </span><span class="p">[</span><span class="nx">route</span><span class="p">]</span>
+      <span class="k">else</span>
+        <span class="nv">routes = </span><span class="nx">@compileJS</span> <span class="nx">route</span>
+      <span class="p">(</span><span class="s2">&quot;&lt;script src=&#39;#{r}&#39;&gt;&lt;/script&gt;&quot;</span> <span class="k">for</span> <span class="nx">r</span> <span class="k">in</span> <span class="nx">routes</span><span class="p">).</span><span class="nx">join</span> <span class="s1">&#39;\n&#39;</span>
+    <span class="nv">context.js.root = </span><span class="s1">&#39;js&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Synchronously compile Stylus to CSS (if needed) and return the route</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">compileCSS: </span><span class="nf">(route) -&gt;</span>
+    <span class="k">for</span> <span class="nx">ext</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;css&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="p">(</span><span class="nx">ext</span> <span class="k">for</span> <span class="nx">ext</span> <span class="k">of</span> <span class="nx">cssCompilers</span><span class="p">)</span>
+      <span class="nv">sourcePath = </span><span class="nx">stripExt</span><span class="p">(</span><span class="nx">route</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.#{ext}&quot;</span>
+      <span class="k">try</span>
+        <span class="nv">stats = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">@absPath</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">ext</span> <span class="o">is</span> <span class="s1">&#39;css&#39;</span>
+          <span class="k">if</span> <span class="nx">timeEq</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span><span class="p">,</span> <span class="nx">@cache</span><span class="p">.</span><span class="nx">map</span><span class="p">[</span><span class="nx">route</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
+            <span class="nv">css = </span><span class="nx">@cache</span><span class="p">.</span><span class="nx">map</span><span class="p">[</span><span class="nx">route</span><span class="p">].</span><span class="nx">data</span>
+          <span class="k">else</span>
+            <span class="nv">css = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">@absPath</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">)</span>
+        <span class="k">else</span>
+          <span class="nv">source = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">@absPath</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">),</span> <span class="s1">&#39;utf8&#39;</span>
+          <span class="nv">css = </span><span class="nx">cssCompilers</span><span class="p">[</span><span class="nx">ext</span><span class="p">].</span><span class="nx">compileSync</span> <span class="nx">@absPath</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">),</span> <span class="nx">source</span>
+        <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">build</span>
+          <span class="nv">filename = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">buildFilenamer</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">css</span>
+          <span class="nv">cacheFlags = expires: </span><span class="nx">@options</span><span class="p">.</span><span class="nx">buildsExpire</span><span class="p">,</span> <span class="nv">mtime: </span><span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span>
+          <span class="nx">@cache</span><span class="p">.</span><span class="nx">set</span> <span class="nx">filename</span><span class="p">,</span> <span class="nx">css</span><span class="p">,</span> <span class="nx">cacheFlags</span>
+          <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">buildDir</span>
+            <span class="nv">buildPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">buildDir</span><span class="p">,</span> <span class="nx">filename</span>
+            <span class="nx">mkdirRecursive</span> <span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">buildPath</span><span class="p">),</span> <span class="mi">0755</span><span class="p">,</span> <span class="o">-&gt;</span>
+              <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span> <span class="nx">buildPath</span><span class="p">,</span> <span class="nx">css</span>
+          <span class="k">return</span> <span class="s2">&quot;/#{filename}&quot;</span>
+        <span class="k">else</span>
+          <span class="nx">@cache</span><span class="p">.</span><span class="nx">set</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">css</span><span class="p">,</span> <span class="nv">mtime: </span><span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span>
+          <span class="k">return</span> <span class="s2">&quot;/#{route}&quot;</span>
+      <span class="k">catch</span> <span class="nx">e</span>
+        <span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">code</span> <span class="o">is</span> <span class="s1">&#39;ENOENT&#39;</span> <span class="k">then</span> <span class="k">continue</span> <span class="k">else</span> <span class="k">throw</span> <span class="nx">e</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;No file found for route #{route}&quot;</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Synchronously compile to JS with Snockets (if needed) and return route(s)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">compileJS: </span><span class="nf">(route) -&gt;</span>
+    <span class="k">for</span> <span class="nx">ext</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;js&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="p">(</span><span class="nx">ext</span> <span class="k">for</span> <span class="nx">ext</span> <span class="k">of</span> <span class="nx">jsCompilers</span><span class="p">)</span>
+      <span class="nv">sourcePath = </span><span class="nx">stripExt</span><span class="p">(</span><span class="nx">route</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.#{ext}&quot;</span>
+      <span class="k">try</span>
+        <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">build</span>
+          <span class="nv">snocketsFlags = minify: </span><span class="nx">@options</span><span class="p">.</span><span class="nx">minifyBuilds</span><span class="p">,</span> <span class="nv">async: </span><span class="kc">false</span>
+          <span class="nv">concatenation = </span><span class="nx">@snockets</span><span class="p">.</span><span class="nx">getConcatenation</span> <span class="nx">sourcePath</span><span class="p">,</span> <span class="nx">snocketsFlags</span>
+          <span class="nv">filename = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">buildFilenamer</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">concatenation</span>
+          <span class="nv">cacheFlags = expires: </span><span class="nx">@options</span><span class="p">.</span><span class="nx">buildsExpire</span>
+          <span class="nx">@cache</span><span class="p">.</span><span class="nx">set</span> <span class="nx">filename</span><span class="p">,</span> <span class="nx">concatenation</span><span class="p">,</span> <span class="nx">cacheFlags</span>
+          <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">buildDir</span>
+            <span class="nv">buildPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">buildDir</span><span class="p">,</span> <span class="nx">filename</span>
+            <span class="nx">mkdirRecursive</span> <span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">buildPath</span><span class="p">),</span> <span class="mi">0755</span><span class="p">,</span> <span class="nf">(err) -&gt;</span>
+              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
+              <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span> <span class="nx">buildPath</span><span class="p">,</span> <span class="nx">concatenation</span>
+          <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;/#{filename}&quot;</span><span class="p">]</span>
+        <span class="k">else</span>
+          <span class="nv">chain = </span><span class="nx">@snockets</span><span class="p">.</span><span class="nx">getCompiledChain</span> <span class="nx">sourcePath</span><span class="p">,</span> <span class="nv">async: </span><span class="kc">false</span>
+          <span class="k">return</span> <span class="nv">filenames = </span><span class="k">for</span> <span class="p">{</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">js</span><span class="p">}</span> <span class="k">in</span> <span class="nx">chain</span>
+            <span class="nv">filename = </span><span class="nx">stripExt</span><span class="p">(</span><span class="nx">filename</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.js&#39;</span>
+            <span class="nx">@cache</span><span class="p">.</span><span class="nx">set</span> <span class="nx">filename</span><span class="p">,</span> <span class="nx">js</span>
+            <span class="s2">&quot;/#{filename}&quot;</span>
+      <span class="k">catch</span> <span class="nx">e</span>
+        <span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">code</span> <span class="o">is</span> <span class="s1">&#39;ENOENT&#39;</span> <span class="k">then</span> <span class="k">continue</span> <span class="k">else</span> <span class="k">throw</span> <span class="nx">e</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;No file found for route #{route}&quot;</span><span class="p">)</span>
 
-<span class="nv">sendFile = </span><span class="nf">(res, next, {str, static, stats, targetPath}) -&gt;</span>
-  <span class="k">if</span> <span class="nx">stats</span> <span class="k">then</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">targetPath</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nv">mtime: </span><span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span><span class="p">,</span> <span class="nx">str</span><span class="p">}</span>
-  <span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="nx">mime</span><span class="p">.</span><span class="nx">lookup</span><span class="p">(</span><span class="nx">targetPath</span><span class="p">)</span>
-  <span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span> <span class="s1">&#39;Expires&#39;</span><span class="p">,</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">.</span><span class="nx">FAR_FUTURE_EXPIRES</span> <span class="k">if</span> <span class="nx">static</span>
-  <span class="nx">res</span><span class="p">.</span><span class="nx">end</span> <span class="nx">str</span>
+  <span class="nv">absPath: </span><span class="nf">(route) -&gt;</span>
+    <span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">route</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Asset compilers</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">exports.cssCompilers = cssCompilers =</span>
 
-<span class="nv">module.exports.compilers = compilers =</span>
-  <span class="nv">coffee:</span>
-    <span class="nv">match: </span><span class="sr">/\.js$/</span>
-    <span class="nv">compile: </span><span class="nf">(filePath, callback) -&gt;</span>
-      <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span> <span class="nx">filePath</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="nf">(err, coffee) -&gt;</span>
-        <span class="k">return</span> <span class="nx">callback</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
-        <span class="k">try</span>
-          <span class="nx">callback</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">compilers</span><span class="p">.</span><span class="nx">coffee</span><span class="p">.</span><span class="nx">compileStr</span> <span class="nx">coffee</span><span class="p">,</span> <span class="nx">filePath</span>
-        <span class="k">catch</span> <span class="nx">e</span>
-          <span class="nx">callback</span> <span class="nx">e</span>
-    <span class="nv">compileStr: </span><span class="nf">(coffee, filePath) -&gt;</span>
-      <span class="nx">libs</span><span class="p">.</span><span class="nx">CoffeeScript</span> <span class="o">or=</span> <span class="nx">require</span> <span class="s1">&#39;coffee-script&#39;</span>
-      <span class="nx">libs</span><span class="p">.</span><span class="nx">CoffeeScript</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">coffee</span><span class="p">,</span> <span class="p">{</span><span class="nv">filename: </span><span class="nx">filePath</span><span class="p">}</span>
   <span class="nv">styl:</span>
-    <span class="nv">match: </span><span class="sr">/\.css$/</span>
     <span class="nv">optionsMap: </span><span class="p">{}</span>
-    <span class="nv">compress: </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">is</span> <span class="s1">&#39;production&#39;</span>
-    <span class="nv">compile: </span><span class="nf">(filePath, callback) -&gt;</span>
-      <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span> <span class="nx">filePath</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="nf">(err, styl) -&gt;</span>
-        <span class="k">return</span> <span class="nx">callback</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
-        <span class="k">try</span>
-          <span class="nx">callback</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span><span class="p">.</span><span class="nx">compileStr</span> <span class="nx">styl</span><span class="p">,</span> <span class="nx">filePath</span>
-        <span class="k">catch</span> <span class="nx">e</span>
-          <span class="nx">callback</span> <span class="nx">e</span>
-    <span class="nv">compileStr: </span><span class="nf">(styl, filePath) -&gt;</span>
-      <span class="nv">options = </span><span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span><span class="p">.</span><span class="nx">optionsMap</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">?=</span>
-        <span class="nv">filename: </span><span class="nx">filePath</span>
-        <span class="nv">compress: </span><span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span><span class="p">.</span><span class="nx">compress</span>
+    <span class="nv">compileSync: </span><span class="nf">(sourcePath, source) -&gt;</span>
       <span class="nv">result = </span><span class="s1">&#39;&#39;</span>
-      <span class="nv">callback = </span><span class="nf">(err, css) -&gt;</span>
+      <span class="nv">callback = </span><span class="nf">(err, js) -&gt;</span>
         <span class="k">throw</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
-        <span class="nv">result = </span><span class="nx">css</span>
+        <span class="nv">result = </span><span class="nx">js</span>
+
       <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span> <span class="o">or=</span> <span class="nx">require</span> <span class="s1">&#39;stylus&#39;</span>
       <span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span> <span class="o">or=</span> <span class="k">try</span> <span class="nx">require</span> <span class="s1">&#39;nib&#39;</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="o">-&gt;</span><span class="p">)</span>
-      <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span><span class="p">(</span><span class="nx">styl</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+      <span class="nv">options = </span><span class="nx">@optionsMap</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span> <span class="o">?=</span>
+        <span class="nv">filename: </span><span class="nx">sourcePath</span>
+        <span class="nv">compress: </span><span class="nx">@compress</span>
+      <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span><span class="p">(</span><span class="nx">source</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span><span class="p">())</span>
           <span class="p">.</span><span class="nx">render</span> <span class="nx">callback</span>
-      <span class="nx">result</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Helper functions for templates</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">HEADER = </span><span class="err">///</span>
-<span class="p">(</span><span class="o">?:</span>
-  <span class="p">(</span><span class="err">\</span><span class="c1">#\#\# .* \#\#\#\n?) |</span>
-  <span class="p">(</span><span class="err">// .* \n?) |</span>
-  <span class="p">(</span><span class="err">\</span><span class="c1"># .* \n?)</span>
-<span class="p">)</span><span class="o">+</span>
-<span class="err">///</span>
+      <span class="nx">result</span>
 
-<span class="nv">DIRECTIVE = </span><span class="err">///</span>
-<span class="o">^</span><span class="p">[</span><span class="err">\</span><span class="nx">W</span><span class="p">]</span> <span class="o">*=</span> <span class="err">\</span><span class="nx">s</span><span class="o">*</span> <span class="p">(</span><span class="err">\</span><span class="nx">w</span><span class="o">+</span><span class="p">.</span><span class="o">*?</span><span class="p">)</span> <span class="p">(</span><span class="err">\</span><span class="o">*</span><span class="err">\\</span><span class="o">/</span><span class="p">)</span><span class="o">?</span><span class="nx">$</span>
-<span class="err">///gm</span>
+<span class="nv">exports.jsCompilers = jsCompilers = </span><span class="nx">Snockets</span><span class="p">.</span><span class="nx">compilers</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Regexes</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">BEFORE_DOT = </span><span class="sr">/([^.]*)(\..*)?$/</span>
 
-<span class="nv">EXPLICIT_PATH = </span><span class="sr">/^\/|^\.|:/</span>
-<span class="nv">REMOTE_PATH = </span><span class="sr">/\/\//</span>
+<span class="nv">EXPLICIT_PATH = </span><span class="sr">/^\/|\/\//</span>
 
-<span class="nv">relPath = </span><span class="nf">(root, fullPath) -&gt;</span>
-  <span class="nx">fullPath</span><span class="p">.</span><span class="nx">slice</span> <span class="nx">root</span><span class="p">.</span><span class="nx">length</span>
-
-<span class="nv">productionJsPath = </span><span class="nf">(filePath, str, options) -&gt;</span>
-  <span class="nv">suffix = </span><span class="nx">options</span><span class="p">.</span><span class="nx">suffixGenerator</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nx">str</span>
-  <span class="nx">filePath</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\.js$/</span><span class="p">,</span> <span class="s2">&quot;.complete#{suffix}.js&quot;</span>
-
-<span class="nv">createHelpers = </span><span class="nf">(options) -&gt;</span>
-  <span class="nv">context = </span><span class="nx">options</span><span class="p">.</span><span class="nx">helperContext</span>
-  <span class="nv">expandPath = </span><span class="nf">(filePath, ext, root) -&gt;</span>
-    <span class="nx">unless</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
-      <span class="nv">filePath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">root</span><span class="p">,</span> <span class="nx">filePath</span>
-    <span class="k">if</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">ext</span><span class="p">,</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">ext</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">is</span> <span class="o">-</span><span class="mi">1</span>
-      <span class="nx">filePath</span> <span class="o">+=</span> <span class="nx">ext</span>
+<span class="nv">REMOTE_PATH = </span><span class="sr">/\/\//</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Utility functions</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">stripExt = </span><span class="nf">(filePath) -&gt;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nv">lastDotIndex = </span><span class="nx">filePath</span><span class="p">.</span><span class="nx">lastIndexOf</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+    <span class="nx">filePath</span><span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">lastDotIndex</span><span class="p">]</span>
+  <span class="k">else</span>
     <span class="nx">filePath</span>
 
-  <span class="nv">cssExt = </span><span class="s1">&#39;.css&#39;</span>
-  <span class="nv">context.css = </span><span class="nf">(cssPath) -&gt;</span>
-    <span class="nv">cssUrl = </span><span class="nx">expandPath</span> <span class="nx">cssPath</span><span class="p">,</span> <span class="nx">cssExt</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">css</span><span class="p">.</span><span class="nx">root</span>
-    <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="o">?</span> <span class="o">and</span> <span class="o">!</span><span class="nx">cssPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
-      <span class="nv">filePath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">cssUrl</span>
-      <span class="nx">readFileOrCompile</span> <span class="nx">filePath</span>
-      <span class="nv">suffix = </span><span class="nx">options</span><span class="p">.</span><span class="nx">suffixGenerator</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">str</span>
-      <span class="nv">staticPath = </span><span class="nx">cssUrl</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/\.css$/</span><span class="p">,</span> <span class="s2">&quot;#{suffix}.css&quot;</span>
-      <span class="k">if</span> <span class="nx">suffix</span> <span class="o">isnt</span> <span class="s1">&#39;&#39;</span>
-        <span class="nx">cache</span><span class="p">[</span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">staticPath</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nv">str: </span><span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">str</span><span class="p">,</span> <span class="nv">static: </span><span class="kc">true</span><span class="p">}</span>
-      <span class="s2">&quot;&lt;link rel=&#39;stylesheet&#39; href=&#39;#{staticPath}&#39;&gt;&quot;</span>
-    <span class="k">else</span>
-      <span class="s2">&quot;&lt;link rel=&#39;stylesheet&#39; href=&#39;#{cssUrl}&#39;&gt;&quot;</span>
-  <span class="nv">context.css.root = </span><span class="s1">&#39;/css&#39;</span>
+<span class="nv">cssExts = </span><span class="o">-&gt;</span>
+  <span class="p">(</span><span class="s2">&quot;.#{ext}&quot;</span> <span class="k">for</span> <span class="nx">ext</span> <span class="k">of</span> <span class="nx">cssCompilers</span><span class="p">).</span><span class="nx">concat</span> <span class="s1">&#39;.css&#39;</span>
 
-  <span class="nv">jsExt = </span><span class="s1">&#39;.js&#39;</span>
-  <span class="nv">context.js = </span><span class="nf">(jsPath) -&gt;</span>
-    <span class="nv">jsUrl = </span><span class="nx">expandPath</span> <span class="nx">jsPath</span><span class="p">,</span> <span class="nx">jsExt</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">js</span><span class="p">.</span><span class="nx">root</span>
-    <span class="k">if</span> <span class="nx">context</span><span class="p">.</span><span class="nx">js</span><span class="p">.</span><span class="nx">concatenate</span>
-      <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="o">?</span> <span class="o">and</span> <span class="o">!</span><span class="nx">jsUrl</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
-        <span class="nv">filePath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">jsUrl</span>
-        <span class="nx">updateDependenciesSync</span> <span class="nx">filePath</span>
-        <span class="nv">str = </span><span class="nx">concatenate</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nx">options</span>
-        <span class="nv">str = </span><span class="nx">minify</span> <span class="nx">str</span>
-        <span class="nv">packagePath = </span><span class="nx">productionJsPath</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nx">str</span><span class="p">,</span> <span class="nx">options</span>
-        <span class="nx">cache</span><span class="p">[</span><span class="nx">packagePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nx">str</span><span class="p">,</span> <span class="nv">static: </span><span class="kc">true</span><span class="p">}</span>
-        <span class="nv">tag = </span><span class="s2">&quot;&lt;script src=&#39;#{relPath options.src, packagePath}&#39;&gt;&lt;/script&gt;&quot;</span>
-      <span class="k">else</span>
-        <span class="nv">tag = </span><span class="s2">&quot;&lt;script src=&#39;#{jsUrl}&#39;&gt;&lt;/script&gt;&quot;</span>
-    <span class="k">else</span>
-      <span class="nv">dependencyTags = </span><span class="s1">&#39;&#39;</span>
-      <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="o">?</span> <span class="o">and</span> <span class="o">!</span><span class="nx">jsUrl</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
-        <span class="nv">filePath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">jsUrl</span>
-        <span class="nx">updateDependenciesSync</span> <span class="nx">filePath</span>
-        <span class="nv">tag = </span><span class="nx">generateTags</span><span class="p">(</span><span class="nx">filePath</span><span class="p">,</span> <span class="nx">options</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">)</span>
-      <span class="k">else</span>
-        <span class="nv">tag = </span><span class="s2">&quot;&lt;script src=&#39;#{jsUrl}&#39;&gt;&lt;/script&gt;&quot;</span>
-    <span class="nx">tag</span>
-  <span class="nv">context.js.root = </span><span class="s1">&#39;/js&#39;</span>
-  <span class="nv">context.js.concatenate = </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">is</span> <span class="s1">&#39;production&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>Dependency management</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">updateDependenciesSync = </span><span class="nf">(filePath) -&gt;</span>
-  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">?=</span> <span class="p">[]</span>
-  <span class="k">return</span> <span class="k">if</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
+<span class="nv">timeEq = </span><span class="nf">(date1, date2) -&gt;</span>
+  <span class="nx">date1</span><span class="o">?</span> <span class="o">and</span> <span class="nx">date2</span><span class="o">?</span> <span class="o">and</span> <span class="nx">date1</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">is</span> <span class="nx">date2</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span>
 
-  <span class="nv">oldTime = </span><span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
-  <span class="nv">directivePath = </span><span class="nx">filePath</span>
-  <span class="nx">readFileOrCompile</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nf">(sourcePath) -&gt;</span> <span class="nv">directivePath = </span><span class="nx">sourcePath</span>
-  <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">mtime</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">is</span> <span class="nx">oldTime</span><span class="o">?</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span>
-    <span class="nx">updateDependenciesSync</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="k">for</span> <span class="nx">p</span> <span class="k">in</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
-    <span class="k">return</span>
+<span class="nv">mkdirRecursive = </span><span class="nf">(dir, mode, callback) -&gt;</span>
+  <span class="nv">pathParts = </span><span class="nx">path</span><span class="p">.</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">dir</span><span class="p">).</span><span class="nx">split</span> <span class="s1">&#39;/&#39;</span>
+  <span class="nx">path</span><span class="p">.</span><span class="nx">exists</span> <span class="nx">dir</span><span class="p">,</span> <span class="nf">(exists) -&gt;</span>
+    <span class="k">return</span> <span class="nx">callback</span> <span class="kc">null</span> <span class="k">if</span> <span class="nx">exists</span>
+    <span class="nx">mkdirRecursive</span> <span class="nx">pathParts</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">),</span> <span class="nx">mode</span><span class="p">,</span> <span class="nf">(err) -&gt;</span>
+      <span class="k">return</span> <span class="nx">callback</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span> <span class="o">and</span> <span class="nx">err</span><span class="p">.</span><span class="nx">errno</span> <span class="o">isnt</span> <span class="nx">process</span><span class="p">.</span><span class="nx">EEXIST</span>
+      <span class="nx">fs</span><span class="p">.</span><span class="nx">mkdir</span> <span class="nx">dir</span><span class="p">,</span> <span class="nx">mode</span><span class="p">,</span> <span class="nx">callback</span>
 
-  <span class="nv">jsCompilerExts = </span><span class="s2">&quot;.#{ext}&quot;</span> <span class="k">for</span> <span class="nx">ext</span><span class="p">,</span> <span class="nx">c</span> <span class="k">of</span> <span class="nx">compilers</span> <span class="k">when</span> <span class="nx">c</span><span class="p">.</span><span class="nx">match</span> <span class="s1">&#39;.js&#39;</span>
-  <span class="nv">jsExtList = </span><span class="p">[</span><span class="s1">&#39;.js&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">jsCompilerExts</span>
-
-  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-  <span class="k">for</span> <span class="nx">directive</span> <span class="k">in</span> <span class="nx">directivesInCode</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">directivePath</span><span class="p">].</span><span class="nx">str</span>
-    <span class="nv">words = </span><span class="nx">directive</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[&#39;&quot;]/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">split</span> <span class="sr">/\s+/</span>
-    <span class="k">switch</span> <span class="nx">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-      <span class="k">when</span> <span class="s1">&#39;require&#39;</span>
-        <span class="k">for</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">words</span><span class="p">[</span><span class="mi">1</span><span class="p">..]</span>
-          <span class="k">if</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="nx">depPath</span><span class="p">)</span> <span class="o">isnt</span> <span class="s1">&#39;.js&#39;</span> <span class="k">then</span> <span class="nx">depPath</span> <span class="o">+=</span> <span class="s1">&#39;.js&#39;</span>
-          <span class="nx">unless</span> <span class="nx">depPath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">EXPLICIT_PATH</span>
-            <span class="nv">depPath = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">filePath</span><span class="p">,</span> <span class="s1">&#39;../&#39;</span><span class="p">,</span> <span class="nx">depPath</span>
-          <span class="k">if</span> <span class="nx">depPath</span> <span class="o">is</span> <span class="nx">filePath</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Script tries to require itself: #{filePath}&quot;</span><span class="p">)</span>
-          <span class="k">continue</span> <span class="k">if</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
-          <span class="nx">updateDependenciesSync</span> <span class="nx">depPath</span>
-          <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">push</span> <span class="nx">depPath</span>
-      <span class="k">when</span> <span class="s1">&#39;require_tree&#39;</span>
-        <span class="nv">requireTree = </span><span class="nf">(parentDir, paths) -&gt;</span>
-          <span class="k">for</span> <span class="nx">p</span> <span class="k">in</span> <span class="nx">paths</span>
-            <span class="nv">p = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">parentDir</span><span class="p">,</span> <span class="nx">p</span>
-            <span class="k">continue</span> <span class="k">if</span> <span class="nx">p</span> <span class="o">is</span> <span class="nx">filePath</span>
-            <span class="nv">stats = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">p</span>
-            <span class="k">if</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">isFile</span><span class="p">()</span>
-              <span class="k">continue</span> <span class="nx">unless</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="k">in</span> <span class="nx">jsExtList</span>
-              <span class="k">if</span> <span class="nx">path</span><span class="p">.</span><span class="nx">extname</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="o">isnt</span> <span class="s1">&#39;.js&#39;</span> <span class="k">then</span> <span class="nv">p = </span><span class="nx">p</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/[^.]+$/</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span>
-              <span class="k">continue</span> <span class="k">if</span> <span class="nx">p</span> <span class="o">is</span> <span class="nx">filePath</span>
-              <span class="k">continue</span> <span class="k">if</span> <span class="nx">p</span> <span class="k">in</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
-              <span class="nx">updateDependenciesSync</span> <span class="nx">p</span>
-              <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">push</span> <span class="nx">p</span>
-            <span class="k">else</span> <span class="k">if</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">isDirectory</span><span class="p">()</span>
-              <span class="nx">requireTree</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
-        <span class="nx">requireTree</span> <span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">filePath</span><span class="p">),</span> <span class="nx">words</span><span class="p">[</span><span class="mi">1</span><span class="p">..]</span>
-
-  <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
-
-<span class="nv">readFileOrCompile = </span><span class="nf">(filePath, compileCallback) -&gt;</span>
-  <span class="k">try</span>
-    <span class="nv">stats = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">filePath</span>
-    <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
-      <span class="k">return</span> <span class="nx">stats</span> <span class="nx">unless</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span> <span class="o">&gt;</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">mtime</span>
-    <span class="nv">str = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">filePath</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span>
-    <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nv">mtime: </span><span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span><span class="p">,</span> <span class="nx">str</span><span class="p">}</span>
-  <span class="k">catch</span> <span class="nx">e</span>
-    <span class="k">for</span> <span class="nx">ext</span><span class="p">,</span> <span class="nx">compiler</span> <span class="k">of</span> <span class="nx">compilers</span> <span class="k">when</span> <span class="nx">compiler</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">filePath</span><span class="p">)</span>
-      <span class="k">try</span>
-        <span class="nv">sourcePath = </span><span class="nx">filePath</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">compiler</span><span class="p">.</span><span class="nx">match</span><span class="p">,</span> <span class="s2">&quot;.#{ext}&quot;</span><span class="p">)</span>
-        <span class="nv">stats = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">sourcePath</span>
-        <span class="k">if</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
-          <span class="nx">unless</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span> <span class="o">&gt;</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
-            <span class="k">if</span> <span class="nx">compiler</span> <span class="o">is</span> <span class="nx">compilers</span><span class="p">.</span><span class="nx">styl</span>  <span class="c1"># @import-ed files may have changed</span>
-              <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nv">str = </span><span class="nx">compiler</span><span class="p">.</span><span class="nx">compileStr</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">].</span><span class="nx">str</span><span class="p">,</span> <span class="nx">sourcePath</span>
-            <span class="nx">compileCallback</span><span class="o">?</span> <span class="nx">sourcePath</span>
-            <span class="k">break</span>
-        <span class="nv">str = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
-        <span class="nx">cache</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nv">mtime: </span><span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span><span class="p">,</span> <span class="nx">str</span><span class="p">}</span>
-      <span class="k">catch</span> <span class="nx">ex</span>
-        <span class="k">continue</span>
-      <span class="nv">str = </span><span class="nx">compiler</span><span class="p">.</span><span class="nx">compileStr</span> <span class="nx">str</span><span class="p">,</span> <span class="nx">sourcePath</span>
-      <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nv">mtime: </span><span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span><span class="p">,</span> <span class="nx">str</span><span class="p">}</span>
-      <span class="nx">compileCallback</span><span class="o">?</span> <span class="nx">sourcePath</span>
-      <span class="k">break</span>
-  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;File not found: #{filePath}&quot;</span><span class="p">)</span> <span class="nx">unless</span> <span class="nx">stats</span>
-  <span class="nx">stats</span>
-
-<span class="nv">directivesInCode = </span><span class="nf">(code) -&gt;</span>
-  <span class="k">return</span> <span class="p">[]</span> <span class="nx">unless</span> <span class="nv">match = </span><span class="nx">HEADER</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">code</span><span class="p">)</span>
-  <span class="nv">header = </span><span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-  <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">while</span> <span class="nv">match = </span><span class="nx">DIRECTIVE</span><span class="p">.</span><span class="nx">exec</span> <span class="nx">header</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>recurse through the dependency graph, avoiding duplicates and cycles</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">collectDependencies = </span><span class="nf">(filePath, traversedPaths = [], traversedBranch = []) -&gt;</span>
-  <span class="k">for</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">dependencies</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">reverse</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">traversedBranch</span>          <span class="c1"># cycle</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Cyclic dependency from #{filePath} to #{depPath}&quot;</span><span class="p">)</span>
-    <span class="k">continue</span> <span class="k">if</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">traversedPaths</span>  <span class="c1"># duplicate</span>
-    <span class="nx">traversedPaths</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">depPath</span>
-    <span class="nx">traversedBranch</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">depPath</span>
-    <span class="nx">collectDependencies</span> <span class="nx">depPath</span><span class="p">,</span> <span class="nx">traversedPaths</span><span class="p">,</span> <span class="nx">traversedBranch</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-  <span class="nx">traversedPaths</span>
-
-<span class="nv">generateTags = </span><span class="nf">(filePath, options) -&gt;</span>
-  <span class="k">if</span> <span class="nx">filePath</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
-    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;&lt;script src=&#39;#{filePath}&#39;&gt;&lt;/script&gt;&quot;</span><span class="p">]</span>
-  <span class="nv">tags = </span><span class="k">for</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">collectDependencies</span><span class="p">(</span><span class="nx">filePath</span><span class="p">).</span><span class="nx">concat</span> <span class="p">[</span><span class="nx">filePath</span><span class="p">]</span>
-    <span class="nv">outputPath = </span><span class="nx">relPath</span> <span class="nx">options</span><span class="p">.</span><span class="nx">src</span><span class="p">,</span> <span class="nx">depPath</span>
-    <span class="nv">suffix = </span><span class="nx">options</span><span class="p">.</span><span class="nx">suffixGenerator</span> <span class="nx">filePath</span><span class="p">,</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">str</span>
-    <span class="k">if</span> <span class="nx">suffix</span> <span class="o">isnt</span> <span class="s1">&#39;&#39;</span>
-      <span class="nx">cache</span><span class="p">[</span><span class="s2">&quot;#{outputPath}#{suffix}&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nx">str</span><span class="p">,</span> <span class="nv">static: </span><span class="kc">true</span><span class="p">}</span>
-    <span class="s2">&quot;&lt;script src=&#39;#{outputPath}#{suffix}&#39;&gt;&lt;/script&gt;&quot;</span>
-  <span class="nx">tags</span>
-
-<span class="nv">concatenate = </span><span class="nf">(filePath, options) -&gt;</span>
-  <span class="nv">script = </span><span class="s1">&#39;&#39;</span>
-  <span class="k">for</span> <span class="nx">depPath</span> <span class="k">in</span> <span class="nx">collectDependencies</span><span class="p">(</span><span class="nx">filePath</span><span class="p">)</span>
-    <span class="nx">script</span> <span class="o">+=</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">depPath</span><span class="p">].</span><span class="nx">str</span> <span class="o">+</span> <span class="s1">&#39;\n&#39;</span>
-  <span class="nx">script</span> <span class="o">+=</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">filePath</span><span class="p">].</span><span class="nx">str</span>
-
-<span class="nv">minify = </span><span class="nf">(js) -&gt;</span>
-  <span class="nv">jsp = </span><span class="nx">uglify</span><span class="p">.</span><span class="nx">parser</span>
-  <span class="nv">pro = </span><span class="nx">uglify</span><span class="p">.</span><span class="nx">uglify</span>
-  <span class="nv">ast = </span><span class="nx">jsp</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">js</span>
-  <span class="nv">ast = </span><span class="nx">pro</span><span class="p">.</span><span class="nx">ast_mangle</span> <span class="nx">ast</span>
-  <span class="nv">ast = </span><span class="nx">pro</span><span class="p">.</span><span class="nx">ast_squeeze</span> <span class="nx">ast</span>
-  <span class="nx">pro</span><span class="p">.</span><span class="nx">gen_code</span> <span class="nx">ast</span>
-
-<span class="nv">md5Suffix = </span><span class="nf">(filePath, str) -&gt;</span>
+<span class="nv">exports.md5Filenamer = md5Filenamer = </span><span class="nf">(filename, code) -&gt;</span>
   <span class="nv">hash = </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">createHash</span><span class="p">(</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
-  <span class="nx">hash</span><span class="p">.</span><span class="nx">update</span> <span class="nx">str</span>
+  <span class="nx">hash</span><span class="p">.</span><span class="nx">update</span> <span class="nx">code</span>
   <span class="nv">md5Hex = </span><span class="nx">hash</span><span class="p">.</span><span class="nx">digest</span> <span class="s1">&#39;hex&#39;</span>
-  <span class="s2">&quot;-#{md5Hex}&quot;</span>
+  <span class="nv">ext = </span><span class="nx">path</span><span class="p">.</span><span class="nx">extname</span> <span class="nx">filename</span>
+  <span class="s2">&quot;#{stripExt filename}-#{md5Hex}#{ext}&quot;</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
