@@ -31,6 +31,7 @@ class ConnectAssets
   constructor: (@options) ->
     @cache = connectCache()
     @snockets = new Snockets src: @options.src
+    @jsFilenames = {}
 
   # ## CSS and JS tag functions
   createHelpers: ->
@@ -97,16 +98,18 @@ class ConnectAssets
       sourcePath = stripExt(route) + ".#{ext}"
       try
         if @options.build
-          snocketsFlags = minify: @options.minifyBuilds, async: false
-          concatenation = @snockets.getConcatenation sourcePath, snocketsFlags
-          filename = @options.buildFilenamer route, concatenation
-          cacheFlags = expires: @options.buildsExpire
-          @cache.set filename, concatenation, cacheFlags
-          if @options.buildDir
-            buildPath = path.join process.cwd(), @options.buildDir, filename
-            mkdirRecursive path.dirname(buildPath), 0755, (err) ->
-              console.log err if err
-              fs.writeFile buildPath, concatenation
+          unless filename = @jsFilenames[route]
+            snocketsFlags = minify: @options.minifyBuilds, async: false
+            concatenation = @snockets.getConcatenation sourcePath, snocketsFlags
+            filename = @options.buildFilenamer route, concatenation
+            cacheFlags = expires: @options.buildsExpire
+            @cache.set filename, concatenation, cacheFlags
+            @jsFilenames[route] = filename
+            if @options.buildDir
+              buildPath = path.join process.cwd(), @options.buildDir, filename
+              mkdirRecursive path.dirname(buildPath), 0755, (err) ->
+                console.log err if err
+                fs.writeFile buildPath, concatenation
           return ["/#{filename}"]
         else
           chain = @snockets.getCompiledChain sourcePath, async: false
