@@ -136,6 +136,17 @@ exports['Script files can `require` (in non-production mode)'] = (test) ->
   test.equals js('dependent'), jsTags
   test.done()
 
+exports['Script source files can contain nothing but directives'] = (test) ->
+  js('dependent')
+  request 'http://localhost:3588/js/dependent.js', (err, res, body) ->
+    throw err if err
+    test.equals body, '''
+    (function() {
+
+    }).call(this);\n
+    '''
+    test.done()
+
 exports['Script files can `require_tree` a single folder'] = (test) ->
   jsTags = """<script src='/js/subdir/nested/hobbits.js'></script>
   <script src='/js/tree-dependent.js'></script>
