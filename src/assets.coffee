@@ -9,7 +9,6 @@ path          = require 'path'
 _             = require 'underscore'
 {parse}       = require 'url'
 
-connectAssets = null
 libs = {}
 
 module.exports = (options = {}) ->
