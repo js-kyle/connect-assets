@@ -31,6 +31,10 @@ class ConnectAssets
     @cache = connectCache()
     @snockets = new Snockets src: @options.src
 
+    # Things that we must cache to work efficiently with CSS compilers
+    @cssSourceFiles = {}
+    @compiledCss    = {}
+
   # ## CSS and JS tag functions
   createHelpers: ->
     context = @options.helperContext
@@ -67,16 +71,23 @@ class ConnectAssets
       try
         stats = fs.statSync @absPath(sourcePath)
         if ext is 'css'
-          if timeEq stats.mtime, @cache.map[route]?.mtime
+          {mtime} = stats
+          if timeEq mtime, @cache.map[route]?.mtime
             css = @cache.map[route].data
           else
             css = fs.readFileSync @absPath(sourcePath)
         else
           source = fs.readFileSync @absPath(sourcePath), 'utf8'
           css = cssCompilers[ext].compileSync @absPath(sourcePath), source
+          if css is @compiledCss[sourcePath]?.toString 'utf8'
+            mtime = @compiledCss[sourcePath].mtime
+          else
+            mtime = new Date
+            @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
+
         if @options.build
           filename = @options.buildFilenamer route, css
-          cacheFlags = expires: @options.buildsExpire, mtime: stats.mtime
+          cacheFlags = {expires: @options.buildsExpire, mtime}
           @cache.set filename, css, cacheFlags
           if @options.buildDir
             buildPath = path.join process.cwd(), @options.buildDir, filename
@@ -84,7 +95,7 @@ class ConnectAssets
               fs.writeFile buildPath, css
           return "/#{filename}"
         else
-          @cache.set route, css, mtime: stats.mtime
+          @cache.set route, css, {mtime}
           return "/#{route}"
       catch e
         if e.code is 'ENOENT' then continue else throw e
