@@ -2,7 +2,7 @@
   "author": "Trevor Burnham (http://trevorburnham.com)",
   "name": "connect-assets",
   "description": "A Rails-like asset pipeline for Connect",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "homepage": "http://github.com/TrevorBurnham/connect-assets",
   "repository": {
     "type": "git",
