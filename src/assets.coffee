@@ -79,7 +79,7 @@ class ConnectAssets
         else
           source = fs.readFileSync @absPath(sourcePath), 'utf8'
           css = cssCompilers[ext].compileSync @absPath(sourcePath), source
-          if css is @compiledCss[sourcePath]?.toString 'utf8'
+          if css is @compiledCss[sourcePath]?.data.toString 'utf8'
             mtime = @compiledCss[sourcePath].mtime
           else
             mtime = new Date
