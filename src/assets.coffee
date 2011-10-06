@@ -77,7 +77,12 @@ class ConnectAssets
           else
             css = fs.readFileSync @absPath(sourcePath)
         else
-          source = fs.readFileSync @absPath(sourcePath), 'utf8'
+          if timeEq stats.mtime, @cssSourceFiles[sourcePath]?.mtime
+            source = @cssSourceFiles[sourcePath].data.toString 'utf8'
+          else
+            data = fs.readFileSync @absPath(sourcePath)
+            @cssSourceFiles[sourcePath] = {data, mtime: stats.mtime}
+            source = data.toString 'utf8'
           css = cssCompilers[ext].compileSync @absPath(sourcePath), source
           if css is @compiledCss[sourcePath]?.data.toString 'utf8'
             mtime = @compiledCss[sourcePath].mtime
