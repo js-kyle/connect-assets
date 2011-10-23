@@ -12,6 +12,7 @@ _             = require 'underscore'
 libs = {}
 
 module.exports = (options = {}) ->
+  return connectAssets if connectAssets
   options.src ?= 'assets'
   options.helperContext ?= global
   if process.env.NODE_ENV is 'production'
@@ -41,7 +42,9 @@ class ConnectAssets
   # ## CSS and JS tag functions
   createHelpers: ->
     context = @options.helperContext
+    srcIsRemote = @options.src.match REMOTE_PATH
     expandRoute = (shortRoute, ext, rootDir) ->
+      context.js.root = context.js.root[1..] if context.js.root[0] is '/'
       if shortRoute.match EXPLICIT_PATH
         unless shortRoute.match REMOTE_PATH
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
@@ -62,6 +65,8 @@ class ConnectAssets
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
+      else if srcIsRemote
+        routes = ["#{@options.src}/#{route}"]
       else
         routes = @compileJS route
       ("<script src='#{r}'></script>" for r in routes).join '\n'
