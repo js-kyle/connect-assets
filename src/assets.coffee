@@ -175,7 +175,7 @@ EXPLICIT_PATH = /^\/|\/\//
 
 REMOTE_PATH = /\/\//
 
-# Utility functions
+# ## Utility functions
 stripExt = (filePath) ->
   if (lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[0...lastDotIndex]
