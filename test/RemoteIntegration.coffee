@@ -4,7 +4,6 @@ request = require 'request'
 app = require('connect').createServer()
 assets = require('../lib/assets.js')
 app.use assets src: 'http://mycdn.com'
-app.listen 3590
 
 exports['options.src can be a URL'] = (test) ->
   jsTag = "<script src='http://mycdn.com/js/jquery.min.js'></script>"
