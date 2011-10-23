@@ -37,6 +37,7 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
       suiteNames = [
         'DevelopmentIntegration'
         'ProductionIntegration'
+        'AbsoluteIntegration'
         'RemoteIntegration'
       ]
       suiteIndex = 0

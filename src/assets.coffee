@@ -148,7 +148,10 @@ class ConnectAssets
     throw new Error("No file found for route #{route}")
 
   absPath: (route) ->
-    path.join process.cwd(), @options.src, route
+    if @options.src.match EXPLICIT_PATH
+      path.join @options.src, route
+    else
+      path.join process.cwd(), @options.src, route
 
 # ## Asset compilers
 exports.cssCompilers = cssCompilers =
