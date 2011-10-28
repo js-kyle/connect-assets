@@ -23,7 +23,7 @@ module.exports = (options = {}) ->
   options.buildsExpire ?= false
   options.minifyBuilds ?= true
 
-  connectAssets = new ConnectAssets options
+  connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
   connectAssets.cache.middleware
 
@@ -79,10 +79,10 @@ class ConnectAssets
       try
         stats = fs.statSync @absPath(sourcePath)
         if ext is 'css'
-          {mtime} = stats
           if timeEq mtime, @cache.map[route]?.mtime
-            css = @cache.map[route].data
+            alreadyCached = true
           else
+            {mtime} = stats
             css = fs.readFileSync @absPath(sourcePath)
         else
           if timeEq stats.mtime, @cssSourceFiles[sourcePath]?.mtime
@@ -93,13 +93,19 @@ class ConnectAssets
             source = data.toString 'utf8'
           css = cssCompilers[ext].compileSync @absPath(sourcePath), source
           if css is @compiledCss[sourcePath]?.data.toString 'utf8'
-            mtime = @compiledCss[sourcePath].mtime
+            alreadyCached = true
           else
             mtime = new Date
             @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
 
-        if @options.build
+        if alreadyCached and @options.build
+          filename = @buildFilenames[sourcePath]
+          return "/#{filename}"
+        else if alreadyCached
+          return "/#{route}"
+        else if @options.build
           filename = @options.buildFilenamer route, css
+          @buildFilenames[sourcePath] = filename
           cacheFlags = {expires: @options.buildsExpire, mtime}
           @cache.set filename, css, cacheFlags
           if @options.buildDir

@@ -23,6 +23,24 @@ exports['Compiled stylesheets work from absolute options.src'] = (test) ->
     test.equals body, expectedBody
     test.done()
 
+exports['Single .js files work from absolute options.src'] = (test) ->
+  test.equals js('js-dependency'), "<script src='/js/js-dependency.js'></script>"
+
+  request 'http://localhost:3590/js/js-dependency.js', (err, res, body) ->
+    throw err if err
+    expectedBody = '// Admit it: You need me.'
+    test.equals body, expectedBody
+    test.done()
+
+exports['Single .coffee files work from absolute options.src'] = (test) ->
+  test.equals js('a'), "<script src='/js/a.js'></script>"
+
+  request 'http://localhost:3590/js/a.js', (err, res, body) ->
+    throw err if err
+    expectedBody = '(function() {\n  alert(\'I require nothing!\');\n}).call(this);\n'
+    test.equals body, expectedBody
+    test.done()
+
 exports['JS dependencies work from absolute options.src'] = (test) ->
   jsTags = """<script src='/js/subdir/nested/hobbits.js'></script>
   <script src='/js/tree-dependent.js'></script>

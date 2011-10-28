@@ -21,7 +21,7 @@
   <span class="nx">options</span><span class="p">.</span><span class="nx">buildsExpire</span> <span class="o">?=</span> <span class="kc">false</span>
   <span class="nx">options</span><span class="p">.</span><span class="nx">minifyBuilds</span> <span class="o">?=</span> <span class="kc">true</span>
 
-  <span class="nv">connectAssets = </span><span class="k">new</span> <span class="nx">ConnectAssets</span> <span class="nx">options</span>
+  <span class="nv">connectAssets = module.exports.instance = </span><span class="k">new</span> <span class="nx">ConnectAssets</span> <span class="nx">options</span>
   <span class="nx">connectAssets</span><span class="p">.</span><span class="nx">createHelpers</span> <span class="nx">options</span>
   <span class="nx">connectAssets</span><span class="p">.</span><span class="nx">cache</span><span class="p">.</span><span class="nx">middleware</span>
 
@@ -65,10 +65,10 @@
       <span class="k">try</span>
         <span class="nv">stats = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span> <span class="nx">@absPath</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">)</span>
         <span class="k">if</span> <span class="nx">ext</span> <span class="o">is</span> <span class="s1">&#39;css&#39;</span>
-          <span class="p">{</span><span class="nx">mtime</span><span class="p">}</span> <span class="o">=</span> <span class="nx">stats</span>
           <span class="k">if</span> <span class="nx">timeEq</span> <span class="nx">mtime</span><span class="p">,</span> <span class="nx">@cache</span><span class="p">.</span><span class="nx">map</span><span class="p">[</span><span class="nx">route</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
-            <span class="nv">css = </span><span class="nx">@cache</span><span class="p">.</span><span class="nx">map</span><span class="p">[</span><span class="nx">route</span><span class="p">].</span><span class="nx">data</span>
+            <span class="nv">alreadyCached = </span><span class="kc">true</span>
           <span class="k">else</span>
+            <span class="p">{</span><span class="nx">mtime</span><span class="p">}</span> <span class="o">=</span> <span class="nx">stats</span>
             <span class="nv">css = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">@absPath</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">)</span>
         <span class="k">else</span>
           <span class="k">if</span> <span class="nx">timeEq</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">mtime</span><span class="p">,</span> <span class="nx">@cssSourceFiles</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">mtime</span>
@@ -79,13 +79,19 @@
             <span class="nv">source = </span><span class="nx">data</span><span class="p">.</span><span class="nx">toString</span> <span class="s1">&#39;utf8&#39;</span>
           <span class="nv">css = </span><span class="nx">cssCompilers</span><span class="p">[</span><span class="nx">ext</span><span class="p">].</span><span class="nx">compileSync</span> <span class="nx">@absPath</span><span class="p">(</span><span class="nx">sourcePath</span><span class="p">),</span> <span class="nx">source</span>
           <span class="k">if</span> <span class="nx">css</span> <span class="o">is</span> <span class="nx">@compiledCss</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">toString</span> <span class="s1">&#39;utf8&#39;</span>
-            <span class="nv">mtime = </span><span class="nx">@compiledCss</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">].</span><span class="nx">mtime</span>
+            <span class="nv">alreadyCached = </span><span class="kc">true</span>
           <span class="k">else</span>
             <span class="nv">mtime = </span><span class="k">new</span> <span class="nb">Date</span>
             <span class="nx">@compiledCss</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nv">data: </span><span class="k">new</span> <span class="nx">Buffer</span><span class="p">(</span><span class="nx">css</span><span class="p">),</span> <span class="nx">mtime</span><span class="p">}</span>
 
-        <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">build</span>
+        <span class="k">if</span> <span class="nx">alreadyCached</span> <span class="o">and</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">build</span>
+          <span class="nv">filename = </span><span class="nx">@buildFilenames</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span>
+          <span class="k">return</span> <span class="s2">&quot;/#{filename}&quot;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">alreadyCached</span>
+          <span class="k">return</span> <span class="s2">&quot;/#{route}&quot;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">build</span>
           <span class="nv">filename = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">buildFilenamer</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">css</span>
+          <span class="nx">@buildFilenames</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span> <span class="o">=</span> <span class="nx">filename</span>
           <span class="nv">cacheFlags = </span><span class="p">{</span><span class="nv">expires: </span><span class="nx">@options</span><span class="p">.</span><span class="nx">buildsExpire</span><span class="p">,</span> <span class="nx">mtime</span><span class="p">}</span>
           <span class="nx">@cache</span><span class="p">.</span><span class="nx">set</span> <span class="nx">filename</span><span class="p">,</span> <span class="nx">css</span><span class="p">,</span> <span class="nx">cacheFlags</span>
           <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">buildDir</span>
