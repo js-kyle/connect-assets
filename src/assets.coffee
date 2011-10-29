@@ -21,6 +21,7 @@ module.exports = (options = {}) ->
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
   options.buildsExpire ?= false
+  options.detectChanges ?= true
   options.minifyBuilds ?= true
 
   connectAssets = module.exports.instance = new ConnectAssets options
@@ -38,6 +39,9 @@ class ConnectAssets
 
     # Things that we must cache to efficiently use MD5 suffixes
     @buildFilenames = {}
+
+    # Things that we must cache if changes aren't detected
+    @cachedRoutePaths = {}
 
   # ## CSS and JS tag functions
   createHelpers: ->
@@ -74,6 +78,9 @@ class ConnectAssets
 
   # Synchronously compile Stylus to CSS (if needed) and return the route
   compileCSS: (route) ->
+    if !@options.detectChanges and @cachedRoutePaths[route]
+      return @cachedRoutePaths[route]
+
     for ext in ['css'].concat (ext for ext of cssCompilers)
       sourcePath = stripExt(route) + ".#{ext}"
       try
@@ -91,6 +98,7 @@ class ConnectAssets
             data = fs.readFileSync @absPath(sourcePath)
             @cssSourceFiles[sourcePath] = {data, mtime: stats.mtime}
             source = data.toString 'utf8'
+          startTime = new Date
           css = cssCompilers[ext].compileSync @absPath(sourcePath), source
           if css is @compiledCss[sourcePath]?.data.toString 'utf8'
             alreadyCached = true
@@ -112,16 +120,19 @@ class ConnectAssets
             buildPath = path.join process.cwd(), @options.buildDir, filename
             mkdirRecursive path.dirname(buildPath), 0755, ->
               fs.writeFile buildPath, css
-          return "/#{filename}"
+          return @cachedRoutePaths[route] = "/#{filename}"
         else
           @cache.set route, css, {mtime}
-          return "/#{route}"
+          return @cachedRoutePaths[route] = "/#{route}"
       catch e
         if e.code is 'ENOENT' then continue else throw e
     throw new Error("No file found for route #{route}")
 
   # Synchronously compile to JS with Snockets (if needed) and return route(s)
   compileJS: (route) ->
+    if !@options.detectChanges and @cachedRoutePaths[route]
+      return @cachedRoutePaths[route]
+
     for ext in ['js'].concat (ext for ext of jsCompilers)
       sourcePath = stripExt(route) + ".#{ext}"
       try
@@ -142,10 +153,10 @@ class ConnectAssets
               filename = @buildFilenames[sourcePath]
           snocketsFlags = minify: @options.minifyBuilds, async: false
           @snockets.getConcatenation sourcePath, snocketsFlags, callback
-          return ["/#{filename}"]
+          return @cachedRoutePaths[route] = ["/#{filename}"]
         else
           chain = @snockets.getCompiledChain sourcePath, async: false
-          return filenames = for {filename, js} in chain
+          return @cachedRoutePaths[route] = for {filename, js} in chain
             filename = stripExt(filename) + '.js'
             @cache.set filename, js
             "/#{filename}"
