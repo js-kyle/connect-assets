@@ -39,6 +39,8 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
         'ProductionIntegration'
         'AbsoluteIntegration'
         'RemoteIntegration'
+        'BenchmarkDynamic'
+        'BenchmarkStatic'
       ]
       suiteIndex = 0
       do runNextTestSuite = ->
