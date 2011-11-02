@@ -5,7 +5,7 @@ async = require 'async'
 app = require('connect').createServer()
 assets = require('../lib/assets.js')
 app.use assets buildDir: false  # disable saving built assets to file
-app.listen 3591
+app.listen 3592
 
 exports['Stylus benchmark'] = (test) ->
   cssTag = "<link rel='stylesheet' href='/css/button-78506f0018c9f2ac06b778971d372a23.css'>"
@@ -15,10 +15,10 @@ exports['Stylus benchmark'] = (test) ->
   trials = for i in [1..100]
     (next) ->
       test.equals css('button'), cssTag
-      request 'http://localhost:3591/css/button-78506f0018c9f2ac06b778971d372a23.css', (err, res, body) ->
+      request 'http://localhost:3592/css/button-78506f0018c9f2ac06b778971d372a23.css', (err, res, body) ->
         throw err if err
         test.equals body, expectedBody
-        next()
+      next()
   async.parallel trials, ->
     console.log "100 Stylus requests done in #{new Date - startTime}ms"
     test.done()
@@ -31,7 +31,7 @@ exports['Snockets benchmark'] = (test) ->
   trials = for i in [1..100]
     (next) ->
       test.equals js('c'), jsTag
-      request 'http://localhost:3591/js/c-99464d3c14ea198ff7d8bc53a5bd63c6.js', (err, res, body) ->
+      request 'http://localhost:3592/js/c-99464d3c14ea198ff7d8bc53a5bd63c6.js', (err, res, body) ->
         throw err if err
         test.equals body, expectedBody
         next()
