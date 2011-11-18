@@ -1,7 +1,7 @@
 fs            = require 'fs'
 {print}       = require 'sys'
 {spawn, exec} = require 'child_process'
-{watchTree}   = require 'watch-tree'
+watchit       = require 'watchit'
 
 build = (watch, callback) ->
   if typeof watch is 'function'
@@ -50,7 +50,10 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
         suite.stderr.on 'data', (data) -> print data.toString()
         suite.on 'exit', -> suiteIndex++; runNextTestSuite()
       invoke 'docs'  # lest I forget
-    testWatcher = watchTree 'test', 'sample-rate': 5
-    testWatcher.on 'fileModified', runTests
-    libWatcher = watchTree 'src', 'sample-rate': 5
-    libWatcher.on 'fileModified', -> build(-> runTests())
+
+    watchTargets = (targets..., callback) ->
+      for target in targets
+        watchit target, include: true, (event) ->
+          callback() unless event is 'success'
+    watchTargets 'src', -> build runTests
+    watchTargets 'test', 'Cakefile', runTests
