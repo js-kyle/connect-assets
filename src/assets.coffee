@@ -18,12 +18,15 @@ module.exports = (options = {}) ->
   if process.env.NODE_ENV is 'production'
     options.build ?= true
     cssCompilers.styl.compress ?= true
+    options.servePath ?= ''
+  else
+    options.servePath = ''
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
   options.buildsExpire ?= false
   options.detectChanges ?= true
   options.minifyBuilds ?= true
-
+  
   connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
   connectAssets.cache.middleware
@@ -73,7 +76,7 @@ class ConnectAssets
         routes = ["#{@options.src}/#{route}"]
       else
         routes = @compileJS route
-      ("<script src='#{r}'></script>" for r in routes).join '\n'
+      ("<script src='#{@options.servePath}#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
   # Synchronously compile Stylus to CSS (if needed) and return the route
