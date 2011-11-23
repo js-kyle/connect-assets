@@ -126,6 +126,20 @@ class ConnectAssets
       ''
     throw new Error("No file found for route #{route}")
 
+  
+  fixCSSImagePaths: (css) ->
+    imgPaths = css.match /url\([^\)]+\)/g
+    if imgPaths
+      for path in imgPaths
+        path = path.replace /url\(|'|"|\)/g, ''
+        resolvedPath = path
+        try
+          resolvedPath = img path
+          css = css.replace new RegExp(path, "g"), resolvedPath
+        catch e
+          console.error "Can't resolve image path: #{path}"
+    return css
+    
   # Synchronously compile Stylus to CSS (if needed) and return the route
   compileCSS: (route) ->
     if !@options.detectChanges and @cachedRoutePaths[route]
@@ -140,7 +154,8 @@ class ConnectAssets
             alreadyCached = true
           else
             {mtime} = stats
-            css = fs.readFileSync @absPath(sourcePath)
+            css = (fs.readFileSync @absPath(sourcePath)).toString 'utf8'
+            css = @fixCSSImagePaths css
         else
           if timeEq stats.mtime, @cssSourceFiles[sourcePath]?.mtime
             source = @cssSourceFiles[sourcePath].data.toString 'utf8'
@@ -155,7 +170,7 @@ class ConnectAssets
           else
             mtime = new Date
             @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
-
+        
         if alreadyCached and @options.build
           filename = @buildFilenames[sourcePath]
           return "/#{filename}"
