@@ -81,7 +81,6 @@ class ConnectAssets
 
     context.img = (route) =>
       route = expandRoute route, null, context.img.root
-      console.log route
       if route.match REMOTE_PATH
         routes = route
       else if srcIsRemote
@@ -112,7 +111,6 @@ class ConnectAssets
         return "/#{route}"
       else if @options.build
         filename = @options.buildFilenamer(route, getExt route)
-        console.log "fileName=#{filename}"
         @buildFilenames[sourcePath] = filename
         cacheFlags = {expires: @options.buildsExpire, mtime}
         @cache.set filename, img, cacheFlags
