@@ -57,7 +57,7 @@ class ConnectAssets
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
       else
         shortRoute = path.join rootDir, shortRoute
-      if shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
+      if ext and shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
         shortRoute += ext
       shortRoute
 
@@ -78,6 +78,55 @@ class ConnectAssets
         routes = @compileJS route
       ("<script src='#{@options.servePath}#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
+
+    context.img = (route) =>
+      route = expandRoute route, null, context.img.root
+      console.log route
+      if route.match REMOTE_PATH
+        routes = route
+      else if srcIsRemote
+        route = "#{@options.src}/#{route}"
+      else
+        route = @cacheImg route
+      "#{@options.servePath}#{route}"
+    context.img.root = 'img'
+  
+  # Synchronously lookup image and return the route
+  cacheImg: (route) ->
+    if !@options.detectChanges and @cachedRoutePaths[route]
+      return @cachedRoutePaths[route]
+
+    sourcePath = route
+    try
+      stats = fs.statSync @absPath(sourcePath)
+      if timeEq mtime, @cache.map[route]?.mtime
+        alreadyCached = true
+      else
+        {mtime} = stats
+        img = fs.readFileSync @absPath(sourcePath)
+
+      if alreadyCached and @options.build
+        filename = @buildFilenames[sourcePath]
+        return "/#{filename}"
+      else if alreadyCached
+        return "/#{route}"
+      else if @options.build
+        filename = @options.buildFilenamer(route, getExt route)
+        console.log "fileName=#{filename}"
+        @buildFilenames[sourcePath] = filename
+        cacheFlags = {expires: @options.buildsExpire, mtime}
+        @cache.set filename, img, cacheFlags
+        if @options.buildDir
+          buildPath = path.join process.cwd(), @options.buildDir, filename
+          mkdirRecursive path.dirname(buildPath), 0755, ->
+            fs.writeFile buildPath, img
+        return @cachedRoutePaths[route] = "/#{filename}"
+      else
+        @cache.set route, img, {mtime}
+        return @cachedRoutePaths[route] = "/#{route}"
+    catch e
+      ''
+    throw new Error("No file found for route #{route}")
 
   # Synchronously compile Stylus to CSS (if needed) and return the route
   compileCSS: (route) ->
@@ -204,6 +253,11 @@ EXPLICIT_PATH = /^\/|\/\//
 REMOTE_PATH = /\/\//
 
 # ## Utility functions
+getExt = (filePath) ->
+  if(lastDotIndex = filePath.lastIndexOf '.') >= 0
+    filePath[(lastDotIndex + 1)...]
+  ''  
+    
 stripExt = (filePath) ->
   if (lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[0...lastDotIndex]
