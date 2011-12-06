@@ -9,7 +9,7 @@
 
 <span class="nv">libs = </span><span class="p">{}</span>
 
-<span class="nv">module.exports = </span><span class="nf">(options = {}) -&gt;</span>
+<span class="nv">module.exports = exports = </span><span class="nf">(options = {}) -&gt;</span>
   <span class="k">return</span> <span class="nx">connectAssets</span> <span class="k">if</span> <span class="nx">connectAssets</span>
   <span class="nx">options</span><span class="p">.</span><span class="nx">src</span> <span class="o">?=</span> <span class="s1">&#39;assets&#39;</span>
   <span class="nx">options</span><span class="p">.</span><span class="nx">helperContext</span> <span class="o">?=</span> <span class="nx">global</span>

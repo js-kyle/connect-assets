@@ -11,7 +11,7 @@ _             = require 'underscore'
 
 libs = {}
 
-module.exports = (options = {}) ->
+module.exports = exports = (options = {}) ->
   return connectAssets if connectAssets
   options.src ?= 'assets'
   options.helperContext ?= global
