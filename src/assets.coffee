@@ -126,18 +126,18 @@ class ConnectAssets
       ''
     throw new Error("No file found for route #{route}")
 
+  resolveImgPath: (path) ->
+    resolvedPath = path + ""
+    resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
+    try
+      resolvedPath = img resolvedPath
+    catch e
+      console.error "Can't resolve image path: #{resolvedPath}"
+    return "url('#{resolvedPath}')"
   
   fixCSSImagePaths: (css) ->
-    imgPaths = css.match /url\([^\)]+\)/g
-    if imgPaths
-      for path in imgPaths
-        path = path.replace /url\(|'|"|\)/g, ''
-        resolvedPath = path
-        try
-          resolvedPath = img path
-          css = css.replace new RegExp(path, "g"), resolvedPath
-        catch e
-          console.error "Can't resolve image path: #{path}"
+    regex = /url\([^\)]+\)/g
+    css = css.replace regex, @resolveImgPath
     return css
     
   # Synchronously compile Stylus to CSS (if needed) and return the route
