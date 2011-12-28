@@ -57,8 +57,7 @@ class ConnectAssets
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
       else
         shortRoute = path.join rootDir, shortRoute
-      # if ext and shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
-      if ext and shortRoute.indexOf(".") is -1
+      if ext and shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
         shortRoute += ext
       shortRoute
 
@@ -180,7 +179,7 @@ class ConnectAssets
         else if @options.build
           filename = @options.buildFilenamer route, css
           @buildFilenames[sourcePath] = filename
-          cacheFlags = {expires: @options.buildsExpire, mime: 'text/css', mtime}
+          cacheFlags = {expires: @options.buildsExpire, mtime}
           @cache.set filename, css, cacheFlags
           if @options.buildDir
             buildPath = path.join process.cwd(), @options.buildDir, filename
@@ -188,7 +187,7 @@ class ConnectAssets
               fs.writeFile buildPath, css
           return @cachedRoutePaths[route] = "/#{filename}"
         else
-          @cache.set route, css, {mime: 'text/css', mtime}
+          @cache.set route, css, {mtime}
           return @cachedRoutePaths[route] = "/#{route}"
       catch e
         if e.code is 'ENOENT' then continue else throw e

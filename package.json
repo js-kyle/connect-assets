@@ -23,7 +23,6 @@
     "nodeunit": "0.5.4",
     "stylus": "0.19.0",
     "request": "2.1.1",
-    "watch-tree": "0.1.1", 
-    "less": "1.1.6"
+    "watch-tree": "0.1.1"
   }
 }
