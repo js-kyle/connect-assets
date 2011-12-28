@@ -256,28 +256,6 @@ exports.cssCompilers = cssCompilers =
           .use(libs.nib())
           .render callback
       result
-      
-  less:
-    optionsMap:
-      compress: false
-      optimization: 1
-      silent: false
-      paths: []
-      color: true
-    
-    compileSync: (sourcePath, source) ->
-      result = ''
-      libs.less or= require 'less'
-      options = @optionsMap
-      options.filename = sourcePath
-      options.paths = [path.dirname(sourcePath)].concat(options.paths)
-      
-      callback = (err, tree) ->
-        throw err if err
-        result = tree.toCSS({})
-        
-      new libs.less.Parser(options).parse(source, callback)
-      result
 
 exports.jsCompilers = jsCompilers = Snockets.compilers
 

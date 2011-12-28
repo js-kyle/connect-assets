@@ -23,21 +23,6 @@ exports['Compiled stylesheets work from absolute options.src'] = (test) ->
     test.equals body, expectedBody
     test.done()
 
-exports['Compiled less stylesheets work'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/test.css'>"
-  test.equals css('test'), cssTag
-  
-  request 'http://localhost:3590/css/test.css', (err, res, body) ->
-    throw err if err
-    expectedBody = '''
-    .class {
-      width: 2;
-    }
-    
-    '''
-    test.equals body, expectedBody
-    test.done()
-
 exports['Single .js files work from absolute options.src'] = (test) ->
   test.equals js('js-dependency'), "<script src='/js/js-dependency.js'></script>"
 
