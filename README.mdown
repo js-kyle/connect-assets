@@ -82,7 +82,7 @@ To override these roots, start a path with `'/'`. So, for instance,
 
 generates
 
-    <link rel='stylesheet' href='/css/normalize.css'>
+    <link rel='stylesheet' href='/css/style.css'>
 
 while
 
@@ -90,7 +90,7 @@ while
 
 gives you
 
-    <link rel='stylesheet' href='/normalize.css'>
+    <link rel='stylesheet' href='/style.css'>
 
 ## Credits
 
