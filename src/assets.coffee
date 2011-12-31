@@ -188,6 +188,7 @@ exports.cssCompilers = cssCompilers =
         compress: @compress
       libs.stylus(source, options)
           .use(libs.nib())
+          .set('include css', true)
           .render callback
       result
 
