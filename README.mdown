@@ -30,7 +30,7 @@ Then add this line to your app's configuration:
 
     app.use require('connect-assets')()
 
-Finally, create an `assets` directory in your project and throw all your `.coffee` and `.styl` files in there
+Finally, create an `assets` directory in your project and throw all your `.coffee` files in /assets/js  and `.styl` files in /assets/css.
 
 ### Markup functions
 
