@@ -53,7 +53,7 @@ class ConnectAssets
         unless shortRoute.match REMOTE_PATH
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
       else
-        shortRoute = path.join rootDir, shortRoute
+        shortRoute = rootDir + '/' + shortRoute
       if shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
         shortRoute += ext
       shortRoute
@@ -197,7 +197,7 @@ exports.jsCompilers = jsCompilers = Snockets.compilers
 # ## Regexes
 BEFORE_DOT = /([^.]*)(\..*)?$/
 
-EXPLICIT_PATH = /^\/|\/\//
+EXPLICIT_PATH = /^\/|\/\/|\w:/
 
 REMOTE_PATH = /\/\//
 
