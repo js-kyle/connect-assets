@@ -185,9 +185,9 @@ exports.cssCompilers = cssCompilers =
       libs.nib or= try require 'nib' catch e then (-> ->)
       options = @optionsMap[sourcePath] ?=
         filename: sourcePath
-        compress: @compress
       libs.stylus(source, options)
           .use(libs.nib())
+          .set('compress', @compress)
           .set('include css', true)
           .render callback
       result

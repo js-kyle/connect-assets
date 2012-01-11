@@ -39,7 +39,7 @@
         <span class="nx">unless</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">match</span> <span class="nx">REMOTE_PATH</span>
           <span class="k">if</span> <span class="nx">shortRoute</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s1">&#39;/&#39;</span> <span class="k">then</span> <span class="nv">shortRoute = </span><span class="nx">shortRoute</span><span class="p">[</span><span class="mi">1</span><span class="p">..]</span>
       <span class="k">else</span>
-        <span class="nv">shortRoute = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">rootDir</span><span class="p">,</span> <span class="nx">shortRoute</span>
+        <span class="nv">shortRoute = </span><span class="nx">rootDir</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">shortRoute</span>
       <span class="k">if</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">ext</span><span class="p">,</span> <span class="nx">shortRoute</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">ext</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">is</span> <span class="o">-</span><span class="mi">1</span>
         <span class="nx">shortRoute</span> <span class="o">+=</span> <span class="nx">ext</span>
       <span class="nx">shortRoute</span>
@@ -162,16 +162,16 @@
       <span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span> <span class="o">or=</span> <span class="k">try</span> <span class="nx">require</span> <span class="s1">&#39;nib&#39;</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="o">-&gt;</span><span class="p">)</span>
       <span class="nv">options = </span><span class="nx">@optionsMap</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span> <span class="o">?=</span>
         <span class="nv">filename: </span><span class="nx">sourcePath</span>
-        <span class="nv">compress: </span><span class="nx">@compress</span>
       <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span><span class="p">(</span><span class="nx">source</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span><span class="p">())</span>
+          <span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;compress&#39;</span><span class="p">,</span> <span class="nx">@compress</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;include css&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">render</span> <span class="nx">callback</span>
       <span class="nx">result</span>
 
 <span class="nv">exports.jsCompilers = jsCompilers = </span><span class="nx">Snockets</span><span class="p">.</span><span class="nx">compilers</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>Regexes</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">BEFORE_DOT = </span><span class="sr">/([^.]*)(\..*)?$/</span>
 
-<span class="nv">EXPLICIT_PATH = </span><span class="sr">/^\/|\/\//</span>
+<span class="nv">EXPLICIT_PATH = </span><span class="sr">/^\/|\/\/|\w:/</span>
 
 <span class="nv">REMOTE_PATH = </span><span class="sr">/\/\//</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h2>Utility functions</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">stripExt = </span><span class="nf">(filePath) -&gt;</span>
   <span class="k">if</span> <span class="p">(</span><span class="nv">lastDotIndex = </span><span class="nx">filePath</span><span class="p">.</span><span class="nx">lastIndexOf</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
