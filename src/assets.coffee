@@ -65,7 +65,7 @@ class ConnectAssets
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
         route = @compileCSS route
-      "<link rel='stylesheet' href='#{route}'>"
+      "<link rel='stylesheet' href='#{@options.servePath}#{route}'>"
     context.css.root = 'css'
 
     context.js = (route) =>
