@@ -58,14 +58,17 @@ class ConnectAssets
         shortRoute += ext
       shortRoute
 
-    context.css = (route) =>
+    context.css = (route, opts) =>
+      opts ?= {}
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
         route = @compileCSS route
+      return route if opts.path_only
       "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
 
-    context.js = (route) =>
+    context.js = (route, opts) =>
+      opts ?= {}
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
@@ -73,6 +76,8 @@ class ConnectAssets
         routes = ["#{@options.src}/#{route}"]
       else
         routes = @compileJS route
+
+      return routes if opts.paths_only
       ("<script src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
