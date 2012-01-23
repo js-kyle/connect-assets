@@ -215,11 +215,13 @@ timeEq = (date1, date2) ->
 
 mkdirRecursive = (dir, mode, callback) ->
   pathParts = path.normalize(dir).split '/'
-  path.exists dir, (exists) ->
-    return callback null if exists
-    mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
-      return callback err if err and err.errno isnt process.EEXIST
-      fs.mkdir dir, mode, callback
+  if path.existsSync dir
+    return callback null
+    
+  mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
+    return callback err if err and err.errno isnt process.EEXIST
+    fs.mkdirSync dir, mode
+    callback()
 
 exports.md5Filenamer = md5Filenamer = (filename, code) ->
   hash = crypto.createHash('md5')
