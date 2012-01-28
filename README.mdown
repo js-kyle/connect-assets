@@ -10,7 +10,9 @@ connect-assets can:
 
 1. Serve `.coffee` ([CoffeeScript](http://coffeescript.org)) files as compiled `.js`
 1. Concatenate `.coffee` and `.js` together using [Snockets](https://github.com/TrevorBurnham/snockets)
-1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css` (with [nib](https://github.com/visionmedia/nib) baked in when available)
+1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css` with
+    -  [nib](https://github.com/visionmedia/nib) 
+    -  [Twitter Bootstrap](https://github.com/shomeya/bootstrap-stylus) 
 1. Serve files with an MD5 hash suffix and use a far-future expires header for maximum efficiency
 1. Avoid redundant git diffs by storing compiled `.js` and `.css` files in memory rather than writing them to the disk—except when you want them (e.g. for deployment to a CDN).
 
@@ -25,6 +27,7 @@ Also install any specific compilers you'll need, e.g.:
     npm install coffee-script
     npm install stylus
     npm install nib
+    npm install bootstrap-stylus
 
 Then add this line to your app's configuration:
 

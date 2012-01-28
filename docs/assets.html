@@ -224,10 +224,12 @@
 
       <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span> <span class="o">or=</span> <span class="nx">require</span> <span class="s1">&#39;stylus&#39;</span>
       <span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span> <span class="o">or=</span> <span class="k">try</span> <span class="nx">require</span> <span class="s1">&#39;nib&#39;</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="o">-&gt;</span><span class="p">)</span>
+      <span class="nx">libs</span><span class="p">.</span><span class="nx">bootstrap</span> <span class="o">or=</span> <span class="k">try</span> <span class="nx">require</span> <span class="s1">&#39;bootstrap-stylus&#39;</span> <span class="k">catch</span> <span class="nx">e</span> <span class="k">then</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="o">-&gt;</span><span class="p">)</span>
       <span class="nv">options = </span><span class="nx">@optionsMap</span><span class="p">[</span><span class="nx">sourcePath</span><span class="p">]</span> <span class="o">?=</span>
         <span class="nv">filename: </span><span class="nx">sourcePath</span>
       <span class="nx">libs</span><span class="p">.</span><span class="nx">stylus</span><span class="p">(</span><span class="nx">source</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span><span class="p">())</span>
+          <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">bootstrap</span><span class="p">())</span>
           <span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;compress&#39;</span><span class="p">,</span> <span class="nx">@compress</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;include css&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">render</span> <span class="nx">callback</span>

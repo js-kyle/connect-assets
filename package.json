@@ -20,6 +20,7 @@
     "coffee-script": "1.1.2",
     "connect": "1.8.5",
     "nib": "0.2.0",
+    "bootstrap-stylus": "0.2.0",
     "nodeunit": "0.5.4",
     "stylus": "0.22.2",
     "request": "2.1.1",
