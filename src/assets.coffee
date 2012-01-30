@@ -10,6 +10,7 @@ _             = require 'underscore'
 {parse}       = require 'url'
 
 libs = {}
+jsCompilers = Snockets.compilers
 
 module.exports = exports = (options = {}) ->
   return connectAssets if connectAssets
@@ -26,7 +27,8 @@ module.exports = exports = (options = {}) ->
   options.buildsExpire ?= false
   options.detectChanges ?= true
   options.minifyBuilds ?= true
-  
+  jsCompilers = _.extend jsCompilers, options.jsCompilers || {}
+
   connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
   connectAssets.cache.middleware
@@ -259,8 +261,7 @@ exports.cssCompilers = cssCompilers =
           .render callback
       result
 
-exports.jsCompilers = jsCompilers = Snockets.compilers
-
+exports.jsCompilers = jsCompilers
 # ## Regexes
 BEFORE_DOT = /([^.]*)(\..*)?$/
 
