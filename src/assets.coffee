@@ -59,7 +59,7 @@ class ConnectAssets
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
       else
         shortRoute = rootDir + '/' + shortRoute
-      if shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
+      if ext and shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
         shortRoute += ext
       shortRoute
 
