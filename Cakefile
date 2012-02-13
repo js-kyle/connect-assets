@@ -39,6 +39,7 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
         'ProductionIntegration'
         'AbsoluteIntegration'
         'RemoteIntegration'
+        'CdnIntegration'
         'BenchmarkDynamic'
         'BenchmarkStatic'
       ]
