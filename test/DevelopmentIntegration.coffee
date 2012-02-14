@@ -126,10 +126,6 @@ exports['css helper function provides correct href'] = (test) ->
   test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), "<link rel='stylesheet' href='#{url}'>"
   test.done()
 
-exports['css helper function provides only path when requested'] = (test) ->
-  test.equals css('style', path_only: true), '/css/style.css'
-  test.done()
-
 exports['js helper function provides correct src'] = (test) ->
   jsTag = "<script src='/js/script.js'></script>"
   test.equals js('/js/script.js'), jsTag
@@ -139,14 +135,17 @@ exports['js helper function provides correct src'] = (test) ->
   test.equals js(url = '//code.jquery.com/jquery-1.6.2.js'), "<script src='#{url}'></script>"
   test.done()
 
-exports['js helper function provides array of paths when requested'] = (test) ->
+exports['helper functions provides only paths when requested'] = (test) ->
+  context = {}
+  path_assets = assets helperContext: context, pathsOnly: true
   jsFiles = [
     '/js/js-dependency.js'
     '/js/coffee-dependency.js'
     '/js/more/annoying.1.2.3.js'
     '/js/dependent.js'
   ]
-  test.deepEqual js('dependent', paths_only: true), jsFiles
+  test.deepEqual context.js('dependent'), jsFiles
+  test.equals context.css('style'), '/css/style.css'
   test.done()
 
 exports['Script files can `require` (in non-production mode)'] = (test) ->

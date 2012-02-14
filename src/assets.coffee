@@ -27,6 +27,7 @@ module.exports = exports = (options = {}) ->
   options.buildsExpire ?= false
   options.detectChanges ?= true
   options.minifyBuilds ?= true
+  options.pathsOnly ?= false
   jsCompilers = _.extend jsCompilers, options.jsCompilers || {}
 
   connectAssets = module.exports.instance = new ConnectAssets options
@@ -63,17 +64,15 @@ class ConnectAssets
         shortRoute += ext
       shortRoute
 
-    context.css = (route, opts) =>
-      opts ?= {}
+    context.css = (route) =>
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
         route = @options.servePath + @compileCSS route
-      return route if opts.path_only
+      return route if @options.pathsOnly
       "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
 
-    context.js = (route, opts) =>
-      opts ?= {}
+    context.js = (route) =>
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
@@ -82,7 +81,7 @@ class ConnectAssets
       else
         routes = (@options.servePath + p for p in @compileJS route)
 
-      return routes if opts.paths_only
+      return routes if @options.pathsOnly
       ("<script src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
