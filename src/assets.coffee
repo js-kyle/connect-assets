@@ -88,8 +88,8 @@ class ConnectAssets
       else if srcIsRemote
         route = "#{@options.src}/#{route}"
       else
-        route = @cacheImg route
-      "#{@options.servePath}#{route}"
+        route = @options.servePath + @cacheImg route
+      route
     context.img.root = 'img'
   
   # Synchronously lookup image and return the route
