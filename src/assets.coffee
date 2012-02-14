@@ -66,8 +66,8 @@ class ConnectAssets
     context.css = (route) =>
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
-        route = @compileCSS route
-      "<link rel='stylesheet' href='#{@options.servePath}#{route}'>"
+        route = @options.servePath + @compileCSS route
+      "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
 
     context.js = (route) =>
@@ -77,8 +77,8 @@ class ConnectAssets
       else if srcIsRemote
         routes = ["#{@options.src}/#{route}"]
       else
-        routes = @compileJS route
-      ("<script src='#{@options.servePath}#{r}'></script>" for r in routes).join '\n'
+        routes = (@options.servePath + p for p in @compileJS route)
+      ("<script src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
     context.img = (route) =>
@@ -88,8 +88,8 @@ class ConnectAssets
       else if srcIsRemote
         route = "#{@options.src}/#{route}"
       else
-        route = @cacheImg route
-      "#{@options.servePath}#{route}"
+        route = @options.servePath + @cacheImg route
+      route
     context.img.root = 'img'
   
   # Synchronously lookup image and return the route
