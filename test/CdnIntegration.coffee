@@ -26,6 +26,16 @@ exports['If options.servePath exists, other css URLs are still allowed'] = (test
   test.equals css('//some.cdn.com/my_style.css'), cssTag
   test.done()
 
+exports['servePath prepended to img paths on production'] = (test) ->
+  imgTag = "http://mycdn.com/img/foobar-d41d8cd98f00b204e9800998ecf8427e.png"
+  test.equals img('foobar.png'), imgTag
+  test.done()
+
+exports['If options.servePath exists, other img URLs are still allowed'] = (test) ->
+  imgTag = "//some.cdn.com/foobar.png"
+  test.equals img('//some.cdn.com/foobar.png'), imgTag
+  test.done()
+
 exports['Still serves files locally'] = (test) ->
   request 'http://localhost:3593/js/dependent-057747a1cbabcbd2279e4f358bc4723f.js', (err, res, body) ->
     throw err if err
