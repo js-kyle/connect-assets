@@ -10,6 +10,7 @@ _             = require 'underscore'
 {parse}       = require 'url'
 
 libs = {}
+jsCompilers = Snockets.compilers
 
 module.exports = exports = (options = {}) ->
   return connectAssets if connectAssets
@@ -18,11 +19,15 @@ module.exports = exports = (options = {}) ->
   if process.env.NODE_ENV is 'production'
     options.build ?= true
     cssCompilers.styl.compress ?= true
+    options.servePath ?= ''
+  else
+    options.servePath = ''
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
   options.buildsExpire ?= false
   options.detectChanges ?= true
   options.minifyBuilds ?= true
+  jsCompilers = _.extend jsCompilers, options.jsCompilers || {}
 
   connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
@@ -54,7 +59,7 @@ class ConnectAssets
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
       else
         shortRoute = rootDir + '/' + shortRoute
-      if shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
+      if ext and shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
         shortRoute += ext
       shortRoute
 
@@ -62,7 +67,7 @@ class ConnectAssets
       opts ?= {}
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
-        route = @compileCSS route
+        route = @options.servePath + @compileCSS route
       return route if opts.path_only
       "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
@@ -75,12 +80,73 @@ class ConnectAssets
       else if srcIsRemote
         routes = ["#{@options.src}/#{route}"]
       else
-        routes = @compileJS route
+        routes = (@options.servePath + p for p in @compileJS route)
 
       return routes if opts.paths_only
       ("<script src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
+    context.img = (route) =>
+      route = expandRoute route, null, context.img.root
+      if route.match REMOTE_PATH
+        routes = route
+      else if srcIsRemote
+        route = "#{@options.src}/#{route}"
+      else
+        route = @options.servePath + @cacheImg route
+      route
+    context.img.root = 'img'
+  
+  # Synchronously lookup image and return the route
+  cacheImg: (route) ->
+    if !@options.detectChanges and @cachedRoutePaths[route]
+      return @cachedRoutePaths[route]
+
+    sourcePath = route
+    try
+      stats = fs.statSync @absPath(sourcePath)
+      if timeEq mtime, @cache.map[route]?.mtime
+        alreadyCached = true
+      else
+        {mtime} = stats
+        img = fs.readFileSync @absPath(sourcePath)
+
+      if alreadyCached and @options.build
+        filename = @buildFilenames[sourcePath]
+        return "/#{filename}"
+      else if alreadyCached
+        return "/#{route}"
+      else if @options.build
+        filename = @options.buildFilenamer(route, getExt route)
+        @buildFilenames[sourcePath] = filename
+        cacheFlags = {expires: @options.buildsExpire, mtime}
+        @cache.set filename, img, cacheFlags
+        if @options.buildDir
+          buildPath = path.join process.cwd(), @options.buildDir, filename
+          mkdirRecursive path.dirname(buildPath), 0755, ->
+            fs.writeFile buildPath, img
+        return @cachedRoutePaths[route] = "/#{filename}"
+      else
+        @cache.set route, img, {mtime}
+        return @cachedRoutePaths[route] = "/#{route}"
+    catch e
+      ''
+    throw new Error("No file found for route #{route}")
+
+  resolveImgPath: (path) ->
+    resolvedPath = path + ""
+    resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
+    try
+      resolvedPath = img resolvedPath
+    catch e
+      console.error "Can't resolve image path: #{resolvedPath}"
+    return "url('#{resolvedPath}')"
+  
+  fixCSSImagePaths: (css) ->
+    regex = /url\([^\)]+\)/g
+    css = css.replace regex, @resolveImgPath
+    return css
+    
   # Synchronously compile Stylus to CSS (if needed) and return the route
   compileCSS: (route) ->
     if !@options.detectChanges and @cachedRoutePaths[route]
@@ -95,7 +161,8 @@ class ConnectAssets
             alreadyCached = true
           else
             {mtime} = stats
-            css = fs.readFileSync @absPath(sourcePath)
+            css = (fs.readFileSync @absPath(sourcePath)).toString 'utf8'
+            css = @fixCSSImagePaths css
         else
           if timeEq stats.mtime, @cssSourceFiles[sourcePath]?.mtime
             source = @cssSourceFiles[sourcePath].data.toString 'utf8'
@@ -110,7 +177,7 @@ class ConnectAssets
           else
             mtime = new Date
             @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
-
+        
         if alreadyCached and @options.build
           filename = @buildFilenames[sourcePath]
           return "/#{filename}"
@@ -188,17 +255,18 @@ exports.cssCompilers = cssCompilers =
 
       libs.stylus or= require 'stylus'
       libs.nib or= try require 'nib' catch e then (-> ->)
+      libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
       options = @optionsMap[sourcePath] ?=
         filename: sourcePath
-        compress: @compress
       libs.stylus(source, options)
           .use(libs.nib())
+          .use(libs.bootstrap())
+          .set('compress', @compress)
           .set('include css', true)
           .render callback
       result
 
-exports.jsCompilers = jsCompilers = Snockets.compilers
-
+exports.jsCompilers = jsCompilers
 # ## Regexes
 BEFORE_DOT = /([^.]*)(\..*)?$/
 
@@ -207,6 +275,11 @@ EXPLICIT_PATH = /^\/|\/\/|\w:/
 REMOTE_PATH = /\/\//
 
 # ## Utility functions
+getExt = (filePath) ->
+  if(lastDotIndex = filePath.lastIndexOf '.') >= 0
+    filePath[(lastDotIndex + 1)...]
+  ''  
+    
 stripExt = (filePath) ->
   if (lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[0...lastDotIndex]
@@ -221,11 +294,13 @@ timeEq = (date1, date2) ->
 
 mkdirRecursive = (dir, mode, callback) ->
   pathParts = path.normalize(dir).split '/'
-  path.exists dir, (exists) ->
-    return callback null if exists
-    mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
-      return callback err if err and err.errno isnt process.EEXIST
-      fs.mkdir dir, mode, callback
+  if path.existsSync dir
+    return callback null
+    
+  mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
+    return callback err if err and err.errno isnt process.EEXIST
+    fs.mkdirSync dir, mode
+    callback()
 
 exports.md5Filenamer = md5Filenamer = (filename, code) ->
   hash = crypto.createHash('md5')

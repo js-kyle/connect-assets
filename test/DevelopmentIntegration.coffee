@@ -41,6 +41,14 @@ exports['Raw CSS is served directly'] = (test) ->
     test.equals res.headers['content-type'], 'text/css'
     test.done()
 
+exports['Images are served directly'] = (test) ->
+  imgTag = "/img/foobar.png"
+  test.equals img('foobar.png'), imgTag
+  request 'http://localhost:3588/img/foobar.png', (err, res, body) ->
+    throw err if err
+    test.equals res.headers['content-type'], 'image/png'
+    test.done()
+
 exports['Stylus is served as CSS'] = (test) ->
   cssTag = "<link rel='stylesheet' href='/css/style.css'>"
   test.equals css('style'), cssTag
