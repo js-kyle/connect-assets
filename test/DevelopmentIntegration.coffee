@@ -135,6 +135,19 @@ exports['js helper function provides correct src'] = (test) ->
   test.equals js(url = '//code.jquery.com/jquery-1.6.2.js'), "<script src='#{url}'></script>"
   test.done()
 
+exports['helper functions provides only paths when requested'] = (test) ->
+  context = {}
+  path_assets = assets helperContext: context, pathsOnly: true
+  jsFiles = [
+    '/js/js-dependency.js'
+    '/js/coffee-dependency.js'
+    '/js/more/annoying.1.2.3.js'
+    '/js/dependent.js'
+  ]
+  test.deepEqual context.js('dependent'), jsFiles
+  test.equals context.css('style'), '/css/style.css'
+  test.done()
+
 exports['Script files can `require` (in non-production mode)'] = (test) ->
   jsTags = """<script src='/js/js-dependency.js'></script>
   <script src='/js/coffee-dependency.js'></script>
