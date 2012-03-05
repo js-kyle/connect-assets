@@ -10,6 +10,7 @@ _             = require 'underscore'
 {parse}       = require 'url'
 
 libs = {}
+jsCompilers = Snockets.compilers
 
 module.exports = exports = (options = {}) ->
   return connectAssets if connectAssets
@@ -26,7 +27,9 @@ module.exports = exports = (options = {}) ->
   options.buildsExpire ?= false
   options.detectChanges ?= true
   options.minifyBuilds ?= true
-  
+  options.pathsOnly ?= false
+  jsCompilers = _.extend jsCompilers, options.jsCompilers || {}
+
   connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
   connectAssets.cache.middleware
@@ -57,15 +60,16 @@ class ConnectAssets
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
       else
         shortRoute = rootDir + '/' + shortRoute
-      if shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
+      if ext and shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
         shortRoute += ext
       shortRoute
 
     context.css = (route) =>
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
-        route = @compileCSS route
-      "<link rel='stylesheet' href='#{@options.servePath}#{route}'>"
+        route = @options.servePath + @compileCSS route
+      return route if @options.pathsOnly
+      "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
 
     context.js = (route) =>
@@ -75,8 +79,10 @@ class ConnectAssets
       else if srcIsRemote
         routes = ["#{@options.src}/#{route}"]
       else
-        routes = @compileJS route
-      ("<script src='#{@options.servePath}#{r}'></script>" for r in routes).join '\n'
+        routes = (@options.servePath + p for p in @compileJS route)
+
+      return routes if @options.pathsOnly
+      ("<script src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
     context.img = (route) =>
@@ -86,8 +92,8 @@ class ConnectAssets
       else if srcIsRemote
         route = "#{@options.src}/#{route}"
       else
-        route = @cacheImg route
-      "#{@options.servePath}#{route}"
+        route = @options.servePath + @cacheImg route
+      route
     context.img.root = 'img'
   
   # Synchronously lookup image and return the route
@@ -249,18 +255,19 @@ exports.cssCompilers = cssCompilers =
       libs.stylus or= require 'stylus'
       libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
       libs.nib or= try require 'nib' catch e then (-> ->)
+      libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
       options = @optionsMap[sourcePath] ?=
         filename: sourcePath
       libs.stylus(source, options)
           .use(libs.bootstrap())
           .use(libs.nib())
+          .use(libs.bootstrap())
           .set('compress', @compress)
           .set('include css', true)
           .render callback
       result
 
-exports.jsCompilers = jsCompilers = Snockets.compilers
-
+exports.jsCompilers = jsCompilers
 # ## Regexes
 BEFORE_DOT = /([^.]*)(\..*)?$/
 
