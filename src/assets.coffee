@@ -95,7 +95,7 @@ class ConnectAssets
         route = @options.servePath + @cacheImg route
       route
     context.img.root = 'img'
-  
+
   # Synchronously lookup image and return the route
   cacheImg: (route) ->
     if !@options.detectChanges and @cachedRoutePaths[route]
@@ -140,12 +140,12 @@ class ConnectAssets
     catch e
       console.error "Can't resolve image path: #{resolvedPath}"
     return "url('#{resolvedPath}')"
-  
+
   fixCSSImagePaths: (css) ->
     regex = /url\([^\)]+\)/g
     css = css.replace regex, @resolveImgPath
     return css
-    
+
   # Synchronously compile Stylus to CSS (if needed) and return the route
   compileCSS: (route) ->
     if !@options.detectChanges and @cachedRoutePaths[route]
@@ -175,8 +175,9 @@ class ConnectAssets
             alreadyCached = true
           else
             mtime = new Date
+            css = @fixCSSImagePaths css
             @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
-        
+
         if alreadyCached and @options.build
           filename = @buildFilenames[sourcePath]
           return "/#{filename}"
@@ -279,8 +280,8 @@ REMOTE_PATH = /\/\//
 getExt = (filePath) ->
   if(lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[(lastDotIndex + 1)...]
-  ''  
-    
+  ''
+
 stripExt = (filePath) ->
   if (lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[0...lastDotIndex]
@@ -297,7 +298,7 @@ mkdirRecursive = (dir, mode, callback) ->
   pathParts = path.normalize(dir).split '/'
   if path.existsSync dir
     return callback null
-    
+
   mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
     return callback err if err and err.errno isnt process.EEXIST
     fs.mkdirSync dir, mode
