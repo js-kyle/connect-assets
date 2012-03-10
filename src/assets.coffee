@@ -319,7 +319,6 @@ exports.cssCompilers = cssCompilers =
       options.paths = [path.dirname(sourcePath)].concat(options.paths)
 
       callback = (err, tree) ->
-        console.log "FEhler", err if err
         throw err if err
         result = tree.toCSS({})
 
