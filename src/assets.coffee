@@ -280,10 +280,8 @@ exports.cssCompilers = cssCompilers =
       less.Parser.importer = (file, paths, callback) ->
         paths.unshift "."
 
-        # for (i = 0; i < paths.length; i++)
         i = 0
         while i < paths.length
-        # for i in [0..paths.length]
           try
             pathname = path.join(paths[i], file)
             fs.statSync(pathname)
