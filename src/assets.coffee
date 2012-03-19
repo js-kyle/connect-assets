@@ -8,6 +8,7 @@ fs            = require 'fs'
 path          = require 'path'
 _             = require 'underscore'
 {parse}       = require 'url'
+util          = require 'util'
 
 libs = {}
 jsCompilers = Snockets.compilers
