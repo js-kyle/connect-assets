@@ -8,6 +8,7 @@ fs            = require 'fs'
 path          = require 'path'
 _             = require 'underscore'
 {parse}       = require 'url'
+util          = require 'util'
 
 libs = {}
 jsCompilers = Snockets.compilers
@@ -19,6 +20,7 @@ module.exports = exports = (options = {}) ->
   if process.env.NODE_ENV is 'production'
     options.build ?= true
     cssCompilers.styl.compress ?= true
+    cssCompilers.less.compress ?= true
     options.servePath ?= ''
   else
     options.servePath = ''
@@ -269,7 +271,6 @@ exports.cssCompilers = cssCompilers =
 
   less:
     optionsMap:
-      compress: false
       optimization: 1
       silent: false
       paths: []
@@ -317,10 +318,11 @@ exports.cssCompilers = cssCompilers =
       options = @optionsMap
       options.filename = sourcePath
       options.paths = [path.dirname(sourcePath)].concat(options.paths)
+      compress = @compress ? false
 
       callback = (err, tree) ->
         throw err if err
-        result = tree.toCSS({})
+        result = tree.toCSS({compress: compress})
 
       new libs.less.Parser(options).parse(source, callback)
       result

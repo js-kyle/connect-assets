@@ -24,6 +24,7 @@
     "nodeunit": "0.5.4",
     "stylus": "0.22.2",
     "request": "2.1.1",
-    "watchit": ">=0.0.1"
+    "watchit": ">=0.0.1",
+    "less": "1.3.0"
   }
 }
