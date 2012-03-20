@@ -81,6 +81,21 @@ exports['Stylus imports work as expected'] = (test) ->
     '''
     test.equals body, expectedBody
     test.done()
+    
+exports['Less is served as CSS'] = (test) ->
+  cssTag = "<link rel='stylesheet' href='/css/style-less.css'>"
+  test.equals css('style-less'), cssTag
+  
+  request 'http://localhost:3588/css/style-less.css', (err, res, body) ->
+    throw err if err
+    expectedBody = '''
+    textarea,
+    input {
+      border: 1px solid #eee;
+    }\n
+    '''
+    test.equals body, expectedBody
+    test.done()
 
 exports['nib is supported when available'] = (test) ->
   cssTag = "<link rel='stylesheet' href='/css/gradient.css'>"

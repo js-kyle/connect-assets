@@ -8,6 +8,7 @@ fs            = require 'fs'
 path          = require 'path'
 _             = require 'underscore'
 {parse}       = require 'url'
+util          = require 'util'
 
 libs = {}
 jsCompilers = Snockets.compilers
@@ -19,6 +20,7 @@ module.exports = exports = (options = {}) ->
   if process.env.NODE_ENV is 'production'
     options.build ?= true
     cssCompilers.styl.compress ?= true
+    cssCompilers.less.compress ?= true
     options.servePath ?= ''
   else
     options.servePath = ''
@@ -95,7 +97,7 @@ class ConnectAssets
         route = @options.servePath + @cacheImg route
       route
     context.img.root = 'img'
-  
+
   # Synchronously lookup image and return the route
   cacheImg: (route) ->
     if !@options.detectChanges and @cachedRoutePaths[route]
@@ -140,12 +142,12 @@ class ConnectAssets
     catch e
       console.error "Can't resolve image path: #{resolvedPath}"
     return "url('#{resolvedPath}')"
-  
+
   fixCSSImagePaths: (css) ->
     regex = /url\([^\)]+\)/g
     css = css.replace regex, @resolveImgPath
     return css
-    
+
   # Synchronously compile Stylus to CSS (if needed) and return the route
   compileCSS: (route) ->
     if !@options.detectChanges and @cachedRoutePaths[route]
@@ -176,7 +178,7 @@ class ConnectAssets
           else
             mtime = new Date
             @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
-        
+
         if alreadyCached and @options.build
           filename = @buildFilenames[sourcePath]
           return "/#{filename}"
@@ -267,6 +269,65 @@ exports.cssCompilers = cssCompilers =
           .render callback
       result
 
+  less:
+    optionsMap:
+      optimization: 1
+      silent: false
+      paths: []
+      color: true
+
+    patchLess: (less) ->
+      # Monkey patch importer of LESS to load files synchronously
+      less.Parser.importer = (file, paths, callback) ->
+        paths.unshift "."
+
+        i = 0
+        while i < paths.length
+          try
+            pathname = path.join(paths[i], file)
+            fs.statSync(pathname)
+            break
+          catch e
+            pathname = null
+
+          i++
+
+        if not pathname
+          util.error("file '" + file + "' wasn't found.\n")
+          process.exit(1)
+
+        try
+          data = fs.readFileSync(pathname, 'utf-8')
+        catch e
+          util.error(e);
+
+        new(less.Parser)(
+          paths: [path.dirname(pathname)].concat(paths)
+          filename: pathname
+        ).parse(data, (e, root) ->
+          if (e)
+            less.writeError(e)
+          callback(e, root)
+        )
+
+      less
+
+    compileSync: (sourcePath, source) ->
+      result = ""
+      libs.less or= @patchLess (require 'less')
+      options = @optionsMap
+      options.filename = sourcePath
+      options.paths = [path.dirname(sourcePath)].concat(options.paths)
+      compress = @compress ? false
+
+      callback = (err, tree) ->
+        throw err if err
+        result = tree.toCSS({compress: compress})
+
+      new libs.less.Parser(options).parse(source, callback)
+      result
+
+
 exports.jsCompilers = jsCompilers
 # ## Regexes
 BEFORE_DOT = /([^.]*)(\..*)?$/
@@ -279,8 +340,8 @@ REMOTE_PATH = /\/\//
 getExt = (filePath) ->
   if(lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[(lastDotIndex + 1)...]
-  ''  
-    
+  ''
+
 stripExt = (filePath) ->
   if (lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[0...lastDotIndex]
@@ -297,7 +358,7 @@ mkdirRecursive = (dir, mode, callback) ->
   pathParts = path.normalize(dir).split '/'
   if path.existsSync dir
     return callback null
-    
+
   mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
     return callback err if err and err.errno isnt process.EEXIST
     fs.mkdirSync dir, mode
