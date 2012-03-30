@@ -12,7 +12,9 @@ connect-assets can:
 1. Concatenate `.coffee` and `.js` together using [Snockets](https://github.com/TrevorBurnham/snockets)
 1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css` with
     -  [nib](https://github.com/visionmedia/nib) 
-    -  [Twitter Bootstrap](https://github.com/shomeya/bootstrap-stylus) 
+    -  [Twitter Bootstrap](https://github.com/shomeya/bootstrap-stylus)
+1. Serve `.less` ([Less](http://lesscss.org/)) as compiled `.css` with
+    - [Twitter Bootstrap](https://github.com/twitter/bootstrap) 
 1. Serve files with an MD5 hash suffix and use a far-future expires header for maximum efficiency
 1. Avoid redundant git diffs by storing compiled `.js` and `.css` files in memory rather than writing them to the disk—except when you want them (e.g. for deployment to a CDN).
 
@@ -28,12 +30,13 @@ Also install any specific compilers you'll need, e.g.:
     npm install stylus
     npm install nib
     npm install bootstrap-stylus
+    npm install less
 
 Then add this line to your app's configuration:
 
     app.use require('connect-assets')()
 
-Finally, create an `assets` directory in your project and throw all your `.coffee` files in /assets/js  and `.styl` files in /assets/css.
+Finally, create an `assets` directory in your project and throw all your `.coffee` files in /assets/js and `.styl`, `.less` files in /assets/css.
 
 ### Markup functions
 
@@ -64,7 +67,7 @@ If you want to bring in a whole folder of scripts, use
 
 See [Snockets](http://github.com/TrevorBurnham/snockets) for more information.
 
-**Note:** CSS concatenation is not supported by connect-assets directly, because Stylus already does a fine job of this. Stylus is basically a superset of CSS, so just rename your `.css` files to `.styl` and learn about its [@import](http://learnboost.github.com/stylus/docs/import.html) syntax.
+**Note:** CSS concatenation is not supported by connect-assets directly, because Stylus and Less already do a fine job of this. Stylus and Less are basically supersets of CSS, so just rename your `.css` files to `.styl` or `.less` and learn about the @import ([Stylus](http://learnboost.github.com/stylus/docs/import.html), [Less](http://lesscss.org/#-importing)) syntax.
 
 ## Options
 
@@ -72,6 +75,7 @@ If you like, you can pass any of these options to the function returned by `requ
 
 * `src` (defaults to `'assets'`): The directory assets will be read from
 * `helperContext` (defaults to `global`): The object the `css` and `js` helper functions will attach to
+* `buildDir` (defaults to `builtAssets`): Writes built asset files to disk using this directory in `production` environment, set to `false` to disable 
 * ... see the source (`src/assets.coffee`) for more.
 
 You can also set the "root path" on the `css` and `js` helper functions (by default, `/css` and `/js`), e.g.
