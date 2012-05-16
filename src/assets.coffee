@@ -20,9 +20,7 @@ module.exports = exports = (options = {}) ->
     options.build ?= true
     cssCompilers.styl.compress ?= true
     cssCompilers.less.compress ?= true
-    options.servePath ?= ''
-  else
-    options.servePath = ''
+  options.servePath ?= ''
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
   options.buildsExpire ?= false
