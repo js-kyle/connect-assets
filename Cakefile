@@ -3,6 +3,13 @@ fs            = require 'fs'
 {spawn, exec} = require 'child_process'
 watchit       = require 'watchit'
 
+if process.platform is 'win32'
+  coffeecmd = 'coffee.cmd'
+  doccocmd = 'docco.cmd'
+else
+  coffeecmd = 'coffee'
+  doccocmd = 'docco'
+
 build = (watch, callback) ->
   if typeof watch is 'function'
     callback = watch
@@ -10,7 +17,7 @@ build = (watch, callback) ->
   options = ['-c', '-o', 'lib', 'src']
   options.unshift '-w' if watch
 
-  coffee = spawn './node_modules/.bin/coffee', options
+  coffee = spawn coffeecmd, options
   coffee.stdout.on 'data', (data) -> print data.toString()
   coffee.stderr.on 'data', (data) -> print data.toString()
   coffee.on 'exit', (status) -> callback?() if status is 0
@@ -18,7 +25,7 @@ build = (watch, callback) ->
 task 'docs', 'Generate annotated source code with Docco', ->
   fs.readdir 'src', (err, contents) ->
     files = ("src/#{file}" for file in contents when /\.coffee$/.test file)
-    docco = spawn 'docco', files
+    docco = spawn doccocmd, files
     docco.stdout.on 'data', (data) -> print data.toString()
     docco.stderr.on 'data', (data) -> print data.toString()
     docco.on 'exit', (status) -> callback?() if status is 0
@@ -46,7 +53,7 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
       suiteIndex = 0
       do runNextTestSuite = ->
         return unless suiteName = suiteNames[suiteIndex]
-        suite = spawn "coffee", ["-e", "{reporters} = require 'nodeunit'; reporters.default.run ['#{suiteName}.coffee']"], cwd: 'test'
+        suite = spawn coffeecmd, ["-e", "{reporters} = require 'nodeunit'; reporters.default.run ['#{suiteName}.coffee']"], cwd: 'test'
         suite.stdout.on 'data', (data) -> print data.toString()
         suite.stderr.on 'data', (data) -> print data.toString()
         suite.on 'exit', -> suiteIndex++; runNextTestSuite()
