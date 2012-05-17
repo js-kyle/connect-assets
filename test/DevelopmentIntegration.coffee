@@ -24,8 +24,8 @@ exports['CoffeeScript is served as JavaScript'] = (test) ->
     throw err if err
     test.equals res.headers['content-type'], 'application/javascript'
     expectedBody = '''
-    (function() {
-      console.log(\'Howdy\');
+    (function() {\n
+      console.log(\'Howdy\');\n
     }).call(this);\n
     '''
     test.equals body, expectedBody
@@ -177,7 +177,7 @@ exports['Script source files can contain nothing but directives'] = (test) ->
   request 'http://localhost:3588/js/dependent.js', (err, res, body) ->
     throw err if err
     test.equals body, '''
-    (function() {
+    (function() {\n\n
 
     }).call(this);\n
     '''

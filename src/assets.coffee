@@ -82,6 +82,9 @@ class ConnectAssets
       else
         routes = (@options.servePath + p for p in @compileJS route)
 
+      # Correct slashes on Windows
+      routes = routes.map (el) -> el.replace /\\/g, '/' if process.platform is 'win32'
+
       return routes if @options.pathsOnly
       ("<script src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
