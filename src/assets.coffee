@@ -103,7 +103,7 @@ class ConnectAssets
     sourcePath = route
     try
       stats = fs.statSync @absPath(sourcePath)
-      if timeEq mtime, @cache.map[route]?.mtime
+      if timeEq stats.mtime, @cache.map[route]?.mtime
         alreadyCached = true
       else
         {mtime} = stats
@@ -156,7 +156,7 @@ class ConnectAssets
       try
         stats = fs.statSync @absPath(sourcePath)
         if ext is 'css'
-          if timeEq mtime, @cache.map[route]?.mtime
+          if timeEq stats.mtime, @cache.map[route]?.mtime
             alreadyCached = true
           else
             {mtime} = stats
