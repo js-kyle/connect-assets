@@ -115,7 +115,7 @@ class ConnectAssets
       else if alreadyCached
         return "/#{route}"
       else if @options.build
-        filename = @options.buildFilenamer(route, getExt route)
+        filename = @options.buildFilenamer route, img
         @buildFilenames[sourcePath] = filename
         cacheFlags = {expires: @options.buildsExpire, mtime}
         @cache.set filename, img, cacheFlags
