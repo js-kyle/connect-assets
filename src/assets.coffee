@@ -20,9 +20,7 @@ module.exports = exports = (options = {}) ->
     options.build ?= true
     cssCompilers.styl.compress ?= true
     cssCompilers.less.compress ?= true
-    options.servePath ?= ''
-  else
-    options.servePath = ''
+  options.servePath ?= ''
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
   options.buildsExpire ?= false
@@ -65,15 +63,15 @@ class ConnectAssets
         shortRoute += ext
       shortRoute
 
-    context.css = (route) =>
+    context.css = (route, pathsOnly) =>
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
         route = @options.servePath + @compileCSS route
-      return route if @options.pathsOnly
+      return route if @options.pathsOnly or pathsOnly
       "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
 
-    context.js = (route) =>
+    context.js = (route, pathsOnly) =>
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
@@ -82,7 +80,7 @@ class ConnectAssets
       else
         routes = (@options.servePath + p for p in @compileJS route)
 
-      return routes if @options.pathsOnly
+      return routes if @options.pathsOnly or pathsOnly
       ("<script src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
@@ -105,7 +103,7 @@ class ConnectAssets
     sourcePath = route
     try
       stats = fs.statSync @absPath(sourcePath)
-      if timeEq mtime, @cache.map[route]?.mtime
+      if timeEq stats.mtime, @cache.map[route]?.mtime
         alreadyCached = true
       else
         {mtime} = stats
@@ -117,12 +115,13 @@ class ConnectAssets
       else if alreadyCached
         return "/#{route}"
       else if @options.build
-        filename = @options.buildFilenamer(route, getExt route)
+        filename = @options.buildFilenamer route, img
         @buildFilenames[sourcePath] = filename
         cacheFlags = {expires: @options.buildsExpire, mtime}
         @cache.set filename, img, cacheFlags
         if @options.buildDir
-          buildPath = path.join process.cwd(), @options.buildDir, filename
+          buildPath = path.join @options.buildDir, filename
+          buildPath = path.join process.cwd(), buildPath if buildPath.indexOf('/')
           mkdirRecursive path.dirname(buildPath), 0o0755, ->
             fs.writeFile buildPath, img
         return @cachedRoutePaths[route] = "/#{filename}"
@@ -133,18 +132,26 @@ class ConnectAssets
       ''
     throw new Error("No file found for route #{route}")
 
-  resolveImgPath: (path) ->
-    resolvedPath = path + ""
-    resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
-    try
-      resolvedPath = img resolvedPath
-    catch e
-      console.error "Can't resolve image path: #{resolvedPath}"
-    return "url('#{resolvedPath}')"
-
   fixCSSImagePaths: (css) ->
+    resolveImgPath = (path) =>
+      resolvedPath = path + ""
+      resolvedPath = resolvedPath.replace /url\(|'|"|\?.*['"\)]|\)/g, ''
+      if (@options.servePath)
+        absPrefix = "#{@options.servePath}/#{@options.helperContext.img.root}/"
+        if resolvedPath.indexOf(absPrefix) is 0
+          resolvedPath = resolvedPath.substring(absPrefix.length)
+        else
+          relativePrefix = "#{parse(@options.servePath).pathname.replace(/\/$/, '')}/#{@options.helperContext.img.root}/"
+          relativePrefixExp = new RegExp('^' + relativePrefix.replace(/\//g, '\\/'))
+          resolvedPath = resolvedPath.replace(relativePrefixExp, '')
+      resolvedPath = resolvedPath.replace(new RegExp("^\\.\\.\\/#{@options.helperContext.img.root.replace(/\//g, '\\/')}\\/"), '')
+      try
+        resolvedPath = @options.helperContext.img resolvedPath
+      catch e
+        console.error "Can't resolve image path: #{resolvedPath}"
+      return "url('#{resolvedPath}')"
     regex = /url\([^\)]+\)/g
-    css = css.replace regex, @resolveImgPath
+    css = css.replace regex, resolveImgPath
     return css
 
   # Synchronously compile Stylus to CSS (if needed) and return the route
@@ -157,7 +164,7 @@ class ConnectAssets
       try
         stats = fs.statSync @absPath(sourcePath)
         if ext is 'css'
-          if timeEq mtime, @cache.map[route]?.mtime
+          if timeEq stats.mtime, @cache.map[route]?.mtime
             alreadyCached = true
           else
             {mtime} = stats
@@ -189,7 +196,8 @@ class ConnectAssets
           cacheFlags = {expires: @options.buildsExpire, mtime}
           @cache.set filename, css, cacheFlags
           if @options.buildDir
-            buildPath = path.join process.cwd(), @options.buildDir, filename
+            buildPath = path.join @options.buildDir, filename
+            buildPath = path.join process.cwd(), buildPath if buildPath.indexOf('/')
             mkdirRecursive path.dirname(buildPath), 0o0755, ->
               fs.writeFile buildPath, css
           return @cachedRoutePaths[route] = "/#{filename}"
@@ -218,7 +226,8 @@ class ConnectAssets
               cacheFlags = expires: @options.buildsExpire
               @cache.set filename, concatenation, cacheFlags
               if buildDir = @options.buildDir
-                buildPath = path.join process.cwd(), buildDir, filename
+                buildPath = path.join buildDir, filename
+                buildPath = path.join process.cwd(), buildPath if buildPath.indexOf('/')
                 mkdirRecursive path.dirname(buildPath), 0o0755, (err) ->
                   fs.writeFile buildPath, concatenation
             else
