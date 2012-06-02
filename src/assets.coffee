@@ -254,7 +254,7 @@ exports.cssCompilers = cssCompilers =
       libs.stylus or= require 'stylus'
       libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
       libs.nib or= try require 'nib' catch e then (-> ->)
-      libs.bootstrap or= try require 'bootstrap.stylus' catch e then (-> ->)
+      libs.bootstrap or= try require 'bootstrap' catch e then (-> console.log("failed to load bootstrap") ->)
       options = @optionsMap[sourcePath] ?=
         filename: sourcePath
       libs.stylus(source, options)
