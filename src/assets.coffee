@@ -353,7 +353,7 @@ timeEq = (date1, date2) ->
 
 mkdirRecursive = (dir, mode, callback) ->
   pathParts = path.normalize(dir).split '/'
-  if path.existsSync dir
+  if fs.existsSync dir
     return callback null
 
   mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
