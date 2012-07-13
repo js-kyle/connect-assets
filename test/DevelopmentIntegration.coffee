@@ -23,11 +23,7 @@ exports['CoffeeScript is served as JavaScript'] = (test) ->
   request 'http://localhost:3588/js/script.js', (err, res, body) ->
     throw err if err
     test.equals res.headers['content-type'], 'application/javascript'
-    expectedBody = '''
-    (function() {
-      console.log(\'Howdy\');
-    }).call(this);\n
-    '''
+    expectedBody = '(function() {\n\n  console.log(\'Howdy\');\n\n}).call(this);\n'
     test.equals body, expectedBody
     test.done()
 
@@ -176,11 +172,7 @@ exports['Script source files can contain nothing but directives'] = (test) ->
   js('dependent')
   request 'http://localhost:3588/js/dependent.js', (err, res, body) ->
     throw err if err
-    test.equals body, '''
-    (function() {
-
-    }).call(this);\n
-    '''
+    test.equals body, '(function() {\n\n\n\n}).call(this);\n'
     test.done()
 
 exports['Script files can `require_tree` a single folder'] = (test) ->
