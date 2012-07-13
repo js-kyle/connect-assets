@@ -14,13 +14,16 @@ jsCompilers = Snockets.compilers
 
 module.exports = exports = (options = {}) ->
   return connectAssets if connectAssets
-  options.src ?= 'assets'
+  unless _.isArray(options.src)
+    options.src = [options.src || 'assets']
   options.helperContext ?= global
   if process.env.NODE_ENV is 'production'
     options.build ?= true
     cssCompilers.styl.compress ?= true
     cssCompilers.less.compress ?= true
-  options.servePath ?= ''
+    options.servePath ?= ''
+  else
+    options.servePath = ''
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
   options.buildsExpire ?= false
@@ -51,7 +54,6 @@ class ConnectAssets
   # ## CSS and JS tag functions
   createHelpers: ->
     context = @options.helperContext
-    srcIsRemote = @options.src.match REMOTE_PATH
     expandRoute = (shortRoute, ext, rootDir) ->
       context.js.root = context.js.root[1..] if context.js.root[0] is '/'
       if shortRoute.match EXPLICIT_PATH
@@ -76,8 +78,6 @@ class ConnectAssets
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
-      else if srcIsRemote
-        routes = ["#{@options.src}/#{route}"]
       else
         routes = (@options.servePath + p for p in @compileJS route)
 
@@ -93,8 +93,6 @@ class ConnectAssets
       route = expandRoute route, null, context.img.root
       if route.match REMOTE_PATH
         routes = route
-      else if srcIsRemote
-        route = "#{@options.src}/#{route}"
       else
         route = @options.servePath + @cacheImg route
       route
@@ -239,11 +237,23 @@ class ConnectAssets
         if e.code is 'ENOENT' then continue else throw e
     throw new Error("No file found for route #{route}")
 
-  absPath: (route) ->
-    if @options.src.match EXPLICIT_PATH
-      path.join @options.src, route
-    else
-      path.join process.cwd(), @options.src, route
+  absPath: (route) =>
+    result = null
+
+    _.any @options.src, (src) =>
+      if src.match EXPLICIT_PATH
+        candidate = path.join src, route
+      else
+        candidate = path.join process.cwd(), src, route
+      result = candidate
+      return true if fs.existsSync(candidate)
+
+      dir = path.dirname(candidate)
+      if fs.existsSync(dir) and fs.statSync(dir).isDirectory()
+        for file in fs.readdirSync(dir)
+          return true if stripExt(file) == path.basename(candidate)
+
+    result
 
 # ## Asset compilers
 exports.cssCompilers = cssCompilers =
