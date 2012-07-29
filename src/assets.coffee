@@ -71,7 +71,8 @@ class ConnectAssets
       "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
 
-    context.js = (route) =>
+    context.js = (route, routeOptions) =>
+      loadingKeyword = ''
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
@@ -81,7 +82,11 @@ class ConnectAssets
         routes = (@options.servePath + p for p in @compileJS route)
 
       return routes if @options.pathsOnly
-      ("<script src='#{r}'></script>" for r in routes).join '\n'
+      if routeOptions? and @options.build
+        loadingKeyword = 'async ' if routeOptions.async?
+        loadingKeyword = 'defer ' if routeOptions.defer?
+
+      ("<script #{loadingKeyword}src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
     context.img = (route) =>
@@ -348,7 +353,7 @@ timeEq = (date1, date2) ->
 
 mkdirRecursive = (dir, mode, callback) ->
   pathParts = path.normalize(dir).split '/'
-  if path.existsSync dir
+  if fs.existsSync dir
     return callback null
 
   mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->

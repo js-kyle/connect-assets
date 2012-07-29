@@ -2,11 +2,14 @@
   "author": "Trevor Burnham (http://trevorburnham.com)",
   "name": "connect-assets",
   "description": "A Rails-like asset pipeline for Connect",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "homepage": "http://github.com/TrevorBurnham/connect-assets",
   "repository": {
     "type": "git",
     "url": "git://github.com/TrevorBurnham/connect-assets.git"
+  },
+  "engines": {
+    "node": ">=0.8.0"
   },
   "main": "lib/assets.js",
   "dependencies": {
@@ -24,7 +27,10 @@
     "nodeunit": "0.5.4",
     "stylus": "0.22.2",
     "request": "2.1.1",
-    "watchit": ">=0.0.1",
+    "watchit": "0.0.4",
     "less": "1.3.0"
+  },
+  "engines": {
+    "node": "0.8.x"
   }
 }
