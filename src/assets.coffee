@@ -140,14 +140,14 @@ class ConnectAssets
     resolvedPath = path + ""
     resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
     try
-      resolvedPath = img resolvedPath
+      resolvedPath = @options.helperContext.img resolvedPath
     catch e
       console.error "Can't resolve image path: #{resolvedPath}"
     return "url('#{resolvedPath}')"
 
   fixCSSImagePaths: (css) ->
     regex = /url\([^\)]+\)/g
-    css = css.replace regex, @resolveImgPath
+    css = css.replace regex, @resolveImgPath.bind(@)
     return css
 
   # Synchronously compile Stylus to CSS (if needed) and return the route
