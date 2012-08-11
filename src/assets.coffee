@@ -200,7 +200,7 @@ class ConnectAssets
           @cache.set route, css, {mtime}
           return @cachedRoutePaths[route] = "/#{route}"
       catch e
-        if e.code is 'ENOENT' then continue else throw e
+        if e.code is 'ENOENT' or e.code is 'ENOTDIR' then continue else throw e
     throw new Error("No file found for route #{route}")
 
   # Synchronously compile to JS with Snockets (if needed) and return route(s)
@@ -236,7 +236,7 @@ class ConnectAssets
             @cache.set filename, js
             "/#{filename}"
       catch e
-        if e.code is 'ENOENT' then continue else throw e
+        if e.code is 'ENOENT' or e.code is 'ENOTDIR' then continue else throw e
     throw new Error("No file found for route #{route}")
 
   absPath: (route) ->
