@@ -139,10 +139,11 @@ class ConnectAssets
   resolveImgPath: (path) ->
     resolvedPath = path + ""
     resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
-    try
-      resolvedPath = @options.helperContext.img resolvedPath
-    catch e
-      console.error "Can't resolve image path: #{resolvedPath}"
+    unless /^data\:(image|font).*/.test resolvedPath
+      try
+        resolvedPath = @options.helperContext.img resolvedPath
+      catch e
+        console.error "Can't resolve image path: #{resolvedPath}"
     return "url('#{resolvedPath}')"
 
   fixCSSImagePaths: (css) ->
