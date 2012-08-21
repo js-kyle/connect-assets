@@ -29,6 +29,8 @@ module.exports = exports = (options = {}) ->
   options.pathsOnly ?= false
   jsCompilers = _.extend jsCompilers, options.jsCompilers || {}
 
+  cssCompilers.less.optionsMap.paths = options.includePath if options.includePath?
+
   connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
   connectAssets.cache.middleware
