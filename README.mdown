@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/TrevorBurnham/connect-assets.png)](http://travis-ci.org/TrevorBurnham/connect-assets)
 # connect-assets
 
 Transparent file compilation and dependency management for Node's [connect](https://github.com/senchalabs/connect) framework in the spirit of the Rails 3.1 asset pipeline.
