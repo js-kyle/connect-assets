@@ -212,6 +212,10 @@ class ConnectAssets
       sourcePath = stripExt(route) + ".#{ext}"
       try
         if @options.build
+          if endsWith(sourcePath, '.min.js')
+            js = (fs.readFileSync @absPath(sourcePath))
+            @cache.set sourcePath, js
+            return @cachedRoutePaths[route] = [js]
           filename = null
           callback = (err, concatenation, changed) =>
             throw err if err
@@ -338,6 +342,8 @@ getExt = (filePath) ->
   if(lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[(lastDotIndex + 1)...]
   ''
+endsWith = (str, suffix) ->
+  str.indexOf(suffix, str.length - suffix.length) isnt -1
 
 stripExt = (filePath) ->
   if (lastDotIndex = filePath.lastIndexOf '.') >= 0
