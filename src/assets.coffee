@@ -230,7 +230,7 @@ class ConnectAssets
             minifyBuilds = false
           else
             minifyBuilds = @options.minifyBuilds
-          snocketsFlags = minify: @options.minifyBuilds, async: false
+          snocketsFlags = minify: minifyBuilds, async: false
           @snockets.getConcatenation sourcePath, snocketsFlags, callback
           return @cachedRoutePaths[route] = ["/#{filename}"]
         else
