@@ -212,10 +212,6 @@ class ConnectAssets
       sourcePath = stripExt(route) + ".#{ext}"
       try
         if @options.build
-          if endsWith(sourcePath, '.min.js')
-            js = (fs.readFileSync @absPath(sourcePath))
-            @cache.set sourcePath, js
-            return @cachedRoutePaths[route] = ["/#{sourcePath}"]
           filename = null
           callback = (err, concatenation, changed) =>
             throw err if err
@@ -230,6 +226,10 @@ class ConnectAssets
                   fs.writeFile buildPath, concatenation
             else
               filename = @buildFilenames[sourcePath]
+          if endsWith(sourcePath, '.min.js')
+            minifyBuilds = false
+          else
+            minifyBuilds = @options.minifyBuilds
           snocketsFlags = minify: @options.minifyBuilds, async: false
           @snockets.getConcatenation sourcePath, snocketsFlags, callback
           return @cachedRoutePaths[route] = ["/#{filename}"]
