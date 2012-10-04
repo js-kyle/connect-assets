@@ -352,11 +352,11 @@ timeEq = (date1, date2) ->
   date1? and date2? and date1.getTime() is date2.getTime()
 
 mkdirRecursive = (dir, mode, callback) ->
-  pathParts = path.normalize(dir).split '/'
+  pathParts = path.normalize(dir).split path.sep
   if fs.existsSync dir
     return callback null
 
-  mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
+  mkdirRecursive pathParts.slice(0,-1).join(path.sep), mode, (err) ->
     return callback err if err and err.errno isnt process.EEXIST
     fs.mkdirSync dir, mode
     callback()
