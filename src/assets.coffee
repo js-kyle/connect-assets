@@ -168,18 +168,21 @@ class ConnectAssets
             css = @fixCSSImagePaths css
         else
           if timeEq stats.mtime, @cssSourceFiles[sourcePath]?.mtime
-            source = @cssSourceFiles[sourcePath].data.toString 'utf8'
-          else
-            data = fs.readFileSync @absPath(sourcePath)
-            @cssSourceFiles[sourcePath] = {data, mtime: stats.mtime}
-            source = data.toString 'utf8'
-          startTime = new Date
-          css = cssCompilers[ext].compileSync @absPath(sourcePath), source
-          if css is @compiledCss[sourcePath]?.data.toString 'utf8'
             alreadyCached = true
           else
-            mtime = new Date
-            @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
+            if @cssSourceFiles[sourcePath]?.mtime
+              source = @cssSourceFiles[sourcePath].data.toString 'utf8'
+            else
+              data = fs.readFileSync @absPath(sourcePath)
+              @cssSourceFiles[sourcePath] = {data, mtime: stats.mtime}
+              source = data.toString 'utf8'
+            startTime = new Date
+            css = cssCompilers[ext].compileSync @absPath(sourcePath), source
+            if css is @compiledCss[sourcePath]?.data.toString 'utf8'
+              alreadyCached = true
+            else
+              mtime = new Date
+              @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
 
         if alreadyCached and @options.build
           filename = @buildFilenames[sourcePath]
@@ -250,6 +253,8 @@ exports.cssCompilers = cssCompilers =
 
   styl:
     optionsMap: {}
+    plugins: []
+    use: (fn) -> @plugins.push fn
     compileSync: (sourcePath, source) ->
       result = ''
       callback = (err, js) ->
@@ -262,13 +267,14 @@ exports.cssCompilers = cssCompilers =
       libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
       options = @optionsMap[sourcePath] ?=
         filename: sourcePath
-      libs.stylus(source, options)
+      renderer = libs.stylus(source, options)
           .use(libs.bootstrap())
           .use(libs.nib())
           .use(libs.bootstrap())
           .set('compress', @compress)
           .set('include css', true)
-          .render callback
+      renderer.use plugin for plugin in @plugins
+      renderer.render callback
       result
 
   less:
