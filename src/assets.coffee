@@ -253,6 +253,8 @@ exports.cssCompilers = cssCompilers =
 
   styl:
     optionsMap: {}
+    plugins: []
+    use: (fn) -> @plugins.push fn
     compileSync: (sourcePath, source) ->
       result = ''
       callback = (err, js) ->
@@ -265,13 +267,14 @@ exports.cssCompilers = cssCompilers =
       libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
       options = @optionsMap[sourcePath] ?=
         filename: sourcePath
-      libs.stylus(source, options)
+      renderer = libs.stylus(source, options)
           .use(libs.bootstrap())
           .use(libs.nib())
           .use(libs.bootstrap())
           .set('compress', @compress)
           .set('include css', true)
-          .render callback
+      renderer.use plugin for plugin in @plugins
+      renderer.render callback
       result
 
   less:
