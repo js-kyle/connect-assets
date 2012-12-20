@@ -47,8 +47,8 @@ connect-assets provides two global functions named `js` and `css`. Use them in y
 
 (where `!= is Jade's syntax for running JS and displaying its output) results in the markup
 
-    <link rel='stylesheet' href='/css/normalize.css'>
-    <script src='/js/jquery.js'></script>
+    <link rel="stylesheet" href="/css/normalize.css" />
+    <script src="/js/jquery.js"></script>
 
 ### Sprockets-style concatenation
 
