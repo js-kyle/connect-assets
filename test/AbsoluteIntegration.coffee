@@ -37,7 +37,7 @@ exports['Single .coffee files work from absolute options.src'] = (test) ->
 
   request 'http://localhost:3590/js/a.js', (err, res, body) ->
     throw err if err
-    expectedBody = '(function() {\n  alert(\'I require nothing!\');\n}).call(this);\n'
+    expectedBody = '(function() {\n\n  alert(\'I require nothing!\');\n\n}).call(this);\n'
     test.equals body, expectedBody
     test.done()
 
@@ -49,7 +49,7 @@ exports['JS dependencies work from absolute options.src'] = (test) ->
 
   request 'http://localhost:3590/js/tree-dependent.js', (err, res, body) ->
     throw err if err
-    expectedBody = '(function() {\n\n}).call(this);\n'
+    expectedBody = '(function() {\n\n\n\n}).call(this);\n'
     test.equals body, expectedBody
     test.done()
     app.close()

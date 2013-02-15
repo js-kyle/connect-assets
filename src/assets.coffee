@@ -81,6 +81,9 @@ class ConnectAssets
       else
         routes = (@options.servePath + p for p in @compileJS route)
 
+      # Correct slashes on Windows
+      routes = routes.map (el) -> el.replace /\\/g, '/' if process.platform is 'win32'
+
       return routes if @options.pathsOnly
       if routeOptions? and @options.build
         loadingKeyword = 'async ' if routeOptions.async?
