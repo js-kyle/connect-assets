@@ -53,12 +53,12 @@ class ConnectAssets
     context = @options.helperContext
     srcIsRemote = @options.src.match REMOTE_PATH
     expandRoute = (shortRoute, ext, rootDir) ->
-      context.js.root = context.js.root[1..] if context.js.root[0] is '/'
+      rootDir = rootDir[1..] if rootDir[0] is '/'
       if shortRoute.match EXPLICIT_PATH
         unless shortRoute.match REMOTE_PATH
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
       else
-        shortRoute = rootDir + '/' + shortRoute
+        shortRoute = rootDir + '/' + shortRoute if rootDir isnt ''
       if ext and shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
         shortRoute += ext
       shortRoute
