@@ -1,1 +1,0 @@
-@proclamation = 'Everyone is counting on me!'
