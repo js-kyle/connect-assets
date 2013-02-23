@@ -1,4 +1,4 @@
-# [connect-assets](http://github.com/TrevorBurnham/connect-assets)
+# [connect-assets](http://github.com/adunkman/connect-assets)
 
 connectCache  = require 'connect-file-cache'
 Snockets      = require 'snockets'
