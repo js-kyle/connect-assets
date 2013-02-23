@@ -68,7 +68,7 @@ class ConnectAssets
       unless route.match REMOTE_PATH
         route = @options.servePath + @compileCSS route
       return route if @options.pathsOnly
-      "<link rel='stylesheet' href='#{route}'>"
+      '<link rel="stylesheet" href="' + route + '" />'
     context.css.root = 'css'
 
     context.js = (route, routeOptions) =>
@@ -86,7 +86,7 @@ class ConnectAssets
         loadingKeyword = 'async ' if routeOptions.async?
         loadingKeyword = 'defer ' if routeOptions.defer?
 
-      ("<script #{loadingKeyword}src='#{r}'></script>" for r in routes).join '\n'
+      ('<script ' + loadingKeyword + 'src="' + r + '"></script>' for r in routes).join '\n'
     context.js.root = 'js'
 
     context.img = (route) =>
