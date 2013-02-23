@@ -319,7 +319,14 @@ exports.cssCompilers = cssCompilers =
 
       callback = (err, tree) ->
         throw err if err
-        result = tree.toCSS({compress: compress})
+        # ## Catch and fix non-usefull stringified "[object Object]" less error message
+        try
+          result = tree.toCSS({compress: compress})
+        catch e
+          err = new Error e.message
+          err.stack = """#{e.message}\n\tat #{e.filename}:#{e.line}:#{e.column}"""
+          throw err
+        result
 
       new libs.less.Parser(options).parse(source, callback)
       result
