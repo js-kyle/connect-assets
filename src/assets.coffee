@@ -31,7 +31,9 @@ module.exports = exports = (options = {}) ->
 
   connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
-  connectAssets.cache.middleware
+
+  # Compiled if changed and then pass to cache middleware
+  connectAssets.compileIfChanged
 
 class ConnectAssets
   constructor: (@options) ->
@@ -47,6 +49,15 @@ class ConnectAssets
 
     # Things that we must cache if changes aren't detected
     @cachedRoutePaths = {}
+
+  compileIfChanged: (req, res, next) =>
+    return next() unless req.method is 'GET'
+    route = parse(req.url).pathname
+    try
+      @compileCSS route[1..]
+    try
+      @compileJS route[1..]
+    @cache.middleware req, res, next
 
   # ## CSS and JS tag functions
   createHelpers: ->
