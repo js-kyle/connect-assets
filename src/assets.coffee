@@ -20,6 +20,7 @@ module.exports = exports = (options = {}) ->
     options.build ?= true
     cssCompilers.styl.compress ?= true
     cssCompilers.less.compress ?= true
+    cssCompilers.less.yuicompress ?= true
   options.servePath ?= ''
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
@@ -316,10 +317,11 @@ exports.cssCompilers = cssCompilers =
       options.filename = sourcePath
       options.paths = [path.dirname(sourcePath)].concat(options.paths)
       compress = @compress ? false
+      yuicompress = @yuicompress ? false
 
       callback = (err, tree) ->
         throw err if err
-        result = tree.toCSS({compress: compress})
+        result = tree.toCSS({compress: compress, yuicompress: yuicompress})
 
       new libs.less.Parser(options).parse(source, callback)
       result
