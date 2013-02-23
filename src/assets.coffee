@@ -352,6 +352,7 @@ timeEq = (date1, date2) ->
   date1? and date2? and date1.getTime() is date2.getTime()
 
 mkdirRecursive = (dir, mode, callback) ->
+  dir.replace /\\/g, '/'
   pathParts = path.normalize(dir).split '/'
   if fs.existsSync dir
     return callback null
