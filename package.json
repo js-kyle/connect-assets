@@ -6,7 +6,7 @@
   "homepage": "http://github.com/TrevorBurnham/connect-assets",
   "repository": {
     "type": "git",
-    "url": "git://github.com/TrevorBurnham/connect-assets.git"
+    "url": "https://github.com/adunkman/connect-assets.git"
   },
   "engines": {
     "node": ">=0.8.0"
