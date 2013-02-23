@@ -179,6 +179,7 @@ class ConnectAssets
             alreadyCached = true
           else
             mtime = new Date
+            css = @fixCSSImagePaths css
             @compiledCss[sourcePath] = {data: new Buffer(css), mtime}
 
         if alreadyCached and @options.build
