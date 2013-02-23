@@ -5,7 +5,7 @@ Transparent file compilation and dependency management for Node's [connect](http
 ## The state of the package
 
 As of February 21, 2013, @adunkman became the maintainer of this package. The game plan is as follows:
-- Address critical issues with version 2.x (master branch) to take of the open pull requests/issues. 
+- Address critical issues with version 2.x (master branch) to take care of the open pull requests/issues. 
 - Begin a version 3.x (v3 branch) that introduces stronger tests and code structure to make contributing easier to manage, reducing dependencies as possible.
 
 ## What?
