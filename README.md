@@ -12,8 +12,8 @@ As of February 21, 2013, @adunkman became the maintainer of this package. The ga
 
 * Rewrite in JS
 * Cleaner code
-** Shorter files
-** Better defined responsibilities
+    * Shorter files
+    * Better defined responsibilities
 * No singleton
 * Replace connect-file-cache
 * Look for replacment for Snockets
