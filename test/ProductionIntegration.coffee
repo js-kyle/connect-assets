@@ -37,6 +37,20 @@ exports['Far-future expires and MD5 hash strings are used for CSS'] = (test) ->
       test.equals body, 'textarea,input{border:1px solid #eee}\n'
       test.done()
 
+exports['JS assets ending in min.js are not minified'] = (test) ->
+  jsTag = "<script src='/js/min_js/annoying.1.2.3.min-fe5c33c451241762ee2df74af8b64c0f.js'></script>"
+  test.equals js('min_js/annoying.1.2.3.min.js'), jsTag
+  test.equals assets.instance.buildFilenames['js/min_js/annoying.1.2.3.min.js'], 'js/min_js/annoying.1.2.3.min-fe5c33c451241762ee2df74af8b64c0f.js'
+
+  request 'http://localhost:3589/js/min_js/annoying.1.2.3.min-fe5c33c451241762ee2df74af8b64c0f.js', (err, res, body) ->
+    throw err if err
+    test.equals res.headers['content-type'], 'application/javascript'
+    expectedBody = '''
+    alert("HEY")
+    '''
+    test.equals body, expectedBody
+    test.done()
+
 exports['JS dependencies are concatenated and minified'] = (test) ->
   jsTag = "<script src='/js/dependent-057747a1cbabcbd2279e4f358bc4723f.js'></script>"
   test.equals js('dependent'), jsTag

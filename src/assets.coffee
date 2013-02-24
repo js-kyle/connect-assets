@@ -226,7 +226,11 @@ class ConnectAssets
                   fs.writeFile buildPath, concatenation
             else
               filename = @buildFilenames[sourcePath]
-          snocketsFlags = minify: @options.minifyBuilds, async: false
+          if endsWith(sourcePath, '.min.js')
+            minifyBuilds = false
+          else
+            minifyBuilds = @options.minifyBuilds
+          snocketsFlags = minify: minifyBuilds, async: false
           @snockets.getConcatenation sourcePath, snocketsFlags, callback
           return @cachedRoutePaths[route] = ["/#{filename}"]
         else
@@ -338,6 +342,8 @@ getExt = (filePath) ->
   if(lastDotIndex = filePath.lastIndexOf '.') >= 0
     filePath[(lastDotIndex + 1)...]
   ''
+endsWith = (str, suffix) ->
+  str.indexOf(suffix, str.length - suffix.length) isnt -1
 
 stripExt = (filePath) ->
   if (lastDotIndex = filePath.lastIndexOf '.') >= 0
