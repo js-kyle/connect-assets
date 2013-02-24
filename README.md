@@ -8,6 +8,20 @@ As of February 21, 2013, @adunkman became the maintainer of this package. The ga
 - Address critical issues with version 2.x (master branch) to take care of the open pull requests/issues. 
 - Begin a version 3.x (v3 branch) that introduces stronger tests and code structure to make contributing easier to manage, reducing dependencies as possible.
 
+## Plans for version 3.0
+
+* Rewrite in JS
+* Cleaner code
+** Shorter files
+** Better defined responsibilities
+* No singleton
+* Replace connect-file-cache
+* Look for replacment for Snockets
+* Remove dependence on underscore
+* Remove dependence on mime
+* Write tests in mocha
+* Remove Cakefile
+
 ## What?
 
 connect-assets can:
