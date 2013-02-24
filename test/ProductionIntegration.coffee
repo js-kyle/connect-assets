@@ -16,7 +16,7 @@ exports['Far-future expires and MD5 hash strings are used for images'] = (test) 
     test.done()
 
 exports['Far-future expires and MD5 hash strings are used for CSS'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/style-666055206709fc94e56e1a59caa615dd.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/style-666055206709fc94e56e1a59caa615dd.css" />'
   test.equals css('style'), cssTag
   test.equals assets.instance.buildFilenames['css/style.styl'], 'css/style-666055206709fc94e56e1a59caa615dd.css'
 
@@ -38,7 +38,7 @@ exports['Far-future expires and MD5 hash strings are used for CSS'] = (test) ->
       test.done()
 
 exports['JS dependencies are concatenated and minified'] = (test) ->
-  jsTag = "<script src='/js/dependent-057747a1cbabcbd2279e4f358bc4723f.js'></script>"
+  jsTag = '<script src="/js/dependent-057747a1cbabcbd2279e4f358bc4723f.js"></script>'
   test.equals js('dependent'), jsTag
   test.equals assets.instance.buildFilenames['js/dependent.coffee'], 'js/dependent-057747a1cbabcbd2279e4f358bc4723f.js'
 

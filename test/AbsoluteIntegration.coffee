@@ -8,7 +8,7 @@ app.use assets src: path.join(__dirname, 'assets')
 app.listen 3590
 
 exports['Compiled stylesheets work from absolute options.src'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/button.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/button.css" />'
   test.equals css('button'), cssTag
 
   request 'http://localhost:3590/css/button.css', (err, res, body) ->
@@ -24,7 +24,7 @@ exports['Compiled stylesheets work from absolute options.src'] = (test) ->
     test.done()
 
 exports['Single .js files work from absolute options.src'] = (test) ->
-  test.equals js('js-dependency'), "<script src='/js/js-dependency.js'></script>"
+  test.equals js('js-dependency'), '<script src="/js/js-dependency.js"></script>'
 
   request 'http://localhost:3590/js/js-dependency.js', (err, res, body) ->
     throw err if err
@@ -33,23 +33,23 @@ exports['Single .js files work from absolute options.src'] = (test) ->
     test.done()
 
 exports['Single .coffee files work from absolute options.src'] = (test) ->
-  test.equals js('a'), "<script src='/js/a.js'></script>"
+  test.equals js('a'), '<script src="/js/a.js"></script>'
 
   request 'http://localhost:3590/js/a.js', (err, res, body) ->
     throw err if err
-    expectedBody = '(function() {\n  alert(\'I require nothing!\');\n}).call(this);\n'
+    expectedBody = '(function() {\n\n  alert(\'I require nothing!\');\n\n}).call(this);\n'
     test.equals body, expectedBody
     test.done()
 
 exports['JS dependencies work from absolute options.src'] = (test) ->
-  jsTags = """<script src='/js/subdir/nested/hobbits.js'></script>
-  <script src='/js/tree-dependent.js'></script>
+  jsTags = """<script src="/js/subdir/nested/hobbits.js"></script>
+  <script src="/js/tree-dependent.js"></script>
   """
   test.equals js('tree-dependent'), jsTags
 
   request 'http://localhost:3590/js/tree-dependent.js', (err, res, body) ->
     throw err if err
-    expectedBody = '(function() {\n\n}).call(this);\n'
+    expectedBody = '(function() {\n\n\n\n}).call(this);\n'
     test.equals body, expectedBody
     test.done()
     app.close()

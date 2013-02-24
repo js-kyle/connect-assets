@@ -8,7 +8,7 @@ app.use assets buildDir: false  # disable saving built assets to file
 app.listen 3592
 
 exports['Stylus benchmark'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/button-78506f0018c9f2ac06b778971d372a23.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/button-78506f0018c9f2ac06b778971d372a23.css" />'
   expectedBody = '.button{-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px}\n'
 
   startTime = new Date
@@ -24,7 +24,7 @@ exports['Stylus benchmark'] = (test) ->
     test.done()
 
 exports['Snockets benchmark'] = (test) ->
-  jsTag = "<script src='/js/c-99464d3c14ea198ff7d8bc53a5bd63c6.js'></script>"
+  jsTag = '<script src="/js/c-99464d3c14ea198ff7d8bc53a5bd63c6.js"></script>'
   expectedBody = '(function(){alert("I require nothing!")}).call(this),function(){}.call(this),function(){}.call(this)'
 
   startTime = new Date
