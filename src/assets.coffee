@@ -6,11 +6,15 @@ Snockets      = require 'snockets'
 crypto        = require 'crypto'
 fs            = require 'fs'
 path          = require 'path'
-_             = require 'underscore'
 {parse}       = require 'url'
 
 libs = {}
 jsCompilers = Snockets.compilers
+
+extend = (dest, objs...) ->
+  for obj in objs
+    dest[k] = v for k, v of obj
+  dest
 
 module.exports = exports = (options = {}) ->
   return connectAssets if connectAssets
@@ -27,7 +31,7 @@ module.exports = exports = (options = {}) ->
   options.detectChanges ?= process.env.NODE_ENV isnt 'production'
   options.minifyBuilds ?= true
   options.pathsOnly ?= false
-  jsCompilers = _.extend jsCompilers, options.jsCompilers || {}
+  jsCompilers = extend jsCompilers, options.jsCompilers || {}
 
   connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
