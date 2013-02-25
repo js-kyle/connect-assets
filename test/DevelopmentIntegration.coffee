@@ -214,14 +214,12 @@ exports['.coffee files can `require_tree` their own folder'] = (test) ->
   test.done()
 
 exports['`require` can be used on a file before `require_tree`'] = (test) ->
-  jsTags = """<script src="/js/moon_units/austin/texas.js"></script>
-  <script src="/js/moon_units/austin/powers.js"></script>
-  <script src="/js/moon_units/alpha.js"></script>
-  <script src="/js/moon_units/zappa.js"></script>
-  <script src="/js/moon_units/evil.js"></script>
-  <script src="/js/needs-evil.js"></script>
-  """
-  test.equals js('needs-evil'), jsTags
+  actualJsTags = js('needs-evil')
+  test.ok actualJsTags.indexOf("moon_units/austin/texas.js") < actualJsTags.indexOf("moon_units/austin/powers.js")
+  test.ok actualJsTags.indexOf("moon_units/austin/powers.js") < actualJsTags.indexOf("moon_units/alpha.js")
+  test.ok actualJsTags.indexOf("moon_units/austin/powers.js") < actualJsTags.indexOf("moon_units/zappa.js")
+  test.ok actualJsTags.indexOf("moon_units/austin/powers.js") < actualJsTags.indexOf("moon_units/evil.js")
+  test.ok actualJsTags.indexOf("moon_units/evil.js") < actualJsTags.indexOf("needs-evil.js")
   test.done()
 
 exports['Dependencies can be chained (in non-production mode)'] = (test) ->
