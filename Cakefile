@@ -29,9 +29,12 @@ task 'build', 'Compile CoffeeScript source files', ->
 task 'watch', 'Recompile CoffeeScript source files when modified', ->
   build true
 
-task 'test', 'Run the test suite (and re-run if anything changes)', ->
+task 'test', 'Run the test suite', ->
   suite = null
-  build ->
+  build false, ->
+    nodeunit = require 'nodeunit'
+    reporter = nodeunit.reporters.default
+
     do runTests = ->
       suite?.kill()
       suiteNames = [
@@ -44,17 +47,17 @@ task 'test', 'Run the test suite (and re-run if anything changes)', ->
         'BenchmarkStatic'
       ]
       suiteIndex = 0
+      codes = 0
       do runNextTestSuite = ->
-        return unless suiteName = suiteNames[suiteIndex]
-        suite = spawn "coffee", ["-e", "{reporters} = require 'nodeunit'; reporters.default.run ['#{suiteName}.coffee']"], cwd: 'test'
-        suite.stdout.on 'data', (data) -> print data.toString()
-        suite.stderr.on 'data', (data) -> print data.toString()
-        suite.on 'exit', -> suiteIndex++; runNextTestSuite()
-      invoke 'docs'  # lest I forget
+        suiteName = suiteNames[suiteIndex]
 
-    watchTargets = (targets..., callback) ->
-      for target in targets
-        watchit target, include: true, (event) ->
-          callback() unless event is 'success'
-    watchTargets 'src', -> build runTests
-    watchTargets 'test', 'Cakefile', runTests
+        if suiteName
+          suite = spawn "coffee", ["-e", "{reporters} = require 'nodeunit'; reporters.default.run ['#{suiteName}.coffee'], null, (err) -> process.exit(if err then 1 else 0)"], cwd: 'test'
+          suite.stdout.on 'data', (data) -> print data.toString()
+          suite.stderr.on 'data', (data) -> print data.toString()
+          suite.on 'exit', (code) ->
+            codes += code
+            suiteIndex++
+            runNextTestSuite()
+        else
+          process.exit codes
