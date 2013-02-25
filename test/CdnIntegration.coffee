@@ -42,13 +42,3 @@ exports['Still serves files locally'] = (test) ->
     test.equals res.headers['content-type'], 'application/javascript'
     test.done()
     app.close()
-
-exports['servePath not prepended to script paths on development'] = (test) ->
-  process.env.NODE_ENV = 'development'
-  app = require('connect').createServer()
-  assets = require('../lib/assets.js')
-  app.use assets servePath: 'http://mycdn.com'
-
-  jsTag = '<script src="/js/js-dependency.js"></script>'
-  test.equals js('js-dependency'), jsTag
-  test.done()
