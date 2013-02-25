@@ -1,11 +1,13 @@
 # connect-assets
 
+[![Build Status](https://travis-ci.org/adunkman/connect-assets.png?branch=master)](https://travis-ci.org/adunkman/connect-assets)
+
 Transparent file compilation and dependency management for Node's [connect](https://github.com/senchalabs/connect) framework in the spirit of the Rails 3.1 asset pipeline.
 
 ## The state of the package
 
 As of February 21, 2013, @adunkman became the maintainer of this package. The game plan is as follows:
-- Address critical issues with version 2.x (master branch) to take care of the open pull requests/issues. 
+- Address critical issues with version 2.x (master branch) to take care of the open pull requests/issues.
 - Begin a version 3.x (v3 branch) that introduces stronger tests and code structure to make contributing easier to manage, reducing dependencies as possible.
 
 ## Plans for version 3.0
@@ -29,10 +31,10 @@ connect-assets can:
 1. Serve `.coffee` ([CoffeeScript](http://coffeescript.org)) files as compiled `.js`
 1. Concatenate `.coffee` and `.js` together using [Snockets](https://github.com/TrevorBurnham/snockets)
 1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css` with
-    -  [nib](https://github.com/visionmedia/nib) 
+    -  [nib](https://github.com/visionmedia/nib)
     -  [Twitter Bootstrap](https://github.com/shomeya/bootstrap-stylus)
 1. Serve `.less` ([Less](http://lesscss.org/)) as compiled `.css` with
-    - [Twitter Bootstrap](https://github.com/twitter/bootstrap) 
+    - [Twitter Bootstrap](https://github.com/twitter/bootstrap)
 1. Serve files with an MD5 hash suffix and use a far-future expires header for maximum efficiency
 1. Avoid redundant git diffs by storing compiled `.js` and `.css` files in memory rather than writing them to the disk—except when you want them (e.g. for deployment to a CDN).
 
@@ -93,7 +95,7 @@ If you like, you can pass any of these options to the function returned by `requ
 
 * `src` (defaults to `'assets'`): The directory assets will be read from
 * `helperContext` (defaults to `global`): The object the `css` and `js` helper functions will attach to
-* `buildDir` (defaults to `builtAssets`): Writes built asset files to disk using this directory in `production` environment, set to `false` to disable 
+* `buildDir` (defaults to `builtAssets`): Writes built asset files to disk using this directory in `production` environment, set to `false` to disable
 * ... see the source (`src/assets.coffee`) for more.
 
 You can also set the "root path" on the `css` and `js` helper functions (by default, `/css` and `/js`), e.g.
