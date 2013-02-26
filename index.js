@@ -3,7 +3,8 @@ var compilers = require("./lib/compilers");
 
 var connectAssets = module.exports = function (options) {
   options = connectAssets.parseOptions(options || {});
-  return new Assets(options).middleware;
+  var instance = new Assets(options);
+  return instance.middleware.bind(instance);
 };
 
 connectAssets.parseOptions = function (options) {
@@ -14,8 +15,11 @@ connectAssets.parseOptions = function (options) {
   options.buildDir = options.buildDir || "builtAssets";
   options.build = options.build || (options.env == "production" ? true : false);
   options.detectChanges = options.detectChanges || (options.env == "production" ? false : true);
-  options.jsCompilers = extend({}, compilers.js, options.jsCompilers || {});
-  options.cssCompilers = extend({}, compilers.css, options.cssCompilers || {});
+  
+  options.compilers = {
+    js: extend({}, compilers.js, options.jsCompilers || {}),
+    css: extend({}, compilers.css, options.cssCompilers || {})
+  };
 
   return options;
 };
