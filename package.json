@@ -40,6 +40,7 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --recursive --reporter spec && ./node_modules/.bin/mocha --require blanket --recursive --reporter travis-cov",
+    "test-watch": "./node_modules/.bin/mocha --recursive --reporter min --watch",
     "travis-cov": {
       "threshold": 80
     }, 
