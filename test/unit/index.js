@@ -1,11 +1,11 @@
 var expect = require("expect.js");
 var mocha = require("mocha");
-var behaviors = require("./options.behaviors");
+var behaviors = require("./index.behaviors");
 var they = it;
 
 var connectAssets = require("../../index");
 
-describe("options", function () {
+describe("index: options", function () {
 
   they("are not required", function () {
     var instance = connectAssets();
