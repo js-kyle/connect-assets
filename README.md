@@ -119,6 +119,10 @@ gives you
 
     <link rel='stylesheet' href='/style.css'>
 
+## Generated documentation 
+
+There is generated documentation (created with [docco](http://jashkenas.github.com/docco/)) available [here](http://adunkman.github.com/connect-assets/).
+
 ## Credits
 
 Borrows heavily from Connect's [compiler](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/compiler.js) and [static](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/static.js) middlewares, and of course sstephenson's [Sprockets](https://github.com/sstephenson/sprockets).
