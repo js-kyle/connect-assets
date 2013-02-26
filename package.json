@@ -34,9 +34,15 @@
   },
   "devDependencies": {
     "mocha": "1.8.1",
-    "expect.js": "0.2.0"
+    "expect.js": "0.2.0",
+    "travis-cov": "0.2.4",
+    "blanket": "1.0.6"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "./node_modules/.bin/mocha --recursive --reporter spec && ./node_modules/.bin/mocha --require blanket --recursive --reporter travis-cov",
+    "travis-cov": {
+      "threshold": 80
+    }, 
+    "blanket": { "pattern": "//^((?!\/node_modules\/)(?!\/test\/helpers\/)(?!\/test\/unit\/)(?!\/test\/integration\/).)*$/ig" }
   }
 }

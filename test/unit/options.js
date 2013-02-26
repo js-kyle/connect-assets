@@ -3,7 +3,7 @@ var mocha = require("mocha");
 var behaviors = require("./options.behaviors");
 var they = it;
 
-var connectAssets = require("../index");
+var connectAssets = require("../../index");
 
 describe("options", function () {
 
