@@ -1,1 +1,0 @@
-alert 'Bilbo and Frodo are pretty clearly the best names ever.'
