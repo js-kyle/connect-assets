@@ -31,7 +31,8 @@
   },
   "main": "index.js",
   "dependencies": {
-    "sqwish": "0.2.1"
+    "sqwish": "0.2.1",
+    "async": "0.2.5"
   },
   "devDependencies": {
     "mocha": "1.8.1",
