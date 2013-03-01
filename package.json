@@ -32,6 +32,7 @@
   "main": "index.js",
   "dependencies": {
     "sqwish": "0.2.1",
+    "uglify-js": "2.2.5",
     "async": "0.2.5"
   },
   "devDependencies": {
