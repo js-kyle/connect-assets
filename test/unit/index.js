@@ -95,19 +95,50 @@ describe("index: options", function () {
 
   describe(".jsCompilers", function () {
 
-    it("supports javascript by default");
+    it("supports javascript by default", function () {
+      var options = connectAssets.parseOptions({});
+      expect(options.compilers.js.js).to.be.ok();
+    });
+
     it("supports coffeescript by default");
-    it("allows adding new compilers without replacing defaults");
-    it("allows overriding default compilers");
+
+    it("allows adding a new compiler without replacing defaults", function () {
+      var options = connectAssets.parseOptions({ jsCompilers: { ts: {} } });
+
+      expect(options.compilers.js.js).to.be.ok();
+      expect(options.compilers.js.ts).to.be.ok();
+    });
+
+    it("allows overriding default compilers", function () {
+      var options = connectAssets.parseOptions({ jsCompilers: { js: "e" } });
+
+      expect(options.compilers.js.js).to.be("e");
+    });
 
   });
 
   describe(".cssCompilers", function () {
 
     it("supports stylus by default");
-    it("supports less by default");
-    it("allows adding new compilers without replacing defaults");
-    it("allows overriding default compilers");
+
+    it("supports less by default", function () {
+      var options = connectAssets.parseOptions({});
+
+      expect(options.compilers.css.less).to.be.ok();
+    });
+
+    it("allows adding a new compiler without replacing defaults", function () {
+      var options = connectAssets.parseOptions({ cssCompilers: { sass: {} } });
+
+      expect(options.compilers.css.css).to.be.ok();
+      expect(options.compilers.css.sass).to.be.ok();
+    });
+
+    it("allows overriding default compilers", function () {
+      var options = connectAssets.parseOptions({ cssCompilers: { css: "e" } });
+
+      expect(options.compilers.css.css).to.be("e");
+    });
 
   });
   

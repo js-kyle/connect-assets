@@ -1,10 +1,9 @@
 var expect = require("expect.js");
 var mocha = require("mocha");
-var behaviors = require("./assets.behaviors");
 
 var connectAssets = require("../../index");
 
-describe("css", function () {
+describe("css helper", function () {
 
   beforeEach(function () {
     connectAssets({
@@ -14,7 +13,12 @@ describe("css", function () {
     });
   });
 
-  behaviors.prepends_type("css");
+  it("prepends the asset folder to the URL (css)", function () {
+    var expected = "/css/some/path.css";
+    var actual = this.css("some/path");
+
+    expect(actual).to.be(expected);
+  });
 
   it("doesn't do anything to full URLs (http://example.com)", function () {
     var expected = "http://example.com/test.css";

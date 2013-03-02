@@ -9,61 +9,89 @@ var connectAssets = require("../../../index");
 
 describe("compilers/less", function () {
 
-  it("serves a css file", function (done) {
-    var file = "test/integration/builtAssets/css/less-with-import.css";
-    var context = {};
+  it("includes a less file with version token", function (done) {
+    var req = { url: "/" };
 
-    var server = http.createServer(connect().use(connectAssets({
+    connectAssets({
+      src: "test/integration/assets",
+      pathsOnly: true,
+      helperContext: this
+    })(req, null, function (err) {
+      if (err) throw err;
+
+      var expected = "/css/less-with-import.css?v=";
+      var actual = this.css("less-with-import");
+
+      expect(actual).to.contain(expected);
+      done();
+    }.bind(this));
+  });
+
+  it("serves a less file with no minification when build=false", function (done) {
+    var file = "test/integration/builtAssets/css/less-with-import.css";
+
+    var middleware = connectAssets({
       build: false,
       src: "test/integration/assets",
       pathsOnly: true,
-      helperContext: context
-    })));
+      helperContext: this
+    });
 
-    fs.readFile(file, "utf-8", function (err, expected) {
-      if (err) throw err;
+    var server = http.createServer(connect().use(middleware));
 
-      server.listen(3588, function () {
-        var url = context.css("less-with-import");
+    server.listen(3570, function () {
+      request("http://localhost:3570", function (err) {
+        if (err) throw err;
 
-        request("http://localhost:3588" + url, function (err, res, body) {
+        fs.readFile(file, "utf-8", function (err, expected) {
           if (err) throw err;
 
-          expect(body).to.be(expected);
+          var url = this.css("less-with-import");
 
-          server.close();
-          done();
-        });
-      });
-    });
+          request("http://localhost:3570" + url, function (err, res, body) {
+            if (err) throw err;
+
+            expect(body).to.be(expected);
+
+            server.close();
+            done();
+          });
+        }.bind(this));
+      }.bind(this));
+    }.bind(this));
   });
 
-  it("serves a compressed css file when build=true", function (done) {
+  it("serves a less file with minification when build=true", function (done) {
     var file = "test/integration/builtAssets/css/less-compressed.css";
-    var context = {};
 
-    var server = http.createServer(connect().use(connectAssets({
+    var middleware = connectAssets({
       build: true,
       src: "test/integration/assets",
       pathsOnly: true,
-      helperContext: context
-    })));
+      helperContext: this
+    });
 
-    fs.readFile(file, "utf-8", function (err, expected) {
-      if (err) throw err;
+    var server = http.createServer(connect().use(middleware));
 
-      server.listen(3588, function () {
-        var url = context.css("less-with-import");
+    server.listen(3571, function () {
+      request("http://localhost:3571", function (err) {
+        if (err) throw err;
 
-        request("http://localhost:3588" + url, function (err, res, body) {
+        fs.readFile(file, "utf-8", function (err, expected) {
           if (err) throw err;
 
-          expect(body).to.be(expected);
+          var url = this.css("less-with-import");
 
-          server.close();
-          done();
-        });
-      });
-    });
+          request("http://localhost:3571" + url, function (err, res, body) {
+            if (err) throw err;
+
+            expect(body).to.be(expected);
+
+            server.close();
+            done();
+          });
+        }.bind(this));
+      }.bind(this));
+    }.bind(this));
   });
 });

@@ -15,6 +15,8 @@ connectAssets.parseOptions = function (options) {
   options.buildDir = options.buildDir || "builtAssets";
   options.build = options.build || (options.env == "production" ? true : false);
   options.detectChanges = options.detectChanges || (options.env == "production" ? false : true);
+  options.saveToDisk = options.saveToDisk || (options.env == "production") ? true : false;
+  options.assetFolders = options.assetFolders || { css: "css", js: "js" };
   
   options.compilers = {
     js: extend({}, compilers.js, options.jsCompilers || {}),
