@@ -14,7 +14,7 @@ describe("compilers/less", function () {
 
     connectAssets({
       src: "test/integration/assets",
-      pathsOnly: true,
+      tagWriter: "passthroughWriter",
       helperContext: this
     })(req, null, function (err) {
       if (err) throw err;
@@ -33,7 +33,7 @@ describe("compilers/less", function () {
     var middleware = connectAssets({
       build: false,
       src: "test/integration/assets",
-      pathsOnly: true,
+      tagWriter: "passthroughWriter",
       helperContext: this
     });
 
@@ -67,7 +67,7 @@ describe("compilers/less", function () {
     var middleware = connectAssets({
       build: true,
       src: "test/integration/assets",
-      pathsOnly: true,
+      tagWriter: "passthroughWriter",
       helperContext: this
     });
 

@@ -10,7 +10,7 @@ var connectAssets = module.exports = function (options) {
 connectAssets.parseOptions = function (options) {
   options.env = options.env || process.env.NODE_ENV;
   options.src = options.src || "assets";
-  options.pathsOnly = !!options.pathsOnly;
+  options.tagWriter = options.tagWriter || "xHtml5Writer";
   options.helperContext = options.helperContext || global;
   options.buildDir = options.buildDir || "builtAssets";
   options.build = options.build || (options.env == "production" ? true : false);
