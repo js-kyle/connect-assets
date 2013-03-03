@@ -39,6 +39,17 @@ describe("index: options", function () {
 
   });
 
+  describe(".tagWriter", function () {
+
+    it("defaults to 'xHtml5Writer'", function () {
+      var options = connectAssets.parseOptions({});
+      expect(options.tagWriter).to.be("xHtml5Writer");
+    });
+
+    behaviors.allows_overrides("tagWriter");
+
+  });
+
   describe(".helperContext", function () {
 
     it("defaults to 'global'", function () {
@@ -91,6 +102,52 @@ describe("index: options", function () {
 
     behaviors.allows_overrides("detectChanges");
 
+  });
+
+  describe(".saveToDisk", function () {
+
+    it("defaults to 'false' when not in production", function () {
+      var options = connectAssets.parseOptions({ env: "not-production" });
+      expect(options.saveToDisk).to.be(false);
+    });
+
+    it("defaults to 'true' in production", function () {
+      var options = connectAssets.parseOptions({ env: "production" });
+      expect(options.saveToDisk).to.be(true);
+    });
+
+    behaviors.allows_overrides("saveToDisk");
+
+  });
+
+  describe(".assetFolders", function () {
+
+    it("defaults to { css: 'css', js: 'js' }", function () {
+      var options = connectAssets.parseOptions({});
+      expect(options.assetFolders).to.eql({ css: "css", js: "js" });
+    });
+
+    it("allows .css to be overridden with keeping default value for .js", function () {
+      var options = connectAssets.parseOptions({
+        assetFolders: { css: "styles" }
+      });
+      expect(options.assetFolders).to.eql({ css: "styles", js: "js" });
+    });
+
+    it("allows .js to be overridden with keeping default value for .css", function () {
+      var options = connectAssets.parseOptions({
+        assetFolders: { js: "scripts" }
+      });
+      expect(options.assetFolders).to.eql({ css: "css", js: "scripts" });
+    });
+
+    it("allows .css and .js to be overridden", function () {
+      var options = connectAssets.parseOptions({
+        assetFolders: { css: "styles", js: "scripts" }
+      });
+      expect(options.assetFolders).to.eql({ css: "styles", js: "scripts" });
+    });
+    
   });
 
   describe(".jsCompilers", function () {
