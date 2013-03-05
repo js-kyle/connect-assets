@@ -6,6 +6,7 @@
 - `options.buildFilenamer` no longer exists; built filenames now use the source file's modification time and cannot be overrided.
 - `options.buildsExpire` no longer exists.
 - `options.pathsOnly` no longer exists; it has been replaced by `options.tagWriter`. To return the file paths without tags from the `js()` and `css()` functions, pass `options.tagWriter = "passthroughWriter"`.
+- `options.jsCompilers` and `options.cssCompilers` are now `options.compilers`.
 
 ## `css()` and `js()` root folders
 

@@ -18,10 +18,7 @@ connectAssets.parseOptions = function (options) {
   options.saveToDisk = options.saveToDisk || (options.env == "production" ? true : false);
   options.assetFolders = extend({ css: "css", js: "js" }, options.assetFolders || {});
   
-  options.compilers = {
-    js: extend({}, compilers.js, options.jsCompilers || {}),
-    css: extend({}, compilers.css, options.cssCompilers || {})
-  };
+  options.compilers = extend({}, compilers, options.compilers);
 
   return options;
 };
