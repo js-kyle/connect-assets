@@ -7,7 +7,7 @@ var request = require("request");
 
 var connectAssets = require("../../../index");
 
-describe("compilers/less", function () {
+describe("lib/compilers/less", function () {
 
   it("includes a less file with version token", function (done) {
     var req = { url: "/" };

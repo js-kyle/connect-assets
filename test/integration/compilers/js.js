@@ -7,7 +7,7 @@ var request = require("request");
 
 var connectAssets = require("../../../index");
 
-describe("compilers/js", function () {
+describe("lib/compilers/js", function () {
 
   it("includes a js file with version token", function (done) {
     var req = { url: "/" };

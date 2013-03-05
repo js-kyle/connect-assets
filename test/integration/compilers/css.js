@@ -7,7 +7,7 @@ var request = require("request");
 
 var connectAssets = require("../../../index");
 
-describe("compilers/css", function () {
+describe("lib/compilers/css", function () {
 
   it("includes a css file with version token", function (done) {
     var req = { url: "/" };
