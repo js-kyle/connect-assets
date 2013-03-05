@@ -1,89 +1,82 @@
 # connect-assets
 
-[![Build Status](https://travis-ci.org/adunkman/connect-assets.png?branch=master)](https://travis-ci.org/adunkman/connect-assets)
+[![Build Status](https://travis-ci.org/adunkman/connect-assets.png?branch=v3)](https://travis-ci.org/adunkman/connect-assets)
 
 Transparent file compilation and dependency management for Node's [connect](https://github.com/senchalabs/connect) framework in the spirit of the Rails 3.1 asset pipeline.
 
-## The state of the package
-
-As of February 21, 2013, @adunkman became the maintainer of this package. The game plan is as follows:
-- Address critical issues with version 2.x (master branch) to take care of the open pull requests/issues.
-- Begin a version 3.x (v3 branch) that introduces stronger tests and code structure to make contributing easier to manage, reducing dependencies as possible.
-
-## Plans for version 3.0
-
-* Rewrite in JS
-* Cleaner code
-    * Shorter files
-    * Better defined responsibilities
-* No singleton
-* Replace connect-file-cache
-* Look for replacment for Snockets
-* Remove dependence on underscore
-* Remove dependence on mime
-* Write tests in mocha
-* Remove Cakefile
-
-## What?
+## What can it do?
 
 connect-assets can:
 
 1. Serve `.coffee` ([CoffeeScript](http://coffeescript.org)) files as compiled `.js`
-1. Concatenate `.coffee` and `.js` together using [Snockets](https://github.com/TrevorBurnham/snockets)
-1. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css` with
-    -  [nib](https://github.com/visionmedia/nib)
-    -  [Twitter Bootstrap](https://github.com/shomeya/bootstrap-stylus)
-1. Serve `.less` ([Less](http://lesscss.org/)) as compiled `.css` with
-    - [Twitter Bootstrap](https://github.com/twitter/bootstrap)
-1. Serve files with an MD5 hash suffix and use a far-future expires header for maximum efficiency
-1. Avoid redundant git diffs by storing compiled `.js` and `.css` files in memory rather than writing them to the disk—except when you want them (e.g. for deployment to a CDN).
+2. Concatenate `.coffee` and `.js` together using [Snockets](https://github.com/TrevorBurnham/snockets)
+3. Serve `.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css`
+4. Serve `.less` ([Less](http://lesscss.org/)) as compiled `.css`
+5. Serve files with a cache-control token and use a far-future expires header for maximum efficiency
+6. Avoid redundant git diffs by storing compiled `.js` and `.css` files in memory rather than writing them to the disk when in development.
 
-## How?
+## How do I use it?
 
 First, install it in your project's directory:
 
-    npm install connect-assets
+```shell
+npm install connect-assets
+```
 
 Also install any specific compilers you'll need, e.g.:
 
-    npm install coffee-script
-    npm install stylus
-    npm install nib
-    npm install bootstrap-stylus
-    npm install less
+```shell
+npm install coffee-script
+npm install stylus
+npm install less
+```
 
 Then add this line to your app's configuration:
 
-    app.use require('connect-assets')()
+```javascript
+app.use(require("connect-assets")());
+```
 
-Finally, create an `assets` directory in your project and throw all your `.coffee` files in /assets/js and `.styl`, `.less` files in /assets/css.
+Finally, create an `assets` directory in your project and throw all your `.coffee` and `.js` files in /assets/js and `.styl`, `.less`, and `.css` files in /assets/css.
 
 ### Markup functions
 
-connect-assets provides two global functions named `js` and `css`. Use them in your views. They tell connect-assets to do any necessary compilation, then return the markup you need. For instance, in a [Jade template](http://jade-lang.com/), the code
+connect-assets provides two global functions named `js` and `css`. Use them in your views. They return the HTML markup needed to include the most recent version of your assets, taking advantage of caching when available. For instance, in a [Jade template](http://jade-lang.com/), the code
 
-    != css('normalize')
-    != js('jquery')
+```
+!= css("normalize")
+!= js("jquery")
+```
 
 (where `!= is Jade's syntax for running JS and displaying its output) results in the markup
 
-    <link rel="stylesheet" href="/css/normalize.css" />
-    <script src="/js/jquery.js"></script>
+```html
+<link rel="stylesheet" href="/css/normalize.css?v=[some number]" />
+<script src="/js/jquery.js?v=[some number]"></script>
+```
 
 ### Sprockets-style concatenation
 
-You can indicate dependencies in your CoffeeScript files using the Sprockets-style syntax
+You can indicate dependencies in your `.coffee` and `.js` files using the Sprockets-style syntax.
 
-    #= require dependency
+In CoffeeScript:
 
-(or `//= require dependency` in JavaScript). When you do so, and point the `js` function at that file, two things can happen:
+```coffeescript
+#= require dependency
+```
+
+In JavaScript:
+
+```javascript
+//= require dependency
+```
+
+When you do so, and point the `js` function at that file, two things can happen:
 
 1. By default, you'll get multiple `<script>` tags out, in an order that gives you all of your dependencies.
-2. If you passed the `build: true` option to connect-assets (enabled by default when `process.env.NODE_ENV == 'production'`), you'll just get a single tag, wich will point to a JavaScript file that encompasses the target's entire dependency graph—compiled, concatenated, and minified (with [UglifyJS](https://github.com/mishoo/UglifyJS)).
+2. If you passed the `build: true` option to connect-assets (enabled by default when `env == 'production'`), you'll just get a single tag, wich will point to a JavaScript file that encompasses the target's entire dependency graph—compiled, concatenated, and minified (with [UglifyJS](https://github.com/mishoo/UglifyJS)).
 
-If you want to bring in a whole folder of scripts, use
-
-    #= require_tree dir
+If you want to bring in a whole folder of scripts, use `//= require_tree dir` instead of `//= require file`.
 
 See [Snockets](http://github.com/TrevorBurnham/snockets) for more information.
 
@@ -93,34 +86,41 @@ See [Snockets](http://github.com/TrevorBurnham/snockets) for more information.
 
 If you like, you can pass any of these options to the function returned by `require('connect-assets')`:
 
-* `src` (defaults to `'assets'`): The directory assets will be read from
-* `helperContext` (defaults to `global`): The object the `css` and `js` helper functions will attach to
-* `buildDir` (defaults to `builtAssets`): Writes built asset files to disk using this directory in `production` environment, set to `false` to disable
-* ... see the source (`src/assets.coffee`) for more.
-
-You can also set the "root path" on the `css` and `js` helper functions (by default, `/css` and `/js`), e.g.
-
-    css.root = '/stylesheets'
-    js.root  = '/javascripts'
+* `env` (defaults to `process.env.NODE_ENV`): Sets a number of defaults, see below.
+* `src` (defaults to `'assets'`): The directory assets will be read from.
+* `tagWriter` (defaults to `'xHtml5Writer'`): The writer to use when creating `<link>` and `<script>` tags. See [lib/tagWriters](https://github.com/adunkman/connect-assets/tree/v3/lib/tagWriters) for available options, or pass in an object implementing `.cssTag(path)` and `.jsTag(path, options)` functions.
+* `helperContext` (defaults to `global`): The object the `css` and `js` helper functions will attach to. It's considered good practice to pass in an object here instead of using the default.
+* `buildDir` (defaults to `builtAssets`): Writes built asset files to disk using this directory when `saveToDisk` is `true`.
+* `detectChanges` (defaults to `false` when `env == 'production'`, otherwise `true`): watches the `src` directory for changes and recompiles the built assets.
+* `saveToDisk` (defaults to `true` when `env == 'production'`, otherwise `false`): Saves the compiled assets to disk in the `buildDir` when `true`.
+* `assetFolders` (defaults to `{ css: 'css', js: 'js' }`): The asset-type-specific folders within the `src` directory. If you do not wish to separate your assets into `css` and `js` folders, set both properties to blank.
 
 To override these roots, start a path with `'/'`. So, for instance,
 
-    css('style.css')
+```
+css('style.css')
+```
 
 generates
 
-    <link rel='stylesheet' href='/css/style.css'>
+```html
+<link rel="stylesheet" href="/css/style.css" />
+```
 
 while
 
-    css('/style.css')
+```
+css('/style.css')
+```
 
 gives you
 
-    <link rel='stylesheet' href='/style.css'>
+```html
+<link rel="stylesheet" href="/style.css" />
+```
 
 ## Credits
 
 Borrows heavily from Connect's [compiler](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/compiler.js) and [static](https://github.com/senchalabs/connect/blob/1.6.4/lib/middleware/static.js) middlewares, and of course sstephenson's [Sprockets](https://github.com/sstephenson/sprockets).
 
-Look at these [awesome people](https://github.com/adunkman/connect-assets/contributors) who make this project possible.
+Take a look at the [contributors](https://github.com/adunkman/connect-assets/contributors) who make this project possible.
