@@ -16,9 +16,5 @@ describe("lib/caches/disk", function () {
   });
 
   behaviors.cache();
-  
-  it("makes the required directories to write out to the disk");
-
-  it("deletes older versions of cached files when a newer version is added");
 
 });
