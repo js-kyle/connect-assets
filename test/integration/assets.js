@@ -10,7 +10,7 @@ describe("lib/assets", function () {
 
   describe("middleware", function () {
 
-    it("serves files using a far-future header", function (done) {
+    it("uses an exires header at least a year from now", function (done) {
       var server = http.createServer(connect().use(connectAssets({
         src: "test/integration/assets",
         tagWriter: "passthroughWriter",
