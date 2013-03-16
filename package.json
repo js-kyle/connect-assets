@@ -1,3 +1,4 @@
+{
   "name": "connect-assets",
   "version": "2.4.0",
   "author": "Andrew Dunkman <andrew@dunkman.org>",
@@ -30,7 +31,8 @@
   },
   "main": "lib/assets.js",
   "dependencies": {
-    "connect-file-cache": "0.2.4"
+    "connect-file-cache": "0.2.4",
+    "snockets": "git://github.com/Fresheyeball/snockets.git#master"
   },
   "devDependencies": {
     "async": "0.1.14",
