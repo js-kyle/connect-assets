@@ -31,6 +31,7 @@ module.exports = exports = (options = {}) ->
   options.detectChanges ?= process.env.NODE_ENV isnt 'production'
   options.minifyBuilds ?= true
   options.pathsOnly ?= false
+  options.mangle ?= true
   jsCompilers = extend jsCompilers, options.jsCompilers || {}
 
   connectAssets = module.exports.instance = new ConnectAssets options
@@ -40,7 +41,7 @@ module.exports = exports = (options = {}) ->
 class ConnectAssets
   constructor: (@options) ->
     @cache = connectCache()
-    @snockets = new Snockets src: @options.src
+    @snockets = new Snockets src: @options.src, mangle : @options.mangle
 
     # Things that we must cache to work efficiently with CSS compilers
     @cssSourceFiles = {}
