@@ -31,6 +31,8 @@ module.exports = exports = (options = {}) ->
   options.detectChanges ?= process.env.NODE_ENV isnt 'production'
   options.minifyBuilds ?= true
   options.pathsOnly ?= false
+  libs.stylusExtends = options.stylusExtends ?= () => {};
+  
   jsCompilers = extend jsCompilers, options.jsCompilers || {}
 
   connectAssets = module.exports.instance = new ConnectAssets options
@@ -270,6 +272,7 @@ exports.cssCompilers = cssCompilers =
           .use(libs.bootstrap())
           .use(libs.nib())
           .use(libs.bootstrap())
+          .use(libs.stylusExtends)
           .set('compress', @compress)
           .set('include css', true)
           .render callback
