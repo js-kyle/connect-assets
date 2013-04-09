@@ -7,7 +7,7 @@ app.use assets()
 app.listen 3588
 
 exports['Raw JavaScript is served directly'] = (test) ->
-  jsTag = "<script src='/js/js-dependency.js'></script>"
+  jsTag = '<script src="/js/js-dependency.js"></script>'
   test.equals js('js-dependency'), jsTag
 
   request 'http://localhost:3588/js/js-dependency.js', (err, res, body) ->
@@ -17,7 +17,7 @@ exports['Raw JavaScript is served directly'] = (test) ->
     test.done()
 
 exports['CoffeeScript is served as JavaScript'] = (test) ->
-  jsTag = "<script src='/js/script.js'></script>"
+  jsTag = '<script src="/js/script.js"></script>'
   test.equals js('script'), jsTag
 
   request 'http://localhost:3588/js/script.js', (err, res, body) ->
@@ -25,14 +25,16 @@ exports['CoffeeScript is served as JavaScript'] = (test) ->
     test.equals res.headers['content-type'], 'application/javascript'
     expectedBody = '''
     (function() {
+
       console.log(\'Howdy\');
+
     }).call(this);\n
     '''
     test.equals body, expectedBody
     test.done()
 
 exports['Raw CSS is served directly'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/normalize.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/normalize.css" />'
   test.equals css('normalize'), cssTag
 
   request 'http://localhost:3588/css/normalize.css', (err, res, body) ->
@@ -49,8 +51,15 @@ exports['Images are served directly'] = (test) ->
     test.equals res.headers['content-type'], 'image/png'
     test.done()
 
+exports['CSS images are resolved correctly'] = (test) ->
+  css('background')
+  request 'http://localhost:3588/img/foobar.png', (err, res, body) ->
+    throw err if err
+    test.equals res.statusCode, 200
+    test.done()
+
 exports['Stylus is served as CSS'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/style.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/style.css" />'
   test.equals css('style'), cssTag
 
   request 'http://localhost:3588/css/style.css', (err, res, body) ->
@@ -67,7 +76,7 @@ exports['Stylus is served as CSS'] = (test) ->
     test.done()
 
 exports['Stylus imports work as expected'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/button.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/button.css" />'
   test.equals css('button'), cssTag
 
   request 'http://localhost:3588/css/button.css', (err, res, body) ->
@@ -81,11 +90,11 @@ exports['Stylus imports work as expected'] = (test) ->
     '''
     test.equals body, expectedBody
     test.done()
-    
+
 exports['Less is served as CSS'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/style-less.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/style-less.css" />'
   test.equals css('style-less'), cssTag
-  
+
   request 'http://localhost:3588/css/style-less.css', (err, res, body) ->
     throw err if err
     expectedBody = '''
@@ -98,7 +107,7 @@ exports['Less is served as CSS'] = (test) ->
     test.done()
 
 exports['nib is supported when available'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/gradient.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/gradient.css" />'
   test.equals css('gradient'), cssTag
 
   request 'http://localhost:3588/css/gradient.css', (err, res, body) ->
@@ -133,21 +142,21 @@ exports['Requests for non-JS/CSS files are ignored'] = (test) ->
     test.done()
 
 exports['css helper function provides correct href'] = (test) ->
-  cssTag = "<link rel='stylesheet' href='/css/style.css'>"
+  cssTag = '<link rel="stylesheet" href="/css/style.css" />'
   test.equals css('/css/style.css'), cssTag
   test.equals css('style.css'), cssTag
   test.equals css('style'), cssTag
-  test.equals css(url = 'http://raw.github.com/necolas/normalize.css/master/normalize'), "<link rel='stylesheet' href='#{url}.css'>"
-  test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), "<link rel='stylesheet' href='#{url}'>"
+  test.equals css(url = 'http://raw.github.com/necolas/normalize.css/master/normalize'), '<link rel="stylesheet" href="'+url+'.css" />'
+  test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), '<link rel="stylesheet" href="'+url+'" />'
   test.done()
 
 exports['js helper function provides correct src'] = (test) ->
-  jsTag = "<script src='/js/script.js'></script>"
+  jsTag = '<script src="/js/script.js"></script>'
   test.equals js('/js/script.js'), jsTag
   test.equals js('script.js'), jsTag
   test.equals js('script'), jsTag
-  test.equals js(url = 'http://code.jquery.com/jquery-1.6.2'), "<script src='#{url}.js'></script>"
-  test.equals js(url = '//code.jquery.com/jquery-1.6.2.js'), "<script src='#{url}'></script>"
+  test.equals js(url = 'http://code.jquery.com/jquery-1.6.2'), '<script src="'+url+'.js"></script>'
+  test.equals js(url = '//code.jquery.com/jquery-1.6.2.js'), '<script src="'+url+'"></script>'
   test.done()
 
 exports['helper functions provides only paths when requested'] = (test) ->
@@ -164,10 +173,10 @@ exports['helper functions provides only paths when requested'] = (test) ->
   test.done()
 
 exports['Script files can `require` (in non-production mode)'] = (test) ->
-  jsTags = """<script src='/js/js-dependency.js'></script>
-  <script src='/js/coffee-dependency.js'></script>
-  <script src='/js/more/annoying.1.2.3.js'></script>
-  <script src='/js/dependent.js'></script>
+  jsTags = """<script src="/js/js-dependency.js"></script>
+  <script src="/js/coffee-dependency.js"></script>
+  <script src="/js/more/annoying.1.2.3.js"></script>
+  <script src="/js/dependent.js"></script>
   """
   test.equals js('dependent'), jsTags
   test.done()
@@ -179,54 +188,54 @@ exports['Script source files can contain nothing but directives'] = (test) ->
     test.equals body, '''
     (function() {
 
+
+
     }).call(this);\n
     '''
     test.done()
 
 exports['Script files can `require_tree` a single folder'] = (test) ->
-  jsTags = """<script src='/js/subdir/nested/hobbits.js'></script>
-  <script src='/js/tree-dependent.js'></script>
+  jsTags = """<script src="/js/subdir/nested/hobbits.js"></script>
+  <script src="/js/tree-dependent.js"></script>
   """
   test.equals js('tree-dependent'), jsTags
   test.done()
 
 exports['.js files can `require_tree` their own folder'] = (test) ->
-  jsTags = """<script src='/js/subdir/nested/hobbits.js'></script>
-  <script src='/js/subdir/subdir-dependent.js'></script>
+  jsTags = """<script src="/js/subdir/nested/hobbits.js"></script>
+  <script src="/js/subdir/subdir-dependent.js"></script>
   """
   test.equals js('subdir/subdir-dependent'), jsTags
   test.done()
 
 exports['.coffee files can `require_tree` their own folder'] = (test) ->
-  jsTag = "<script src='/js/starbucks/mocha.js'></script>"
+  jsTag = '<script src="/js/starbucks/mocha.js"></script>'
   test.equals js('starbucks/mocha'), jsTag
   test.done()
 
 exports['`require` can be used on a file before `require_tree`'] = (test) ->
-  jsTags = """<script src='/js/moon_units/austin/texas.js'></script>
-  <script src='/js/moon_units/austin/powers.js'></script>
-  <script src='/js/moon_units/alpha.js'></script>
-  <script src='/js/moon_units/zappa.js'></script>
-  <script src='/js/moon_units/evil.js'></script>
-  <script src='/js/needs-evil.js'></script>
-  """
-  test.equals js('needs-evil'), jsTags
+  actualJsTags = js('needs-evil')
+  test.ok actualJsTags.indexOf("moon_units/austin/texas.js") < actualJsTags.indexOf("moon_units/austin/powers.js")
+  test.ok actualJsTags.indexOf("moon_units/austin/powers.js") < actualJsTags.indexOf("moon_units/alpha.js")
+  test.ok actualJsTags.indexOf("moon_units/austin/powers.js") < actualJsTags.indexOf("moon_units/zappa.js")
+  test.ok actualJsTags.indexOf("moon_units/austin/powers.js") < actualJsTags.indexOf("moon_units/evil.js")
+  test.ok actualJsTags.indexOf("moon_units/evil.js") < actualJsTags.indexOf("needs-evil.js")
   test.done()
 
 exports['Dependencies can be chained (in non-production mode)'] = (test) ->
-  jsTags = """<script src='/js/js-dependency.js'></script>
-  <script src='/js/coffee-dependency.js'></script>
-  <script src='/js/more/annoying.1.2.3.js'></script>
-  <script src='/js/dependent.js'></script>
-  <script src='/js/chained-dependent.js'></script>
+  jsTags = """<script src="/js/js-dependency.js"></script>
+  <script src="/js/coffee-dependency.js"></script>
+  <script src="/js/more/annoying.1.2.3.js"></script>
+  <script src="/js/dependent.js"></script>
+  <script src="/js/chained-dependent.js"></script>
   """
   test.equals js('chained-dependent'), jsTags
   test.done()
 
 exports['The same dependency will not be loaded twice'] = (test) ->
-  jsTags = """<script src='/js/a.js'></script>
-  <script src='/js/b.js'></script>
-  <script src='/js/c.js'></script>
+  jsTags = """<script src="/js/a.js"></script>
+  <script src="/js/b.js"></script>
+  <script src="/js/c.js"></script>
   """
   test.equals js('c'), jsTags
   test.done()

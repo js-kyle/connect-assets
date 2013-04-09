@@ -1,4 +1,4 @@
-# [connect-assets](http://github.com/TrevorBurnham/connect-assets)
+# [connect-assets](http://github.com/adunkman/connect-assets)
 
 connectCache  = require 'connect-file-cache'
 Snockets      = require 'snockets'
@@ -6,11 +6,15 @@ Snockets      = require 'snockets'
 crypto        = require 'crypto'
 fs            = require 'fs'
 path          = require 'path'
-_             = require 'underscore'
 {parse}       = require 'url'
 
 libs = {}
 jsCompilers = Snockets.compilers
+
+extend = (dest, objs...) ->
+  for obj in objs
+    dest[k] = v for k, v of obj
+  dest
 
 module.exports = exports = (options = {}) ->
   return connectAssets if connectAssets
@@ -24,10 +28,12 @@ module.exports = exports = (options = {}) ->
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
   options.buildsExpire ?= false
-  options.detectChanges ?= true
+  options.detectChanges ?= process.env.NODE_ENV isnt 'production'
   options.minifyBuilds ?= true
   options.pathsOnly ?= false
-  jsCompilers = _.extend jsCompilers, options.jsCompilers || {}
+  libs.stylusExtends = options.stylusExtends ?= () => {};
+  
+  jsCompilers = extend jsCompilers, options.jsCompilers || {}
 
   connectAssets = module.exports.instance = new ConnectAssets options
   connectAssets.createHelpers options
@@ -53,12 +59,12 @@ class ConnectAssets
     context = @options.helperContext
     srcIsRemote = @options.src.match REMOTE_PATH
     expandRoute = (shortRoute, ext, rootDir) ->
-      context.js.root = context.js.root[1..] if context.js.root[0] is '/'
+      rootDir = rootDir[1..] if rootDir[0] is '/'
       if shortRoute.match EXPLICIT_PATH
         unless shortRoute.match REMOTE_PATH
           if shortRoute[0] is '/' then shortRoute = shortRoute[1..]
       else
-        shortRoute = rootDir + '/' + shortRoute
+        shortRoute = rootDir + '/' + shortRoute if rootDir isnt ''
       if ext and shortRoute.indexOf(ext, shortRoute.length - ext.length) is -1
         shortRoute += ext
       shortRoute
@@ -68,10 +74,11 @@ class ConnectAssets
       unless route.match REMOTE_PATH
         route = @options.servePath + @compileCSS route
       return route if @options.pathsOnly
-      "<link rel='stylesheet' href='#{route}'>"
+      '<link rel="stylesheet" href="' + route + '" />'
     context.css.root = 'css'
 
-    context.js = (route) =>
+    context.js = (route, routeOptions) =>
+      loadingKeyword = ''
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
@@ -81,7 +88,11 @@ class ConnectAssets
         routes = (@options.servePath + p for p in @compileJS route)
 
       return routes if @options.pathsOnly
-      ("<script src='#{r}'></script>" for r in routes).join '\n'
+      if routeOptions? and @options.build
+        loadingKeyword = 'async ' if routeOptions.async?
+        loadingKeyword = 'defer ' if routeOptions.defer?
+
+      ('<script ' + loadingKeyword + 'src="' + r + '"></script>' for r in routes).join '\n'
     context.js.root = 'js'
 
     context.img = (route) =>
@@ -135,14 +146,14 @@ class ConnectAssets
     resolvedPath = path + ""
     resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
     try
-      resolvedPath = img resolvedPath
+      resolvedPath = @options.helperContext.img resolvedPath
     catch e
       console.error "Can't resolve image path: #{resolvedPath}"
     return "url('#{resolvedPath}')"
 
   fixCSSImagePaths: (css) ->
     regex = /url\([^\)]+\)/g
-    css = css.replace regex, @resolveImgPath
+    css = css.replace regex, @resolveImgPath.bind(@)
     return css
 
   # Synchronously compile Stylus to CSS (if needed) and return the route
@@ -261,6 +272,7 @@ exports.cssCompilers = cssCompilers =
           .use(libs.bootstrap())
           .use(libs.nib())
           .use(libs.bootstrap())
+          .use(libs.stylusExtends)
           .set('compress', @compress)
           .set('include css', true)
           .render callback
@@ -347,11 +359,11 @@ timeEq = (date1, date2) ->
   date1? and date2? and date1.getTime() is date2.getTime()
 
 mkdirRecursive = (dir, mode, callback) ->
-  pathParts = path.normalize(dir).split '/'
-  if path.existsSync dir
+  pathParts = path.normalize(dir).split path.sep
+  if fs.existsSync dir
     return callback null
 
-  mkdirRecursive pathParts.slice(0,-1).join('/'), mode, (err) ->
+  mkdirRecursive pathParts.slice(0,-1).join(path.sep), mode, (err) ->
     return callback err if err and err.errno isnt process.EEXIST
     fs.mkdirSync dir, mode
     callback()
