@@ -20,7 +20,8 @@ module.exports = exports = (options = {}) ->
   return connectAssets if connectAssets
   options.src ?= 'assets'
   options.helperContext ?= global
-  if process.env.NODE_ENV is 'production'
+  options.env ?= process.env.NODE_ENV
+  if options.env is 'production'
     options.build ?= true
     cssCompilers.styl.compress ?= true
     cssCompilers.less.compress ?= true
@@ -28,7 +29,7 @@ module.exports = exports = (options = {}) ->
   options.buildDir ?= 'builtAssets'
   options.buildFilenamer ?= md5Filenamer
   options.buildsExpire ?= false
-  options.detectChanges ?= process.env.NODE_ENV isnt 'production'
+  options.detectChanges ?= options.env isnt 'production'
   options.minifyBuilds ?= true
   options.pathsOnly ?= false
   libs.stylusExtends = options.stylusExtends ?= () => {};
@@ -265,7 +266,7 @@ exports.cssCompilers = cssCompilers =
       libs.stylus or= require 'stylus'
       libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
       libs.nib or= try require 'nib' catch e then (-> ->)
-      libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
+      libs.bootstrap or= try require 'bootstrap' catch e then (-> console.log("failed to load bootstrap") ->)
       options = @optionsMap[sourcePath] ?=
         filename: sourcePath
       libs.stylus(source, options)
