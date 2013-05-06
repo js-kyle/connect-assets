@@ -32,7 +32,7 @@
   "main": "lib/assets.js",
   "dependencies": {
     "connect-file-cache": "0.2.4",
-    "snockets": "git://github.com/Fresheyeball/snockets.git#master"
+    "snockets": "git+https://github.com/Fresheyeball/snockets.git#master"
   },
   "devDependencies": {
     "async": "0.1.14",
