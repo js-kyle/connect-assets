@@ -27,7 +27,7 @@ exports['If options.servePath exists, other css URLs are still allowed'] = (test
   test.done()
 
 exports['servePath prepended to img paths on production'] = (test) ->
-  imgTag = "http://mycdn.com/img/foobar-d41d8cd98f00b204e9800998ecf8427e.png"
+  imgTag = "http://mycdn.com/img/foobar-25c2e8559281a2cd7503300442862885.png"
   test.equals img('foobar.png'), imgTag
   test.done()
 

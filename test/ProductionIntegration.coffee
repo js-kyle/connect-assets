@@ -7,9 +7,9 @@ app.use assets buildDir: false  # disable saving built assets to file
 app.listen 3589
 
 exports['Far-future expires and MD5 hash strings are used for images'] = (test) ->
-  imgTag = "/img/foobar-d41d8cd98f00b204e9800998ecf8427e.png"
+  imgTag = "/img/foobar-25c2e8559281a2cd7503300442862885.png"
   test.equals img('foobar.png'), imgTag
-  request 'http://localhost:3589/img/foobar-d41d8cd98f00b204e9800998ecf8427e.png', (err, res, body) ->
+  request 'http://localhost:3589/img/foobar-25c2e8559281a2cd7503300442862885.png', (err, res, body) ->
     throw err if err
     test.equals res.headers['content-type'], 'image/png'
     test.equals res.headers['expires'], 'Wed, 01 Feb 2034 12:34:56 GMT'
