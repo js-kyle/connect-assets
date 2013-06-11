@@ -95,4 +95,86 @@ describe("lib/compilers/js", function () {
     }.bind(this));
   });
 
+  it("serves all dependencies with `//= require file` when build=false", function (done) {
+    var file1 = "test/integration/assets/js/no-dependencies.js";
+    var file2 = "test/integration/assets/js/dependencies.js";
+
+    var middleware = connectAssets({
+      build: false,
+      src: "test/integration/assets",
+      tagWriter: "passthroughWriter",
+      helperContext: this
+    });
+
+    var server = http.createServer(connect().use(middleware));
+
+    server.listen(3592, function () {
+      request("http://localhost:3592", function (err) {
+        if (err) throw err;
+
+        fs.readFile(file1, "utf-8", function (err, expected) {
+          if (err) throw err;
+
+          var urls = this.js("dependencies").split("\n");
+
+          expect(urls.length).to.be(2);
+
+          request("http://localhost:3592" + urls[0], function (err, res, body) {
+            if (err) throw err;
+
+            expect(body).to.be(expected);
+
+            fs.readFile(file2, "utf-8", function (err, expected) {
+              if (err) throw err;
+
+              request("http://localhost:3592" + urls[1], function (err, res, body) {
+                if (err) throw err;
+
+                expect(body).to.be(expected);
+
+                server.close();
+                done();
+              });
+            }.bind(this));
+          }.bind(this));
+        }.bind(this));
+      }.bind(this));
+    }.bind(this));
+  });
+
+  it("concatenates all dependencies with `//= require file` when build=false", function (done) {
+    var file = "test/integration/builtAssets/js/dependencies.js";
+
+    var middleware = connectAssets({
+      build: true,
+      src: "test/integration/assets",
+      tagWriter: "passthroughWriter",
+      helperContext: this
+    });
+
+    var server = http.createServer(connect().use(middleware));
+
+    server.listen(3593, function () {
+      request("http://localhost:3593", function (err) {
+        if (err) throw err;
+
+        fs.readFile(file, "utf-8", function (err, expected) {
+          if (err) throw err;
+
+          var urls = this.js("dependencies").split("\n");
+
+          expect(urls.length).to.be(1);
+
+          request("http://localhost:3593" + urls[0], function (err, res, body) {
+            if (err) throw err;
+
+            expect(body).to.be(expected);
+
+            server.close();
+            done();
+          });
+        }.bind(this));
+      }.bind(this));
+    }.bind(this));
+  });
 });
