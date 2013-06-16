@@ -159,24 +159,24 @@ describe("index: options", function () {
 
     it("supports coffeescript by default");
 
-    it("supports stylus by default");
+    it("supports stylus by default", function () {
+      var options = connectAssets.parseOptions({});
+      expect(options.compilers.styl).to.be.ok();
+    });
 
     it("supports less by default", function () {
       var options = connectAssets.parseOptions({});
-
       expect(options.compilers.less).to.be.ok();
     });
 
     it("allows adding a new compiler without replacing defaults", function () {
       var options = connectAssets.parseOptions({ compilers: { ts: {} } });
-
       expect(options.compilers.js).to.be.ok();
       expect(options.compilers.ts).to.be.ok();
     });
 
     it("allows overriding default compilers", function () {
       var options = connectAssets.parseOptions({ compilers: { js: "e" } });
-
       expect(options.compilers.js).to.be("e");
     });
 
