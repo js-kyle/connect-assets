@@ -147,6 +147,13 @@ describe("index: options", function () {
       });
       expect(options.assetFolders).to.eql({ css: "styles", js: "scripts" });
     });
+
+    it("allows .css and .js to be set to same value", function () {
+      var options = connectAssets.parseOptions({
+        assetFolders: { css: "theme", js: "theme" }
+      });
+      expect(options.assetFolders).to.eql({ css: "theme", js: "theme" });
+    });
     
   });
 

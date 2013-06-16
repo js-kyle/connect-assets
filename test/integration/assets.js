@@ -160,6 +160,19 @@ describe("lib/assets", function () {
       expect(actual).to.be(expected);
     });
 
+    it("doesn't double-slash if asset folder is empty", function () {
+      connectAssets({
+        assetFolders: { css: "" },
+        tagWriter: "passthroughWriter",
+        helperContext: this
+      });
+
+      var expected = "/some/path.css";
+      var actual = this.css("some/path");
+
+      expect(actual).to.be(expected);
+    });
+
     it("doesn't do anything to full URLs (http://example.com)", function () {
       var expected = "http://example.com/test.css";
       var actual = this.css(expected);
@@ -188,6 +201,19 @@ describe("lib/assets", function () {
 
     it("prepends the asset folder to the URL (js)", function () {
       var expected = "/js/some/path.js";
+      var actual = this.js("some/path");
+
+      expect(actual).to.be(expected);
+    });
+
+    it("doesn't double-slash if asset folder is empty", function () {
+      connectAssets({
+        assetFolders: { js: "" },
+        tagWriter: "passthroughWriter",
+        helperContext: this
+      });
+
+      var expected = "/some/path.js";
       var actual = this.js("some/path");
 
       expect(actual).to.be(expected);
