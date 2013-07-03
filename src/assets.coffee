@@ -142,14 +142,28 @@ class ConnectAssets
       ''
     throw new Error("No file found for route #{route}")
 
+  extractQueryAndHash = (path) ->
+    parsedPath = parse(path)
+    hash = parsedPath.hash || ''
+    query = if parsedPath.query then "?#{parsedPath.query}" else ''
+    "#{query}#{hash}"
+
+  removeQueryAndHash = (path) ->
+    parsedPath = parse(path)
+    hash = parsedPath.hash || ''
+    query = if parsedPath.query then "?#{parsedPath.query}" else ''
+    path.replace(hash, '').replace(query, '')
+
   resolveImgPath: (path) ->
     resolvedPath = path + ""
     resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
+    queryAndHash = extractQueryAndHash(resolvedPath)
+    resolvedPath = removeQueryAndHash(resolvedPath)
     try
       resolvedPath = @options.helperContext.img resolvedPath
     catch e
       console.error "Can't resolve image path: #{resolvedPath}"
-    return "url('#{resolvedPath}')"
+    return "url('#{resolvedPath}#{queryAndHash}')"
 
   fixCSSImagePaths: (css) ->
     regex = /url\([^\)]+\)/g

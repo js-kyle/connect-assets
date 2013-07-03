@@ -6,6 +6,8 @@ assets = require('../lib/assets.js')
 app.use assets buildDir: false  # disable saving built assets to file
 app.listen 3589
 
+extractCssHref = (cssLink) -> cssLink.replace('<link rel="stylesheet" href="', '').replace('" />', '')
+
 exports['Far-future expires and MD5 hash strings are used for images'] = (test) ->
   imgTag = "/img/foobar-25c2e8559281a2cd7503300442862885.png"
   test.equals img('foobar.png'), imgTag
@@ -13,6 +15,34 @@ exports['Far-future expires and MD5 hash strings are used for images'] = (test) 
     throw err if err
     test.equals res.headers['content-type'], 'image/png'
     test.equals res.headers['expires'], 'Wed, 01 Feb 2034 12:34:56 GMT'
+    test.done()
+
+exports['MD5 hash strings are used for images in CSS files'] = (test) ->
+  relativeCssPath = extractCssHref css('background.css')
+  request "http://localhost:3589#{relativeCssPath}", (err, res, body) ->
+    throw err if err
+    test.equals body, '.background { background-image: url(\'/img/foobar-25c2e8559281a2cd7503300442862885.png\'); }'
+    test.done()
+
+exports['MD5 hash strings are used for images with hashes in CSS files'] = (test) ->
+  relativeCssPath = extractCssHref css('background-with-hash.css')
+  request "http://localhost:3589#{relativeCssPath}", (err, res, body) ->
+    throw err if err
+    test.equals body, '.background { background-image: url(\'/img/foobar-25c2e8559281a2cd7503300442862885.png#a-hash\'); }'
+    test.done()
+
+exports['MD5 hash strings are used for images with query strings in CSS files'] = (test) ->
+  relativeCssPath = extractCssHref css('background-with-query.css')
+  request "http://localhost:3589#{relativeCssPath}", (err, res, body) ->
+    throw err if err
+    test.equals body, '.background { background-image: url(\'/img/foobar-25c2e8559281a2cd7503300442862885.png?a=query\'); }'
+    test.done()
+
+exports['MD5 hash strings are used for images with hashes and query srings in CSS files'] = (test) ->
+  relativeCssPath = extractCssHref css('background-with-hash-and-query.css')
+  request "http://localhost:3589#{relativeCssPath}", (err, res, body) ->
+    throw err if err
+    test.equals body, '.background { background-image: url(\'/img/foobar-25c2e8559281a2cd7503300442862885.png?a=query#a-hash\'); }'
     test.done()
 
 exports['Far-future expires and MD5 hash strings are used for CSS'] = (test) ->
