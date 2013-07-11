@@ -305,14 +305,14 @@ exports.cssCompilers = cssCompilers =
       options = @optionsMap
       options.filename = sourcePath
       options.paths = [path.dirname(sourcePath)].concat(options.paths)
+      options.syncImport = true
       compress = @compress ? false
 
       callback = (err, tree) ->
         throw err if err
         result = tree.toCSS({compress: compress})
-      env = new libs.less.tree.parseEnv options
-      env.syncImport = true
-      new libs.less.Parser(env).parse(source, callback)
+
+      new libs.less.Parser(options).parse(source, callback)
       result
 
 
