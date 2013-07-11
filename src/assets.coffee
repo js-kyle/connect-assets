@@ -32,7 +32,7 @@ module.exports = exports = (options = {}) ->
   options.minifyBuilds ?= true
   options.pathsOnly ?= false
   libs.stylusExtends = options.stylusExtends ?= () => {};
-  
+
   jsCompilers = extend jsCompilers, options.jsCompilers || {}
 
   connectAssets = module.exports.instance = new ConnectAssets options
@@ -299,40 +299,9 @@ exports.cssCompilers = cssCompilers =
       paths: []
       color: true
 
-    patchLess: (less) ->
-      # Monkey patch importer of LESS to load files synchronously
-      less.Parser.importer = (file, paths, callback) ->
-        paths.unshift "."
-
-        i = 0
-        while i < paths.length
-          try
-            pathname = path.join(paths[i], file)
-            fs.statSync(pathname)
-            break
-          catch e
-            pathname = null
-
-          i++
-
-        if not pathname
-          throw new Error "File #{file} not found"
-
-        data = fs.readFileSync(pathname, 'utf-8')
-        new(less.Parser)(
-          paths: [path.dirname(pathname)].concat(paths)
-          filename: pathname
-        ).parse(data, (e, root) ->
-          if (e)
-            less.writeError(e)
-          callback(e, root)
-        )
-
-      less
-
     compileSync: (sourcePath, source) ->
       result = ""
-      libs.less or= @patchLess (require 'less')
+      libs.less or= require 'less'
       options = @optionsMap
       options.filename = sourcePath
       options.paths = [path.dirname(sourcePath)].concat(options.paths)
@@ -341,8 +310,9 @@ exports.cssCompilers = cssCompilers =
       callback = (err, tree) ->
         throw err if err
         result = tree.toCSS({compress: compress})
-
-      new libs.less.Parser(options).parse(source, callback)
+      env = new libs.less.tree.parseEnv options
+      env.syncImport = true
+      new libs.less.Parser(env).parse(source, callback)
       result
 
 
