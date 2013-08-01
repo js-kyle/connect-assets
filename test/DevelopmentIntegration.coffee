@@ -91,6 +91,21 @@ exports['Stylus imports work as expected'] = (test) ->
     test.equals body, expectedBody
     test.done()
 
+exports['Stylus provides the assetsurl function'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/background-styl.css" />'
+  test.equals css('background-styl'), cssTag
+
+  request 'http://localhost:3588/css/background-styl.css', (err, res, body) ->
+    throw err if err
+    expectedBody = '''
+    .background {
+      background-image: url(/img/foobar.png);
+    }\n
+    '''
+    test.equals body, expectedBody
+    test.done()
+
+
 exports['Less is served as CSS'] = (test) ->
   cssTag = '<link rel="stylesheet" href="/css/style-less.css" />'
   test.equals css('style-less'), cssTag
@@ -105,6 +120,21 @@ exports['Less is served as CSS'] = (test) ->
     '''
     test.equals body, expectedBody
     test.done()
+
+exports['Less provides the assetsurl function'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/background-less.css" />'
+  test.equals css('background-less'), cssTag
+
+  request 'http://localhost:3588/css/background-less.css', (err, res, body) ->
+    throw err if err
+    expectedBody = '''
+    .background {
+      background-image: url(/img/foobar.png);
+    }\n
+    '''
+    test.equals body, expectedBody
+    test.done()
+
 
 exports['nib is supported when available'] = (test) ->
   cssTag = '<link rel="stylesheet" href="/css/gradient.css" />'
