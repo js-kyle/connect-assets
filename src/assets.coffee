@@ -69,12 +69,12 @@ class ConnectAssets
         shortRoute += ext
       shortRoute
 
-    context.css = (route) =>
+    context.css = (route, media) =>
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
         route = @options.servePath + @compileCSS route
       return route if @options.pathsOnly
-      '<link rel="stylesheet" href="' + route + '" />'
+      ['<link rel="stylesheet" media="', media || "screen", '" href="', route,'" />'].join('')
     context.css.root = 'css'
 
     context.js = (route, routeOptions) =>
