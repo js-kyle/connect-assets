@@ -1,5 +1,5 @@
 var connect = require("connect");
-var connectAssets = require("../lib/connect-assets");
+var connectAssets = require("../index");
 
 var app = connect();
 app.use(connectAssets({
@@ -7,7 +7,7 @@ app.use(connectAssets({
 }));
 
 app.use(function (req, res) {
-  res.end(js("mains"));
+  res.end(js("main"));
 });
 
 app.listen(3000);

@@ -1,38 +1,27 @@
 var url = require("url");
-var Blarg = require("./blarg");
-var tagWriters = require("./tagWriters");
+var Assets = require("./lib/assets");
 
 var connectAssets = module.exports = function (options) {
   options = parseOptions(options || {});
 
-  var blarg = new Blarg({
-    paths: options.paths,
-    precompile: options.precompile,
-    build: options.build,
-    servePath: options.servePath
-  });
+  var assets = new Assets(options);
 
   // TODO: environment.registerHelper asset_path?
-  options.helperContext.css = blarg.helper(tagWriters.css);
-  options.helperContext.js = blarg.helper(tagWriters.js);
-  options.helperContext.assetPath = blarg.helper(tagWriters.noop);
+  options.helperContext.css = assets.helper(tagWriters.css);
+  options.helperContext.js = assets.helper(tagWriters.js);
+  options.helperContext.assetPath = assets.helper(tagWriters.noop);
 
-  blarg.compileAssets();
+  assets.compile();
 
   return function (req, res, next) {
-    // Since compiling is async, and view rendering is sync, we need to delay
-    // views from being rendered until compilation has completed. The only
-    // practical way of doing this is holding up requests from being processed.
-    blarg.whenFinishedCompiling(function () {
-      var path = url.parse(req.url).pathname.replace(/^\//, "");
+    var path = url.parse(req.url).pathname.replace(/^\//, "");
 
-      if (path.toLowerCase().indexOf(options.servePath.toLowerCase()) === 0) {
-        blarg.serveAsset(req, res, next);
-      }
-      else {
-        next();
-      }
-    });
+    if (path.toLowerCase().indexOf(options.servePath.toLowerCase()) === 0) {
+      assets.serveAsset(req, res, next);
+    }
+    else {
+      next();
+    }
   };
 };
 
@@ -61,6 +50,8 @@ var helper = module.exports._helper = function (environment, path) {
   return paths;
 };
 
-var whenFinishedCompiling = module.exports._whenFinishedCompiling = function (environment, fn) {
-
+var tagWriters = {
+  css: function (url) { return '<link rel="stylesheet" href="' + url + '" />'; },
+  js: function (url) { return '<script src="' + url + '"></script>'; },
+  noop: function (url) { return url; }
 };
