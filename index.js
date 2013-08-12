@@ -31,9 +31,8 @@ var parseOptions = module.exports._parseOptions = function (options) {
 
   options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
-  options.servePath = (options.servePath || "assets").replace(/^\//, "");
+  options.servePath = (options.servePath || "assets").replace(/^\//, "").replace(/\/$/, "");
   options.precompile = arrayify(options.precompile || []);
-  options.watch = options.watch || options.detectChanges || isDevelopment;
   options.build = options.build || isProduction;
 
   return options;
@@ -41,13 +40,6 @@ var parseOptions = module.exports._parseOptions = function (options) {
 
 var arrayify = module.exports._arrayify = function (target) {
   return (target instanceof Array) ? target : [ target ];
-};
-
-var helper = module.exports._helper = function (environment, path) {
-  var asset = environment.findAsset(path);
-  var paths = [];
-
-  return paths;
 };
 
 var tagWriters = {
