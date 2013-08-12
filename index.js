@@ -1,38 +1,49 @@
+var url = require("url");
 var Assets = require("./lib/assets");
-var compilers = require("./lib/compilers");
 
 var connectAssets = module.exports = function (options) {
-  options = connectAssets.parseOptions(options || {});
-  var instance = new Assets(options);
-  return instance.middleware.bind(instance);
+  options = parseOptions(options || {});
+
+  var assets = new Assets(options);
+
+  // TODO: environment.registerHelper asset_path?
+  options.helperContext.css = assets.helper(tagWriters.css);
+  options.helperContext.js = assets.helper(tagWriters.js);
+  options.helperContext.assetPath = assets.helper(tagWriters.noop);
+
+  assets.compile();
+
+  return function (req, res, next) {
+    var path = url.parse(req.url).pathname.replace(/^\//, "");
+
+    if (path.toLowerCase().indexOf(options.servePath.toLowerCase()) === 0) {
+      assets.serveAsset(req, res, next);
+    }
+    else {
+      next();
+    }
+  };
 };
 
-connectAssets.parseOptions = function (options) {
-  options.env = options.env || process.env.NODE_ENV;
-  options.src = options.src || "assets";
-  options.tagWriter = options.tagWriter || "xHtml5Writer";
+var parseOptions = module.exports._parseOptions = function (options) {
+  var isProduction = process.env.NODE_ENV === "production";
+  var isDevelopment = !isProduction;
+
+  options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
-  options.buildDir = options.buildDir || "builtAssets";
-  options.build = options.build || (options.env == "production" ? true : false);
-  options.detectChanges = options.detectChanges || (options.env == "production" ? false : true);
-  options.saveToDisk = options.saveToDisk || (options.env == "production" ? true : false);
-  options.assetFolders = extend({ css: "css", js: "js" }, options.assetFolders || {});
-  
-  options.compilers = extend({}, compilers, options.compilers);
+  options.servePath = (options.servePath || "assets").replace(/^\//, "").replace(/\/$/, "");
+  options.precompile = arrayify(options.precompile || []);
+  options.build = options.build || isProduction;
 
   return options;
 };
 
-var extend = function () {
-  var destination = arguments[0];
-  
-  for (var i = 1; i < arguments.length; i++) {
-    var obj = arguments[i];
+var arrayify = module.exports._arrayify = function (target) {
+  return (target instanceof Array) ? target : [ target ];
+};
 
-    for (var key in obj) {
-      destination[key] = obj[key];
-    }
-  }
-
-  return destination;
+var tagWriters = {
+  css: function (url) { return '<link rel="stylesheet" href="' + url + '" />'; },
+  js: function (url) { return '<script src="' + url + '"></script>'; },
+  noop: function (url) { return url; }
 };
