@@ -115,9 +115,47 @@ describe("serveAsset", function () {
     });
 
     describe("status codes", function () {
-      it("sends HTTP 405 if method isn't GET or HEAD");
-      it("sends HTTP 400 if request contains '..' or null characters");
-      it("sends HTTP 304 if request If-None-Match header matches ETag");
+      var sends405 = function (method) {
+        return function (done) {
+          var path = this.assetPath("blank.js");
+          var opts = url.parse(this.host + path);
+
+          opts.method = method;
+
+          http.request(opts, function (res) {
+            expect(res.statusCode).to.equal(405);
+            done();
+          }).end();
+        };
+      };
+
+      it("sends HTTP 405 when method is POST", sends405("POST"));
+      it("sends HTTP 405 when method is PUT", sends405("PUT"));
+      it("sends HTTP 405 when method is DELETE", sends405("DELETE"));
+
+      it("sends HTTP 400 if request contains '..'", function (done) {
+        var url = this.host + "/assets/../../../usr/var";
+
+        http.get(url, function (res) {
+          expect(res.statusCode).to.equal(400);
+          done();
+        });
+      });
+
+      it("sends HTTP 304 if request If-None-Match header matches ETag", function (done) {
+      var path = this.assetPath("blank.js");
+      var opts = url.parse(this.host + path);
+      var fingerprint = path.match(/-([0-9a-f]{32,40})\.[^.]+$/)[1];
+
+      opts.headers = {
+        "If-None-Match": '"' + fingerprint + '"'
+      };
+
+      http.request(opts, function (res) {
+        expect(res.statusCode).to.equal(304);
+        done();
+      }).end();
+    });
     });
   });
 });

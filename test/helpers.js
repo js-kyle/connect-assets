@@ -25,9 +25,24 @@ describe("helper functions", function () {
     }).to.throwError(/'non-existant-asset.js' not found/i);
   });
 
-  it("returns many paths if options.build is false");
+  it("returns many paths if options.build is false", function () {
+    var ctx = {};
+    var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: false });
+    var files = ctx.assetPath("depends-on-blank.css");
 
-  it("returns a single path if options.build is true");
+    expect(files).to.equal(
+      '/assets/blank-436828974cd5282217fcbd406d41e9ca.css\n' +
+      '/assets/depends-on-blank-dcbda6ea3c118edcc94dad50eee4e49b.css'
+    );
+  });
+
+  it("returns a single path if options.build is true", function () {
+    var ctx = {};
+    var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: true });
+    var files = ctx.assetPath("depends-on-blank.css");
+
+    expect(files).to.equal('/assets/depends-on-blank-e40fda5077dc7787be4bf24232ab6cfc.css');
+  });
 
   describe("css", function () {
     it("returns a <link> tag for each asset found (separated by \\n)", function () {
