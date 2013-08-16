@@ -67,6 +67,20 @@ exports['Far-future expires and MD5 hash strings are used for CSS'] = (test) ->
       test.equals body, 'textarea,input{border:1px solid #eee}\n'
       test.done()
 
+exports['MD5 hash strings are used for images when asseturl is used in less'] = (test) ->
+  relativeCssPath = extractCssHref css('background-less.css')
+  request "http://localhost:3589#{relativeCssPath}", (err, res, body) ->
+    throw err if err
+    test.equals body, '.background{background-image:url(/img/foobar-25c2e8559281a2cd7503300442862885.png)}\n'
+    test.done()
+
+exports['MD5 hash strings are used for images when asseturl is used in stylus'] = (test) ->
+  relativeCssPath = extractCssHref css('background-styl.css')
+  request "http://localhost:3589#{relativeCssPath}", (err, res, body) ->
+    throw err if err
+    test.equals body, '.background{background-image:url(/img/foobar-25c2e8559281a2cd7503300442862885.png)}\n'
+    test.done()
+
 exports['JS dependencies are concatenated and minified'] = (test) ->
   jsTag = '<script src="/js/dependent-057747a1cbabcbd2279e4f358bc4723f.js"></script>'
   test.equals js('dependent'), jsTag

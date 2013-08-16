@@ -205,7 +205,7 @@ class ConnectAssets
             @cssSourceFiles[sourcePath] = {data, mtime: stats.mtime}
             source = data.toString 'utf8'
           startTime = new Date
-          css = cssCompilers[ext].compileSync @absPath(sourcePath), source
+          css = cssCompilers[ext].compileSync @absPath(sourcePath), source, @options.helperContext
           if css is @compiledCss[sourcePath]?.data.toString 'utf8'
             alreadyCached = true
           else
@@ -281,7 +281,7 @@ exports.cssCompilers = cssCompilers =
 
   styl:
     optionsMap: {}
-    compileSync: (sourcePath, source) ->
+    compileSync: (sourcePath, source, helperContext) ->
       result = ''
       callback = (err, js) ->
         throw err if err
@@ -298,6 +298,7 @@ exports.cssCompilers = cssCompilers =
           .use(libs.nib())
           .use(libs.bootstrap())
           .use(libs.stylusExtends)
+          .define('asseturl', (url) -> "url(#{helperContext.img(url.val)})")
           .set('compress', @compress)
           .set('include css', true)
           .render callback
@@ -310,9 +311,11 @@ exports.cssCompilers = cssCompilers =
       paths: []
       color: true
 
-    compileSync: (sourcePath, source) ->
+    compileSync: (sourcePath, source, helperContext) ->
       result = ""
       libs.less or= require 'less'
+      libs.less.tree.functions.asseturl = (str) -> 
+        new libs.less.tree.URL(new libs.less.tree.Anonymous(helperContext.img(str.value)))
       options = @optionsMap
       options.filename = sourcePath
       options.paths = [path.dirname(sourcePath)].concat(options.paths)
