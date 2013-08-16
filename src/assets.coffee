@@ -170,10 +170,12 @@ class ConnectAssets
     resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
     queryAndHash = extractQueryAndHash(resolvedPath)
     resolvedPath = removeQueryAndHash(resolvedPath)
-    try
-      resolvedPath = @options.helperContext.img resolvedPath
-    catch e
-      console.error "Can't resolve image path: #{resolvedPath}"
+
+    unless /^data\:(image|font).*/.test resolvedPath
+      try
+        resolvedPath = @options.helperContext.img resolvedPath
+      catch e
+        console.error "Can't resolve image path: #{resolvedPath}"
     return "url('#{resolvedPath}#{queryAndHash}')"
 
   fixCSSImagePaths: (css) ->
@@ -314,7 +316,7 @@ exports.cssCompilers = cssCompilers =
     compileSync: (sourcePath, source, helperContext) ->
       result = ""
       libs.less or= require 'less'
-      libs.less.tree.functions.asseturl = (str) -> 
+      libs.less.tree.functions.asseturl = (str) ->
         new libs.less.tree.URL(new libs.less.tree.Anonymous(helperContext.img(str.value)))
       options = @optionsMap
       options.filename = sourcePath
