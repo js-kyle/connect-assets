@@ -150,6 +150,13 @@ exports['css helper function provides correct href'] = (test) ->
   test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), '<link rel="stylesheet" href="'+url+'" />'
   test.done()
 
+exports['css helper function allows media tag'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/style.css" media="print" />'
+  test.equals css('/css/style.css', media: "print"), cssTag
+  test.equals css('style.css', media: "print"), cssTag
+  test.equals css('style', media: "print"), cssTag
+  test.done()
+
 exports['js helper function provides correct src'] = (test) ->
   jsTag = '<script src="/js/script.js"></script>'
   test.equals js('/js/script.js'), jsTag
