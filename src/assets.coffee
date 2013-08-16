@@ -171,7 +171,7 @@ class ConnectAssets
     queryAndHash = extractQueryAndHash(resolvedPath)
     resolvedPath = removeQueryAndHash(resolvedPath)
 
-    unless /^data\:(image|font).*/.test resolvedPath
+    unless /^data\:/.test resolvedPath
       try
         resolvedPath = @options.helperContext.img resolvedPath
       catch e

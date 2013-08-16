@@ -43,6 +43,19 @@ exports['Raw CSS is served directly'] = (test) ->
     test.equals res.headers['content-type'], 'text/css'
     test.done()
 
+exports['CSS with data: uris are okay'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/data-uri.css" />'
+  errFn = console.error;
+  console.error = (message) -> throw message
+  test.equals css('data-uri'), cssTag
+  console.error = errFn;
+
+  request 'http://localhost:3588/css/normalize.css', (err, res, body) ->
+    throw err if err
+    test.equals body, '/* Just act normal, dude. */'
+    test.equals res.headers['content-type'], 'text/css'
+    test.done()
+
 exports['Images are served directly'] = (test) ->
   imgTag = "/img/foobar.png"
   test.equals img('foobar.png'), imgTag
