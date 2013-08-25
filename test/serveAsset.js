@@ -33,6 +33,22 @@ describe("serveAsset", function () {
     });
   });
 
+  it("allows the served path to be 'empty'", function (done) {
+    // You should use '/', because if it's empty it defaults to 'assets'
+    createServer({ servePath: "/" }, function () {
+      var path = this.assetPath("blank.js");
+      var url = this.host + path;
+
+      expect(path).not.to.contain("//");
+      expect(path).not.to.contain("/assets/");
+
+      http.get(url, function (res) {
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
   it("serves new files as they exist on disk in development", function (done) {
     createServer({}, function () {
       var file = "test/assets/css/new-file.css";
