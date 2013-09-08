@@ -36,7 +36,6 @@ describe("serveAsset", function () {
   it("serves new files as they exist on disk in development", function (done) {
     createServer({}, function () {
       var file = "test/assets/css/new-file.css";
-      expect(function () { fs.statSync(file); }).to.throwError(/ENOENT/);
       fs.writeFileSync(file, "");
 
       var path = this.assetPath("new-file.css");
@@ -52,7 +51,6 @@ describe("serveAsset", function () {
 
   it("serves file changes as they are made in development", function (done) {
     var file = "test/assets/css/file-changes-dev.css";
-    expect(function () { fs.statSync(file); }).to.throwError(/ENOENT/);
     fs.writeFileSync(file, "");
 
     createServer({}, function () {
@@ -82,11 +80,9 @@ describe("serveAsset", function () {
     var file = "test/assets/css/file-changes-prod.css";
     var content = "body { color: #fff; }";
     process.env.NODE_ENV = "production";
-    expect(function () { fs.statSync(file); }).to.throwError(/ENOENT/);
     fs.writeFileSync(file, content);
 
     createServer({}, function () {
-
       fs.writeFileSync(file, "");
 
       var path = this.assetPath("file-changes-prod.css");
