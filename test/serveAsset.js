@@ -51,27 +51,32 @@ describe("serveAsset", function () {
 
   it("serves file changes as they are made in development", function (done) {
     var file = "test/assets/css/file-changes-dev.css";
+    var instance = this;
     fs.writeFileSync(file, "");
 
     createServer({}, function () {
       var content = "body { color: #fff; }";
       fs.writeFileSync(file, content);
 
-      var path = this.assetPath("file-changes-dev.css");
-      var url = this.host + path;
-      var body = "";
+      // We need to let mincer detect the filesystem change — and therefore we
+      // can't use process.nextTick here as that will jump ahead of IO calls.
+      setTimeout(function () {
+        var path = instance.assetPath("file-changes-dev.css");
+        var url = instance.host + path;
+        var body = "";
 
-      http.get(url, function (res) {
-        expect(res.statusCode).to.equal(200);
+        http.get(url, function (res) {
+          expect(res.statusCode).to.equal(200);
 
-        res.setEncoding("utf8");
-        res.on("data", function (chunk) { body += chunk });
-        res.on("end", function () {
-          expect(body).to.equal(content);
-          fs.unlinkSync(file);
-          done();
+          res.setEncoding("utf8");
+          res.on("data", function (chunk) { body += chunk });
+          res.on("end", function () {
+            expect(body).to.equal(content + "\n");
+            fs.unlinkSync(file);
+            done();
+          });
         });
-      });
+      }, 0);
     });
   });
 
