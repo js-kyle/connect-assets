@@ -1,24 +1,10 @@
 var expect = require("expect.js");
 var mocha = require("mocha");
-var assets = require("..");
-var connect = require("connect");
 var http = require("http");
 var fs = require("fs");
+var createServer = require("./testHelpers/createServer");
 
 describe("serveAsset", function () {
-  var createServer = function (opts, done) {
-    opts.paths = [ "test/assets/js", "test/assets/css" ];
-    opts.helperContext = this;
-
-    var app = this.app = connect().use(assets(opts));
-
-    app.listen(function () {
-      var address = this.address();
-      opts.helperContext.host = "http://" + address.address + ":" + address.port;
-      done();
-    });
-  };
-
   it("allows the served path to be changed", function (done) {
     createServer({ servePath: "arsets" }, function () {
       var path = this.assetPath("blank.js");
