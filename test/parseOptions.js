@@ -102,4 +102,49 @@ describe("parseOptions", function () {
       process.env.NODE_ENV = env;
     });
   });
+
+  describe("buildDir", function () {
+    it("defaults to false in development", function () {
+      var env = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
+      var opts = assets._parseOptions({});
+      expect(opts.buildDir).to.equal(false);
+      process.env.NODE_ENV = env;
+    });
+
+    it("defaults to 'builtAssets' in production", function () {
+      var env = process.env.NODE_ENV;
+      process.env.NODE_ENV = "production";
+      var opts = assets._parseOptions({});
+      expect(opts.buildDir).to.equal("builtAssets");
+      process.env.NODE_ENV = env;
+    });
+
+    it("can be overridden", function () {
+      var opts = assets._parseOptions({ buildDir: "connect" });
+      expect(opts.buildDir).to.equal("connect");
+    });
+
+    it("trims off leading slashes", function () {
+      var opts = assets._parseOptions({ buildDir: "/assets" });
+      expect(opts.buildDir).to.equal("assets");
+    });
+
+    it("trims off trailing slashes", function () {
+      var opts = assets._parseOptions({ buildDir: "assets/" });
+      expect(opts.buildDir).to.equal("assets");
+    });
+  });
+
+  describe("compile", function () {
+    it("defaults to true", function () {
+      var opts = assets._parseOptions({});
+      expect(opts.compile).to.equal(true);
+    });
+
+    it("can be overridden", function () {
+      var opts = assets._parseOptions({ compile: false });
+      expect(opts.compile).to.equal(false);
+    });
+  });
 });
