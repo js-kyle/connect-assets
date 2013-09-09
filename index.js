@@ -5,19 +5,35 @@ var connectAssets = module.exports = function (options) {
   options = parseOptions(options || {});
 
   var assets = new Assets(options);
+  var compilationComplete = false;
+  var compilationError;
+  var waiting = [];
 
   // TODO: environment.registerHelper asset_path?
   options.helperContext.css = assets.helper(tagWriters.css);
   options.helperContext.js = assets.helper(tagWriters.js);
   options.helperContext.assetPath = assets.helper(tagWriters.noop);
 
-  assets.compile();
+  assets.compile(function (err) {
+    if (err) { compilationError = err; }
+    compilationComplete = true;
+
+    for (var i = 0; i < waiting.length; i++) {
+      waiting[i]();
+    };
+  });
 
   return function (req, res, next) {
     var path = url.parse(req.url).pathname.replace(/^\//, "");
 
     if (path.toLowerCase().indexOf(options.servePath.toLowerCase()) === 0) {
-      assets.serveAsset(req, res, next);
+      var serve = function (req, res, next) {
+        if (compilationError) { next(compilationError); }
+        else { assets.serveAsset(req, res, next); }
+      };
+
+      if (compilationComplete) { serve(req, res, next); }
+      else { waiting.push(serve.bind(this, req, res, next)); }
     }
     else {
       next();

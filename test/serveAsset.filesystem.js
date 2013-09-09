@@ -3,6 +3,7 @@ var mocha = require("mocha");
 var http = require("http");
 var fs = require("fs");
 var createServer = require("./testHelpers/createServer");
+var rmrf = require("./testHelpers/rmrf");
 
 describe("serveAsset filesystem", function () {
   describe("development", function () {
@@ -53,7 +54,7 @@ describe("serveAsset filesystem", function () {
   });
 
   describe("production", function () {
-    it("stores compiled files to disk in production"/*, function (done) {
+    it("stores compiled files to disk in production", function (done) {
       var env = process.env.NODE_ENV;
       var dir = "testBuiltAssets";
       process.env.NODE_ENV = "production";
@@ -65,10 +66,12 @@ describe("serveAsset filesystem", function () {
         http.get(url, function (res) {
           expect(res.statusCode).to.equal(200);
           expect(fs.statSync(dir).isDirectory()).to.equal(true);
-          expect(fs.statSync(dir + "/assets/blank.css").isFile()).to.equal(true);
-          done();
+          expect(fs.statSync(dir + "/blank-436828974cd5282217fcbd406d41e9ca.css").isFile()).to.equal(true);
+
+          process.env.NODE_ENV = env;
+          rmrf(dir, done);
         });
       });
-    }*/);
+    });
   });
 });
