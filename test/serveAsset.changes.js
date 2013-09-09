@@ -57,6 +57,11 @@ describe("serveAsset file changes", function () {
     process.env.NODE_ENV = "production";
     fs.writeFileSync(file, content);
 
+    // Pretend like this file was last touched a minute ago.
+    var stats = fs.statSync(file);
+    var newmtime = new Date(stats.mtime.getTime() - 60 * 1000);
+    fs.utimesSync(file, stats.atime, newmtime);
+
     createServer.call(this, {}, function () {
       fs.writeFileSync(file, "");
 
