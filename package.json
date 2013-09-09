@@ -45,7 +45,7 @@
     "test-watch": "./node_modules/.bin/mocha --reporter min --watch",
     "test-cov-report": "./node_modules/.bin/mocha --require blanket --reporter html-cov > coverage.html && open coverage.html",
     "travis-cov": {
-      "threshold": 90
+      "threshold": 95
     },
     "blanket": {
       "pattern": "//^((?!/node_modules/)(?!/test/helpers/)(?!/test/).)*$/ig"
