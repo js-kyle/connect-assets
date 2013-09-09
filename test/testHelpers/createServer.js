@@ -6,10 +6,11 @@ var createServer = module.exports = function (opts, done) {
   opts.helperContext = this;
 
   var app = this.app = connect().use(assets(opts));
+  var scope = this;
 
   app.listen(function () {
     var address = this.address();
     opts.helperContext.host = "http://" + address.address + ":" + address.port;
-    done();
+    done.call(scope);
   });
 };

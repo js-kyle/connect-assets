@@ -6,7 +6,7 @@ var createServer = require("./testHelpers/createServer");
 
 describe("serveAsset paths", function () {
   it("allows the served path to be changed", function (done) {
-    createServer({ servePath: "arsets" }, function () {
+    createServer.call(this, { servePath: "arsets" }, function () {
       var path = this.assetPath("blank.js");
       var url = this.host + path;
 
@@ -20,7 +20,7 @@ describe("serveAsset paths", function () {
   });
 
   it("does not serve assets for URLs outside of serve path", function (done) {
-    createServer({}, function () {
+    createServer.call(this, {}, function () {
       var path = this.assetPath("blank.js").replace("/assets", "");
       var url = this.host + path;
 
@@ -32,7 +32,7 @@ describe("serveAsset paths", function () {
   });
 
   it("does not serve asset if fingerprint doesn't match", function (done) {
-    createServer({}, function () {
+    createServer.call(this, {}, function () {
       var path = this.assetPath("blank.js").replace("af7c72e86aadcfde95bb29d286c27034", "436828974cd5282217fcbd406d41e9ca");
       var url = this.host + path;
 
@@ -44,7 +44,7 @@ describe("serveAsset paths", function () {
   });
 
   it("does not serve asset if fingerprint isn't supplied", function (done) {
-    createServer({}, function () {
+    createServer.call(this, {}, function () {
       var path = this.assetPath("blank.js").replace("-af7c72e86aadcfde95bb29d286c27034", "");
       var url = this.host + path;
 

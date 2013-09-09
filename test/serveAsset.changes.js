@@ -6,7 +6,7 @@ var createServer = require("./testHelpers/createServer");
 
 describe("serveAsset file changes", function () {
   it("serves new files as they exist on disk in development", function (done) {
-    createServer({}, function () {
+    createServer.call(this, {}, function () {
       var file = "test/assets/css/new-file.css";
       fs.writeFileSync(file, "");
 
@@ -26,7 +26,7 @@ describe("serveAsset file changes", function () {
     var instance = this;
     fs.writeFileSync(file, "");
 
-    createServer({}, function () {
+    createServer.call(this, {}, function () {
       var content = "body { color: #fff; }";
       fs.writeFileSync(file, content);
 
@@ -59,7 +59,7 @@ describe("serveAsset file changes", function () {
     process.env.NODE_ENV = "production";
     fs.writeFileSync(file, content);
 
-    createServer({}, function () {
+    createServer.call(this, {}, function () {
       fs.writeFileSync(file, "");
 
       var path = this.assetPath("file-changes-prod.css");
