@@ -36,8 +36,91 @@ describe("serveAsset manifest", function () {
     });
   });
 
-  it("serves files outside of the manifest if compile is true");
+  it("serves files outside of the manifest if compile is true", function (done) {
+    var dir = "testBuiltAssets";
 
-  it("does not serve files outside of the manifest if compile is false");
+    createServer.call(this, { buildDir: dir, compile: true }, function () {
+      var path = this.assetPath("blank.css");
+      var url = this.host + path;
+
+      http.get(url, function (res) {
+        var file = "test/assets/css/new-file-manifest-served.css";
+        fs.writeFileSync(file, "");
+
+        var path = this.assetPath("new-file-manifest-served.css");
+        var url = this.host + path;
+
+        http.get(url, function (res) {
+          expect(res.statusCode).to.equal(200);
+          fs.unlinkSync(file);
+          rmrf(dir, done);
+        });
+      }.bind(this));
+    });
+  });
+
+  it("updates the manifest if compile is true", function (done) {
+    var dir = "testBuiltAssets";
+    var file = "test/assets/css/new-file-manifest.css";
+
+    rmrf(dir, function (err) {
+      if (err && err.code != "ENOENT") return done(err);
+
+      try { fs.unlinkSync(file); }
+      catch (e) { if (e.code != "ENOENT") throw e; }
+
+      createServer.call(this, { buildDir: dir, compile: true }, function () {
+        var path = this.assetPath("blank.css");
+        var url = this.host + path;
+
+        http.get(url, function (res) {
+          fs.writeFileSync(file, "");
+
+          var path = this.assetPath("new-file-manifest.css");
+          var url = this.host + path;
+
+          http.get(url, function (res) {
+            expect(res.statusCode).to.equal(200);
+
+            var manifest = fs.readFileSync(dir + "/manifest.json", "utf8");
+            expect(manifest).to.contain("new-file-manifest.css");
+            fs.unlinkSync(file);
+            rmrf(dir, done);
+          });
+        }.bind(this));
+      });
+
+    });
+  });
+
+  it("does not serve files outside of the manifest if compile is false", function (done) {
+    var dir = "testBuiltAssets";
+
+    rmrf(dir, function (err) {
+      if (err && err.code != "ENOENT") return done(err);
+
+      // Build the initial manifest.
+      createServer.call(this, { buildDir: dir, compile: true }, function () {
+        var path = this.assetPath("blank.css");
+        var url = this.host + path;
+
+        http.get(url, function (res) {
+
+          // Now, create a server using the existing manifest.
+          createServer.call(this, { buildDir: dir, compile: false }, function () {
+            var file = "test/assets/css/new-file-manifest-no-compile.css";
+            fs.writeFileSync(file, "");
+
+            expect(function () {
+              this.assetPath("new-file-manifest-no-compile.css");
+            }.bind(this)).to.throwError(/Asset 'new-file-manifest-no-compile.css' not found/);
+
+            fs.unlinkSync(file);
+            rmrf(dir, done);
+          });
+        }.bind(this));
+      });
+    });
+  });
 
 });
