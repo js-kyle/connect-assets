@@ -58,6 +58,11 @@ describe("parseOptions", function () {
       var opts = assets._parseOptions({ servePath: "assets/" });
       expect(opts.servePath).to.equal("assets");
     });
+
+    it("plays nicely with URLs", function () {
+      var opts = assets._parseOptions({ servePath: "http://cache.example.com" });
+      expect(opts.servePath).to.equal("http://cache.example.com");
+    });
   });
 
   describe("precompile", function () {
