@@ -31,8 +31,8 @@ describe("helper functions", function () {
     var files = ctx.assetPath("depends-on-blank.css");
 
     expect(files).to.equal(
-      '/assets/blank-436828974cd5282217fcbd406d41e9ca.css\n' +
-      '/assets/depends-on-blank-dcbda6ea3c118edcc94dad50eee4e49b.css'
+      '/assets/blank-20069ab163c070349198aa05124dcaa8.css\n' +
+      '/assets/depends-on-blank-976b290d2657588f29e6f3c5a26611ee.css'
     );
   });
 
@@ -41,7 +41,7 @@ describe("helper functions", function () {
     var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: true });
     var files = ctx.assetPath("depends-on-blank.css");
 
-    expect(files).to.equal('/assets/depends-on-blank-e40fda5077dc7787be4bf24232ab6cfc.css');
+    expect(files).to.equal('/assets/depends-on-blank-9df23d3309e74402b1d69a0a08dcd9ee.css');
   });
 
   describe("css", function () {
@@ -51,8 +51,8 @@ describe("helper functions", function () {
       var link = ctx.css("depends-on-blank.css");
 
       expect(link).to.equal(
-        '<link rel="stylesheet" href="/assets/blank-436828974cd5282217fcbd406d41e9ca.css" />\n' +
-        '<link rel="stylesheet" href="/assets/depends-on-blank-dcbda6ea3c118edcc94dad50eee4e49b.css" />'
+        '<link rel="stylesheet" href="/assets/blank-20069ab163c070349198aa05124dcaa8.css" />\n' +
+        '<link rel="stylesheet" href="/assets/depends-on-blank-976b290d2657588f29e6f3c5a26611ee.css" />'
       );
     });
   });
@@ -64,8 +64,8 @@ describe("helper functions", function () {
       var script = ctx.js("depends-on-blank.js");
 
       expect(script).to.equal(
-        '<script src="/assets/blank-af7c72e86aadcfde95bb29d286c27034.js"></script>\n' +
-        '<script src="/assets/depends-on-blank-af7c72e86aadcfde95bb29d286c27034.js"></script>'
+        '<script src="/assets/blank-3d2afa4aef421f17310e48c12eb39145.js"></script>\n' +
+        '<script src="/assets/depends-on-blank-3d2afa4aef421f17310e48c12eb39145.js"></script>'
       );
     });
   });
@@ -77,8 +77,8 @@ describe("helper functions", function () {
       var path = ctx.assetPath("depends-on-blank.js");
 
       expect(path).to.equal(
-        '/assets/blank-af7c72e86aadcfde95bb29d286c27034.js\n' +
-        '/assets/depends-on-blank-af7c72e86aadcfde95bb29d286c27034.js'
+        '/assets/blank-3d2afa4aef421f17310e48c12eb39145.js\n' +
+        '/assets/depends-on-blank-3d2afa4aef421f17310e48c12eb39145.js'
       );
     });
   });
