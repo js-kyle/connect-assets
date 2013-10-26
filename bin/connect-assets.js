@@ -26,9 +26,8 @@ var initialize = exports.initialize = function () {
   });
 
   cli.addArgument(["-c", "--compile"], {
-    help: "Adds the file (or pattern) to a list of files to compile. Specify " +
-      "the option multiple times for multiple files (or patterns). Defaults to " +
-      "all files.",
+    help: "Adds the file (or pattern) to a list of files to compile. " +
+      "Defaults to all files.",
     metavar: "FILE",
     action: "append",
     nargs: "*",

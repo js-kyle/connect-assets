@@ -118,7 +118,7 @@ If you like, you can pass any of these options to the function returned by `requ
 connect-assets includes a command-line utility, `connect-assets`, which can be used to precompile assets on your filesystem (which you can then upload to your CDN of choice). From your application directory, you can execute it with `./node_modules/.bin/connect-assets [options]`.
 
 ```
-usage: connect-assets [-h] [-v] [-i [DIRECTORY [DIRECTORY ...]]]
+Usage: connect-assets [-h] [-v] [-i [DIRECTORY [DIRECTORY ...]]]
                       [-c [FILE [FILE ...]]] [-o DIRECTORY]
 
 Precompiles assets supplied into their production-ready form, ready for
@@ -135,8 +135,7 @@ Optional arguments:
                         Defaults to 'assets/js' and 'assets/css'.
   -c [FILE [FILE ...]], --compile [FILE [FILE ...]]
                         Adds the file (or pattern) to a list of files to
-                        compile. Specify the option multiple times for
-                        multiple files (or patterns). Defaults to all files.
+                        compile. Defaults to all files.
   -o DIRECTORY, --output DIRECTORY
                         Specifies the output directory to write compiled
                         assets to. Defaults to 'builtAssets'.
