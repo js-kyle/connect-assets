@@ -52,7 +52,7 @@
       "threshold": 95
     },
     "blanket": {
-      "pattern": "//^((?!/node_modules/)(?!/test/helpers/)(?!/test/).)*$/ig"
+      "pattern": "//^((?!/node_modules/)(?!/test/).)*$/ig"
     }
   }
 }
