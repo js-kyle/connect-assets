@@ -101,4 +101,6 @@ var _compile = function (args, callback) {
 
 var flatten = function (arr) { return [].concat.apply([], arr); };
 
-execute();
+if (require.main === module) {
+  execute();
+}
