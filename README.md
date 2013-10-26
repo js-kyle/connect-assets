@@ -113,6 +113,35 @@ If you like, you can pass any of these options to the function returned by `requ
 * **buildDir** — The directory to save (and load) compiled assets to/from.
 * **compile** — Should assets be compiled if they don’t already exist in the `buildDir`?
 
+## Serving Assets from a CDN
+
+connect-assets includes a command-line utility, `connect-assets`, which can be used to precompile assets on your filesystem (which you can then upload to your CDN of choice). From your application directory, you can execute it with `./node_modules/.bin/connect-assets [options]`.
+
+```
+usage: connect-assets [-h] [-v] [-i [DIRECTORY [DIRECTORY ...]]]
+                      [-c [FILE [FILE ...]]] [-o DIRECTORY]
+
+Precompiles assets supplied into their production-ready form, ready for
+upload to a CDN or static file server. The generated manifest.json is all
+that is required on your application server if connect-assets is properly
+configured.
+
+Optional arguments:
+  -h, --help            Show this help message and exit.
+  -v, --version         Show program's version number and exit.
+  -i [DIRECTORY [DIRECTORY ...]], --include [DIRECTORY [DIRECTORY ...]]
+                        Adds the directory to a list of directories that
+                        assets will be read from, in order of preference.
+                        Defaults to 'assets/js' and 'assets/css'.
+  -c [FILE [FILE ...]], --compile [FILE [FILE ...]]
+                        Adds the file (or pattern) to a list of files to
+                        compile. Specify the option multiple times for
+                        multiple files (or patterns). Defaults to all files.
+  -o DIRECTORY, --output DIRECTORY
+                        Specifies the output directory to write compiled
+                        assets to. Defaults to 'builtAssets'.
+```
+
 ## Credits
 
 Follows in the footsteps of sstephenson's [Sprockets](https://github.com/sstephenson/sprockets), through the [Mincer](https://github.com/nodeca/mincer) project.

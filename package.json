@@ -30,8 +30,12 @@
     "node": ">=0.8.0"
   },
   "main": "index.js",
+  "bin": {
+    "connect-assets": "bin/connect-assets.js"
+  },
   "dependencies": {
-    "mincer": "0.5.10"
+    "mincer": "0.5.10",
+    "argparse": "0.1.15"
   },
   "devDependencies": {
     "mocha": "1.12.0",
