@@ -300,7 +300,7 @@ exports.cssCompilers = cssCompilers =
           .use(libs.nib())
           .use(libs.bootstrap())
           .use(libs.stylusExtends)
-          .define('asseturl', (url) -> "url(#{helperContext.img(url.val)})")
+          .define('asseturl', (url) -> new libs.stylus.nodes.Literal("url(#{helperContext.img(url.val)})") )
           .set('compress', @compress)
           .set('include css', true)
           .render callback

@@ -41,7 +41,7 @@
     "nib": "0.2.0",
     "bootstrap-stylus": "0.2.0",
     "nodeunit": "0.7.4",
-    "stylus": "0.22.2",
+    "stylus": "0.39.4",
     "request": "2.1.1",
     "watchit": "0.0.4",
     "less": "1.4.0",
