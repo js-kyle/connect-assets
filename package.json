@@ -1,6 +1,6 @@
 {
   "name": "connect-assets",
-  "version": "2.4.0",
+  "version": "2.5.3",
   "author": "Andrew Dunkman <andrew@dunkman.org>",
   "description": "A Rails-like asset pipeline for Connect",
   "contributors": [
@@ -41,10 +41,10 @@
     "nib": "0.2.0",
     "bootstrap-stylus": "0.2.0",
     "nodeunit": "0.7.4",
-    "stylus": "0.22.2",
+    "stylus": "0.39.4",
     "request": "2.1.1",
     "watchit": "0.0.4",
-    "less": "1.3.0",
+    "less": "1.4.0",
     "docco": "~0.4.0"
   },
   "scripts": {

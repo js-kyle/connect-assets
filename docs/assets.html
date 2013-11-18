@@ -29,6 +29,8 @@
   <span class="nx">options</span><span class="p">.</span><span class="nx">detectChanges</span> <span class="o">?=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">isnt</span> <span class="s">&#39;production&#39;</span>
   <span class="nx">options</span><span class="p">.</span><span class="nx">minifyBuilds</span> <span class="o">?=</span> <span class="kc">true</span>
   <span class="nx">options</span><span class="p">.</span><span class="nx">pathsOnly</span> <span class="o">?=</span> <span class="kc">false</span>
+  <span class="nv">libs.stylusExtends = </span><span class="nx">options</span><span class="p">.</span><span class="nx">stylusExtends</span> <span class="o">?=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{};</span>
+  
   <span class="nv">jsCompilers = </span><span class="nx">extend</span> <span class="nx">jsCompilers</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">jsCompilers</span> <span class="o">||</span> <span class="p">{}</span>
 
   <span class="nv">connectAssets = module.exports.instance = </span><span class="k">new</span> <span class="nx">ConnectAssets</span> <span class="nx">options</span>
@@ -244,6 +246,7 @@
           <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">bootstrap</span><span class="p">())</span>
           <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">nib</span><span class="p">())</span>
           <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">bootstrap</span><span class="p">())</span>
+          <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">libs</span><span class="p">.</span><span class="nx">stylusExtends</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s">&#39;compress&#39;</span><span class="p">,</span> <span class="nx">@compress</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s">&#39;include css&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
           <span class="p">.</span><span class="nx">render</span> <span class="nx">callback</span>

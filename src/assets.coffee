@@ -32,6 +32,9 @@ module.exports = exports = (options = {}) ->
   options.minifyBuilds ?= true
   options.pathsOnly ?= false
   options.mangle ?= true
+
+  libs.stylusExtends = options.stylusExtends ?= () => {};
+
   jsCompilers = extend jsCompilers, options.jsCompilers || {}
 
   connectAssets = module.exports.instance = new ConnectAssets options
@@ -68,12 +71,23 @@ class ConnectAssets
         shortRoute += ext
       shortRoute
 
-    context.css = (route) =>
+    context.css = (route, routeOptions = {}) =>
+      attrs = []
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
         route = @options.servePath + @compileCSS route
-      return route if @options.pathsOnly
-      '<link rel="stylesheet" href="' + route + '" />'
+
+      if @options.pathsOnly
+        return route
+
+      attrs.push 'rel="stylesheet"'
+      attrs.push "href=\"#{route}\""
+
+      if routeOptions.media
+        attrs.push "media=\"#{routeOptions.media}\""
+
+      return "<link #{attrs.join " "} />"
+
     context.css.root = 'css'
 
     context.js = (route, routeOptions) =>
@@ -125,7 +139,7 @@ class ConnectAssets
       else if alreadyCached
         return "/#{route}"
       else if @options.build
-        filename = @options.buildFilenamer(route, getExt route)
+        filename = @options.buildFilenamer(route, img)
         @buildFilenames[sourcePath] = filename
         cacheFlags = {expires: @options.buildsExpire, mtime}
         @cache.set filename, img, cacheFlags
@@ -141,14 +155,30 @@ class ConnectAssets
       ''
     throw new Error("No file found for route #{route}")
 
+  extractQueryAndHash = (path) ->
+    parsedPath = parse(path)
+    hash = parsedPath.hash || ''
+    query = if parsedPath.query then "?#{parsedPath.query}" else ''
+    "#{query}#{hash}"
+
+  removeQueryAndHash = (path) ->
+    parsedPath = parse(path)
+    hash = parsedPath.hash || ''
+    query = if parsedPath.query then "?#{parsedPath.query}" else ''
+    path.replace(hash, '').replace(query, '')
+
   resolveImgPath: (path) ->
     resolvedPath = path + ""
     resolvedPath = resolvedPath.replace /url\(|'|"|\)/g, ''
-    try
-      resolvedPath = @options.helperContext.img resolvedPath
-    catch e
-      console.error "Can't resolve image path: #{resolvedPath}"
-    return "url('#{resolvedPath}')"
+    queryAndHash = extractQueryAndHash(resolvedPath)
+    resolvedPath = removeQueryAndHash(resolvedPath)
+
+    unless /^data\:/.test resolvedPath
+      try
+        resolvedPath = @options.helperContext.img resolvedPath
+      catch e
+        console.error "Can't resolve image path: #{resolvedPath}"
+    return "url('#{resolvedPath}#{queryAndHash}')"
 
   fixCSSImagePaths: (css) ->
     regex = /url\([^\)]+\)/g
@@ -179,7 +209,7 @@ class ConnectAssets
             @cssSourceFiles[sourcePath] = {data, mtime: stats.mtime}
             source = data.toString 'utf8'
           startTime = new Date
-          css = cssCompilers[ext].compileSync @absPath(sourcePath), source
+          css = cssCompilers[ext].compileSync @absPath(sourcePath), source, @options.helperContext
           if css is @compiledCss[sourcePath]?.data.toString 'utf8'
             alreadyCached = true
           else
@@ -255,7 +285,7 @@ exports.cssCompilers = cssCompilers =
 
   styl:
     optionsMap: {}
-    compileSync: (sourcePath, source) ->
+    compileSync: (sourcePath, source, helperContext) ->
       result = ''
       callback = (err, js) ->
         throw err if err
@@ -271,6 +301,8 @@ exports.cssCompilers = cssCompilers =
           .use(libs.bootstrap())
           .use(libs.nib())
           .use(libs.bootstrap())
+          .use(libs.stylusExtends)
+          .define('asseturl', (url) -> new libs.stylus.nodes.Literal("url(#{helperContext.img(url.val)})") )
           .set('compress', @compress)
           .set('include css', true)
           .render callback
@@ -283,43 +315,15 @@ exports.cssCompilers = cssCompilers =
       paths: []
       color: true
 
-    patchLess: (less) ->
-      # Monkey patch importer of LESS to load files synchronously
-      less.Parser.importer = (file, paths, callback) ->
-        paths.unshift "."
-
-        i = 0
-        while i < paths.length
-          try
-            pathname = path.join(paths[i], file)
-            fs.statSync(pathname)
-            break
-          catch e
-            pathname = null
-
-          i++
-
-        if not pathname
-          throw new Error "File #{file} not found"
-
-        data = fs.readFileSync(pathname, 'utf-8')
-        new(less.Parser)(
-          paths: [path.dirname(pathname)].concat(paths)
-          filename: pathname
-        ).parse(data, (e, root) ->
-          if (e)
-            less.writeError(e)
-          callback(e, root)
-        )
-
-      less
-
-    compileSync: (sourcePath, source) ->
+    compileSync: (sourcePath, source, helperContext) ->
       result = ""
-      libs.less or= @patchLess (require 'less')
+      libs.less or= require 'less'
+      libs.less.tree.functions.asseturl = (str) ->
+        new libs.less.tree.URL(new libs.less.tree.Anonymous(helperContext.img(str.value)))
       options = @optionsMap
       options.filename = sourcePath
       options.paths = [path.dirname(sourcePath)].concat(options.paths)
+      options.syncImport = true
       compress = @compress ? false
 
       callback = (err, tree) ->

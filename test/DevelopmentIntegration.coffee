@@ -43,6 +43,19 @@ exports['Raw CSS is served directly'] = (test) ->
     test.equals res.headers['content-type'], 'text/css'
     test.done()
 
+exports['CSS with data: uris are okay'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/data-uri.css" />'
+  errFn = console.error;
+  console.error = (message) -> throw message
+  test.equals css('data-uri'), cssTag
+  console.error = errFn;
+
+  request 'http://localhost:3588/css/normalize.css', (err, res, body) ->
+    throw err if err
+    test.equals body, '/* Just act normal, dude. */'
+    test.equals res.headers['content-type'], 'text/css'
+    test.done()
+
 exports['Images are served directly'] = (test) ->
   imgTag = "/img/foobar.png"
   test.equals img('foobar.png'), imgTag
@@ -91,6 +104,21 @@ exports['Stylus imports work as expected'] = (test) ->
     test.equals body, expectedBody
     test.done()
 
+exports['Stylus provides the assetsurl function'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/background-styl.css" />'
+  test.equals css('background-styl'), cssTag
+
+  request 'http://localhost:3588/css/background-styl.css', (err, res, body) ->
+    throw err if err
+    expectedBody = '''
+    .background {
+      background-image: url(/img/foobar.png);
+    }\n
+    '''
+    test.equals body, expectedBody
+    test.done()
+
+
 exports['Less is served as CSS'] = (test) ->
   cssTag = '<link rel="stylesheet" href="/css/style-less.css" />'
   test.equals css('style-less'), cssTag
@@ -105,6 +133,21 @@ exports['Less is served as CSS'] = (test) ->
     '''
     test.equals body, expectedBody
     test.done()
+
+exports['Less provides the assetsurl function'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/background-less.css" />'
+  test.equals css('background-less'), cssTag
+
+  request 'http://localhost:3588/css/background-less.css', (err, res, body) ->
+    throw err if err
+    expectedBody = '''
+    .background {
+      background-image: url(/img/foobar.png);
+    }\n
+    '''
+    test.equals body, expectedBody
+    test.done()
+
 
 exports['nib is supported when available'] = (test) ->
   cssTag = '<link rel="stylesheet" href="/css/gradient.css" />'
@@ -148,6 +191,13 @@ exports['css helper function provides correct href'] = (test) ->
   test.equals css('style'), cssTag
   test.equals css(url = 'http://raw.github.com/necolas/normalize.css/master/normalize'), '<link rel="stylesheet" href="'+url+'.css" />'
   test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), '<link rel="stylesheet" href="'+url+'" />'
+  test.done()
+
+exports['css helper function allows media tag'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/style.css" media="print" />'
+  test.equals css('/css/style.css', media: "print"), cssTag
+  test.equals css('style.css', media: "print"), cssTag
+  test.equals css('style', media: "print"), cssTag
   test.done()
 
 exports['js helper function provides correct src'] = (test) ->
