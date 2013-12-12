@@ -81,5 +81,24 @@ describe("helper functions", function () {
         '/assets/depends-on-blank-3d2afa4aef421f17310e48c12eb39145.js'
       );
     });
+
+    it("is accessible from javascript assets");
+    it("is accessible from coffeescript assets");
+    it("is accessible from stylus assets");
+    it("is accessible from less assets");
+    it("is accessible from sass assets");
+    it("is accessible from haml coffeescript assets");
+    it("is accessible from ejs assets");
+  });
+
+  describe("asset", function () {
+    it("returns the contents of the asset");
+    it("is accessible from javascript assets");
+    it("is accessible from coffeescript assets");
+    it("is accessible from stylus assets");
+    it("is accessible from less assets");
+    it("is accessible from sass assets");
+    it("is accessible from haml coffeescript assets");
+    it("is accessible from ejs assets");
   });
 });
