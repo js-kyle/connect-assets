@@ -195,9 +195,9 @@ exports['css helper function provides correct href'] = (test) ->
 
 exports['css helper function allows user attributes'] = (test) ->
   cssTag = '<link rel="stylesheet" href="/css/style.css" media="print" data-confirm />'
-  test.equals css('/css/style.css', {media: "print", data: { confirm: -> true }}), cssTag
-  test.equals css('style.css', {media: "print", data: { confirm: -> true }}), cssTag
-  test.equals css('style', {media: "print", data: { confirm: -> true }}), cssTag
+  test.equals css('/css/style.css', {media: "print", delete: false, data: { confirm: -> true}}), cssTag
+  test.equals css('style.css', {media: "print", delete: false, data: { confirm: -> true }}), cssTag
+  test.equals css('style', {media: "print", delete: false, data: { confirm: -> true }}), cssTag
   test.done()
 
 
