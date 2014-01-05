@@ -193,13 +193,19 @@ exports['css helper function provides correct href'] = (test) ->
   test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), '<link rel="stylesheet" href="'+url+'" />'
   test.done()
 
-exports['css helper function allows media tag'] = (test) ->
-  cssTag = '<link rel="stylesheet" href="/css/style.css" media="print" />'
-  test.equals css('/css/style.css', media: "print"), cssTag
-  test.equals css('style.css', media: "print"), cssTag
-  test.equals css('style', media: "print"), cssTag
+exports['css helper function allows user attributes'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/style.css" media="print" data-confirm />'
+  test.equals css('/css/style.css', {media: "print", data: { confirm: -> true }}), cssTag
+  test.equals css('style.css', {media: "print", data: { confirm: -> true }}), cssTag
+  test.equals css('style', {media: "print", data: { confirm: -> true }}), cssTag
   test.done()
 
+
+exports['Compiled stylesheets work from absolute options.src with user options'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/button.css" data-option />'
+  test.equals css('button', 'data-option': true), cssTag
+  test.done()
+  
 exports['js helper function provides correct src'] = (test) ->
   jsTag = '<script src="/js/script.js"></script>'
   test.equals js('/js/script.js'), jsTag
@@ -289,7 +295,6 @@ exports['The same dependency will not be loaded twice'] = (test) ->
   """
   test.equals js('c'), jsTags
   test.done()
-
 exports['An error is thrown if a script requires itself directly'] = (test) ->
   test.throws -> js('narcissist')
   test.done()
