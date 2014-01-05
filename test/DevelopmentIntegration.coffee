@@ -194,16 +194,15 @@ exports['css helper function provides correct href'] = (test) ->
   test.done()
 
 exports['css helper function allows user attributes'] = (test) ->
-  cssTag = '<link rel="stylesheet" href="/css/style.css" media="print" data-confirm />'
-  test.equals css('/css/style.css', {media: "print", delete: false, data: { confirm: -> true}}), cssTag
-  test.equals css('style.css', {media: "print", delete: false, data: { confirm: -> true }}), cssTag
-  test.equals css('style', {media: "print", delete: false, data: { confirm: -> true }}), cssTag
+  cssTag = '<link rel="stylesheet" href="/css/style.css" media="print" />'
+  test.equals css('/css/style.css', media: "print"), cssTag
+  test.equals css('style.css', media: "print"), cssTag
+  test.equals css('style', media: "print"), cssTag
   test.done()
 
-
-exports['Compiled stylesheets work from absolute options.src with user options'] = (test) ->
-  cssTag = '<link rel="stylesheet" href="/css/button.css" data-option />'
-  test.equals css('button', 'data-option': true), cssTag
+exports['css helper function allows user attributes such as functions, objects and booleans'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/style.css" data-confirm="Are you sure to do this?" data-delete />'
+  test.equals css('style.css', { data: { confirm: 'Are you sure to do this?', delete: -> true } }), cssTag
   test.done()
   
 exports['js helper function provides correct src'] = (test) ->
