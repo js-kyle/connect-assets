@@ -18,6 +18,20 @@ describe("serveAsset paths", function () {
       });
     });
   });
+  
+  it("allows servePath to be a URL", function (done) {
+    createServer.call(this, { servePath: this.host+"/arsets" }, function () {
+      var path = this.assetPath("blank.js");
+      var url = path;
+
+      expect(path).to.contain("/arsets/");
+
+      http.get(url, function (res) {
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
 
   it("does not serve assets for URLs outside of serve path", function (done) {
     createServer.call(this, {}, function () {
