@@ -3,6 +3,7 @@
 connectCache  = require 'connect-file-cache'
 Snockets      = require 'snockets'
 
+zlib          = require 'zlib'
 crypto        = require 'crypto'
 fs            = require 'fs'
 path          = require 'path'
@@ -141,10 +142,7 @@ class ConnectAssets
         @buildFilenames[sourcePath] = filename
         cacheFlags = {expires: @options.buildsExpire, mtime}
         @cache.set filename, img, cacheFlags
-        if @options.buildDir
-          buildPath = path.join process.cwd(), @options.buildDir, filename
-          mkdirRecursive path.dirname(buildPath), 0o0755, ->
-            fs.writeFile buildPath, img
+        @writeFile filename, img
         return @cachedRoutePaths[route] = "/#{filename}"
       else
         @cache.set route, img, {mtime}
@@ -224,10 +222,7 @@ class ConnectAssets
           @buildFilenames[sourcePath] = filename
           cacheFlags = {expires: @options.buildsExpire, mtime}
           @cache.set filename, css, cacheFlags
-          if @options.buildDir
-            buildPath = path.join process.cwd(), @options.buildDir, filename
-            mkdirRecursive path.dirname(buildPath), 0o0755, ->
-              fs.writeFile buildPath, css
+          @writeFile filename, css
           return @cachedRoutePaths[route] = "/#{filename}"
         else
           @cache.set route, css, {mtime}
@@ -253,10 +248,7 @@ class ConnectAssets
               @buildFilenames[sourcePath] = filename
               cacheFlags = expires: @options.buildsExpire
               @cache.set filename, concatenation, cacheFlags
-              if buildDir = @options.buildDir
-                buildPath = path.join process.cwd(), buildDir, filename
-                mkdirRecursive path.dirname(buildPath), 0o0755, (err) ->
-                  fs.writeFile buildPath, concatenation
+              @writeFile filename, concatenation
             else
               filename = @buildFilenames[sourcePath]
           snocketsFlags = minify: @options.minifyBuilds, async: false
@@ -277,6 +269,15 @@ class ConnectAssets
       path.join @options.src, route
     else
       path.join process.cwd(), @options.src, route
+
+  writeFile: (filename, content) ->
+    if @options.buildDir
+      buildPath = path.join process.cwd(), @options.buildDir, filename
+      mkdirRecursive path.dirname(buildPath), 0o0755, (err) =>
+        fs.writeFile buildPath, content
+        if @options.gzip and not(content.length < @options.gzipThreshold)
+          zlib.gzip content, (_, buf) -> fs.writeFile buildPath + ".gz", buf
+        return
 
 # ## Asset compilers
 exports.cssCompilers = cssCompilers =
