@@ -192,19 +192,19 @@ class ConnectAssets
       sourcePath = stripExt(route) + ".#{ext}"
       try
         stats = fs.statSync @absPath(sourcePath)
+        {mtime} = stats
         if ext is 'css'
           if timeEq mtime, @cache.map[route]?.mtime
             alreadyCached = true
           else
-            {mtime} = stats
             css = (fs.readFileSync @absPath(sourcePath)).toString 'utf8'
             css = @fixCSSImagePaths css
         else
-          if timeEq stats.mtime, @cssSourceFiles[sourcePath]?.mtime
+          if timeEq mtime, @cssSourceFiles[sourcePath]?.mtime
             source = @cssSourceFiles[sourcePath].data.toString 'utf8'
           else
             data = fs.readFileSync @absPath(sourcePath)
-            @cssSourceFiles[sourcePath] = {data, mtime: stats.mtime}
+            @cssSourceFiles[sourcePath] = {data, mtime}
             source = data.toString 'utf8'
           startTime = new Date
           css = cssCompilers[ext].compileSync @absPath(sourcePath), source, @options.helperContext
