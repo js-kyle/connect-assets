@@ -125,10 +125,11 @@ class ConnectAssets
     sourcePath = route
     try
       stats = fs.statSync @absPath(sourcePath)
+      {mtime} = stats
+
       if timeEq mtime, @cache.map[route]?.mtime
         alreadyCached = true
       else
-        {mtime} = stats
         img = fs.readFileSync @absPath(sourcePath)
 
       if alreadyCached and @options.build
@@ -193,6 +194,7 @@ class ConnectAssets
       try
         stats = fs.statSync @absPath(sourcePath)
         {mtime} = stats
+
         if ext is 'css'
           if timeEq mtime, @cache.map[route]?.mtime
             alreadyCached = true
