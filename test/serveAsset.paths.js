@@ -29,6 +29,16 @@ describe("serveAsset paths", function () {
     });
   });
 
+  it("allows servePath to be a URL without a protocol", function (done) {
+    createServer.call(this, { servePath: "//cdn.example.com/" }, function () {
+      var path = this.assetPath("blank.js");
+      var url = path;
+
+      expect(path.indexOf("//cdn.example.com/")).to.equal(0);
+      done();
+    });
+  });
+
   it("does not serve assets for URLs outside of serve path", function (done) {
     createServer.call(this, {}, function () {
       var path = this.assetPath("blank.js").replace("/assets", "");
