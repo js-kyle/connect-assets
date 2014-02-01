@@ -96,20 +96,17 @@ See [Mincer](https://github.com/nodeca/mincer) for more information.
 
 If you like, you can pass any of these options to the function returned by `require('connect-assets')`:
 
-```text
-|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-| Option        | Default Value                   |
-|---------------|---------------------------------|
-| paths         | [ "assets/js", "assets/css" ]   |
-| helperContext | global                          |
-| servePath     | "assets"                        |
-| precompile    | []                              |
-| build         | dev: false; prod: true          |
-| buildDir      | dev: false; prod: "builtAssets" |
-| compile       | true                            |
-| compress      | dev: false; prod: true          |
-|_______________|_________________________________|
-```
+Option        | Default Value
+--------------|---------------------------------
+paths         | [ "assets/js", "assets/css" ]
+helperContext | global
+servePath     | "assets"
+precompile    | []
+build         | dev: false; prod: true
+buildDir      | dev: false; prod: "builtAssets"
+compile       | true
+compress      | dev: false; prod: true
+
 * **paths** — The directories that assets will be read from, in order of preference.
 * **helperContext** — The object that helper functions (css, js, assetPath) will be attached to.
 * **servePath** — The virtual path in which assets will be served over HTTP. If hosting assets locally, supply a local path (say, "assets"). If hosting assets remotely on a CDN, supply a URL: "http://myassets.cdn.com/assets".
