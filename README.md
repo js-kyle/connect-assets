@@ -37,6 +37,10 @@ npm install node-sass
 npm install haml-coffee
 npm install jade
 npm install ejs
+
+// For minification in production:
+npm install csso
+npm install uglify-js
 ```
 
 Then add this line to your app's configuration:
@@ -103,6 +107,7 @@ If you like, you can pass any of these options to the function returned by `requ
 | build         | dev: false; prod: true          |
 | buildDir      | dev: false; prod: "builtAssets" |
 | compile       | true                            |
+| compress      | dev: false; prod: true          |
 |_______________|_________________________________|
 ```
 * **paths** — The directories that assets will be read from, in order of preference.
@@ -112,6 +117,7 @@ If you like, you can pass any of these options to the function returned by `requ
 * **build** — Should assets be saved to disk (true), or just served from memory (false)?
 * **buildDir** — The directory to save (and load) compiled assets to/from.
 * **compile** — Should assets be compiled if they don’t already exist in the `buildDir`?
+* **compress** - Should assets be minified? If enabled, requires `uglify-js` and `csso`.
 
 ## Serving Assets from a CDN
 

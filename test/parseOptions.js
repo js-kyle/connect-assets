@@ -152,4 +152,30 @@ describe("parseOptions", function () {
       expect(opts.compile).to.equal(false);
     });
   });
+
+  describe("compress", function () {
+    it("defaults to false in development", function () {
+      var env = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
+      var opts = assets._parseOptions({});
+      expect(opts.compress).to.equal(false);
+      process.env.NODE_ENV = env;
+    });
+
+    it("defaults to true in production", function () {
+      var env = process.env.NODE_ENV;
+      process.env.NODE_ENV = "production";
+      var opts = assets._parseOptions({});
+      expect(opts.compress).to.equal(true);
+      process.env.NODE_ENV = env;
+    });
+
+    it("can be overridden", function () {
+      var env = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
+      var opts = assets._parseOptions({ compress: true });
+      expect(opts.compress).to.equal(true);
+      process.env.NODE_ENV = env;
+    });
+  });
 });
