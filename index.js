@@ -48,7 +48,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
   options.servePath = (options.servePath || "assets").replace(/^\//, "").replace(/\/$/, "");
-  options.precompile = arrayify(options.precompile || []);
+  options.precompile = arrayify(options.precompile || ["*.*"]);
   options.build = options.build != null ? options.build : isProduction;
   options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
   options.compile = options.compile != null ? options.compile : true;

@@ -66,9 +66,9 @@ describe("parseOptions", function () {
   });
 
   describe("precompile", function () {
-    it("defaults to an empty array (all assets)", function () {
+    it("defaults to all files with extensions", function () {
       var opts = assets._parseOptions({});
-      expect(opts.precompile).to.eql([]);
+      expect(opts.precompile).to.eql(["*.*"]);
     });
 
     it("can be overridden with a string", function () {

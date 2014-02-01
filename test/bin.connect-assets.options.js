@@ -61,13 +61,13 @@ describe("connect-assets command-line interface options", function () {
   });
 
   describe("compile", function () {
-    it("defaults to empty array (all assets)", function () {
+    it("defaults to all assets with extensions", function () {
       var argv = process.argv;
       process.argv = "node connect-assets".split(" ");
       var cli = bin.initialize();
       var args = bin.prepare(cli);
 
-      expect(args.compile).to.eql([]);
+      expect(args.compile).to.eql(["*.*"]);
 
       process.argv = argv;
     });

@@ -27,11 +27,11 @@ var initialize = exports.initialize = function () {
 
   cli.addArgument(["-c", "--compile"], {
     help: "Adds the file (or pattern) to a list of files to compile. " +
-      "Defaults to all files.",
+      "Defaults to all files with extensions.",
     metavar: "FILE",
     action: "append",
     nargs: "*",
-    defaultValue: []
+    defaultValue: ["*.*"]
   });
 
   cli.addArgument(["-o", "--output"], {
@@ -57,6 +57,11 @@ var prepare = exports.prepare = function (cli) {
 
   args.include = flatten(args.include);
   args.compile = flatten(args.compile);
+
+  // Remove the default "all files" argument if more files are specified.
+  if (args.compile.length > 1) {
+    args.compile.shift();
+  }
 
   return args;
 };
