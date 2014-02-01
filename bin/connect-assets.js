@@ -102,6 +102,9 @@ var _compile = exports._compile = function (args, callback) {
   var environment = new mincer.Environment();
   var manifest = new mincer.Manifest(environment, args.output);
 
+  environment.cssCompressor = "csso";
+  environment.jsCompressor = "uglify";
+
   args.include.forEach(environment.appendPath, environment);
   manifest.compile(args.compile, callback);
 };
