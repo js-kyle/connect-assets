@@ -96,25 +96,16 @@ See [Mincer](https://github.com/nodeca/mincer) for more information.
 
 If you like, you can pass any of these options to the function returned by `require('connect-assets')`:
 
-Option        | Default Value
---------------|---------------------------------
-paths         | [ "assets/js", "assets/css" ]
-helperContext | global
-servePath     | "assets"
-precompile    | []
-build         | dev: false; prod: true
-buildDir      | dev: false; prod: "builtAssets"
-compile       | true
-compress      | dev: false; prod: true
-
-* **paths** — The directories that assets will be read from, in order of preference.
-* **helperContext** — The object that helper functions (css, js, assetPath) will be attached to.
-* **servePath** — The virtual path in which assets will be served over HTTP. If hosting assets locally, supply a local path (say, "assets"). If hosting assets remotely on a CDN, supply a URL: "http://myassets.cdn.com/assets".
-* **precompile** — An array of assets to precompile while the server is initializing. An empty array is treated as "all assets".
-* **build** — Should assets be saved to disk (true), or just served from memory (false)?
-* **buildDir** — The directory to save (and load) compiled assets to/from.
-* **compile** — Should assets be compiled if they don’t already exist in the `buildDir`?
-* **compress** - Should assets be minified? If enabled, requires `uglify-js` and `csso`.
+Option        | Default Value                   | Description
+--------------|---------------------------------|-------------------------------
+paths         | ["assets/js", "assets/css"]     | The directories that assets will be read from, in order of preference.
+helperContext | global                          | The object that helper functions (css, js, assetPath) will be attached to.
+servePath     | "assets"                        | The virtual path in which assets will be served over HTTP. If hosting assets locally, supply a local path (say, "assets"). If hosting assets remotely on a CDN, supply a URL: "http://myassets.example.com/assets".
+precompile    | ["\*.\*"]                       | An array of assets to precompile while the server is initializing. Patterns should match the filename only, not including the directory.
+build         | dev: false; prod: true          | Should assets be saved to disk (true), or just served from memory (false)?
+buildDir      | dev: false; prod: "builtAssets" | The directory to save (and load) compiled assets to/from.
+compile       | true                            | Should assets be compiled if they don’t already exist in the `buildDir`?
+compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csso`.
 
 ## Serving Assets from a CDN
 
