@@ -75,7 +75,7 @@ var describe = exports.describe = function (logger, args) {
 
   logger.log("\nCompile:");
 
-  if (args.compile.length) {
+  if (args.compile[0] != "*.*") {
     for (var i = 0; i < args.compile.length; i++) {
       logger.log("  " + args.compile[i]);
     };
