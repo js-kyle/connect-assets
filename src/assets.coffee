@@ -163,7 +163,7 @@ class ConnectAssets
   removeQueryAndHash = (path) ->
     parsedPath = parse(path)
     hash = parsedPath.hash || ''
-    query = if parsedPath.query then "?#{parsedPath.query}" else '?'
+    query = "?#{parsedPath.query || ''}"
     path.replace(hash, '').replace(query, '')
 
   resolveImgPath: (path) ->
