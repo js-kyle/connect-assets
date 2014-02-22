@@ -56,6 +56,14 @@ exports['CSS with data: uris are okay'] = (test) ->
     test.equals res.headers['content-type'], 'text/css'
     test.done()
 
+exports['CSS with empty querystring: uris are okay'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/font.css" />'
+  errFn = console.error;
+  console.error = (message) -> throw message
+  test.equals css('font'), cssTag
+  console.error = errFn;
+  test.done()
+
 exports['Images are served directly'] = (test) ->
   imgTag = "/img/foobar.png"
   test.equals img('foobar.png'), imgTag
