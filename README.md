@@ -63,6 +63,21 @@ connect-assets provides three global functions named `js`, `css`, and `assetPath
 <script src="/js/jquery-[hash].js"></script>
 ```
 
+You can pass a Hash of special attributes to helper method `css` or `js`.
+
+
+```
+!= css("normalize", { data: { 'turbolinks-track': true } })
+!= js("jquery", { async: true })
+```
+
+the result will:
+
+```html
+<link rel="stylesheet" href="/css/normalize-[hash].css" "data-turbolinks-track" />
+<script src="/js/jquery-[hash].js" async></script>
+```
+
 ### Sprockets-style concatenation
 
 You can indicate dependencies in your `.js.coffee` and `.js` files using the Sprockets-style syntax.
