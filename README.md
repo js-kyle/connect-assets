@@ -72,7 +72,7 @@ connect-assets provides two global functions named `js` and `css`. Use them in y
 
 For your purposes you can pass additional attributes to helpers `js` and `css`.
 
-    != css('normalize', { media: 'print', data: { confirm: 'Are you sure to do this?', delete: function(){return true} } })
+    != css('normalize', { media: 'print', 'data-confirm': 'Are you sure to do this?', 'data-delete': true })
 
 Result:
     
