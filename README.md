@@ -67,7 +67,7 @@ You can pass a Hash of special attributes to helper method `css` or `js`.
 
 
 ```
-!= css("normalize", { data: { 'turbolinks-track': true } })
+!= css("normalize", { 'data-turbolinks-track': true } })
 != js("jquery", { async: true })
 ```
 
