@@ -68,7 +68,7 @@ describe("helper functions", function () {
     it("should have additional attributes in result tag", function() {
       var ctx = {};
       var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
-      var link = ctx.css("asset", { data: { 'turbolinks-track': true } });
+      var link = ctx.css("asset", { 'data-turbolinks-track': true });
       expect(link).to.equal(
         '<link rel="stylesheet" href="/assets/asset-20069ab163c070349198aa05124dcaa8.css" data-turbolinks-track />'
       );
