@@ -70,6 +70,15 @@ connect-assets provides two global functions named `js` and `css`. Use them in y
     <link rel="stylesheet" href="/css/normalize.css" />
     <script src="/js/jquery.js"></script>
 
+For your purposes you can pass additional attributes to helpers `js` and `css`.
+
+    != css('normalize', { media: 'print', 'data-confirm': 'Are you sure to do this?', 'data-delete': true })
+
+Result:
+    
+    <link rel="stylesheet" href="/css/normalize.css" media="print" data-confirm="Are you sure to do this?" data-delete />
+
+
 ### Sprockets-style concatenation
 
 You can indicate dependencies in your CoffeeScript files using the Sprockets-style syntax
