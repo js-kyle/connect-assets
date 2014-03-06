@@ -78,7 +78,7 @@ class ConnectAssets
           else continue
       attrs
 
-    context.css = (route, routeOptions = {}) =>
+    context.css = (route, routeOptions={}) =>
       attrs = []
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
