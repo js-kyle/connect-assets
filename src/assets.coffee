@@ -69,18 +69,12 @@ class ConnectAssets
         shortRoute += ext
       shortRoute
 
-    parseAttributes = (routeOptions={}, root='') ->
+    parseAttributes = (routeOptions) ->
       attrs = []
       for name, value of routeOptions
         switch typeof value
-          when 'boolean' then attrs.push(root + name) if value
-          when 'string' then attrs.push("#{root}#{name}=\"#{value}\"")
-          when 'function'
-            h = {}
-            h[root + name] = value()
-            attrs = attrs.concat parseAttributes(h)
-          when 'object'
-            attrs = attrs.concat parseAttributes(value, "#{name}-")
+          when 'boolean' then attrs.push(name) if value
+          when 'string' then attrs.push("#{name}=\"#{value}\"")
           else continue
       attrs
 
