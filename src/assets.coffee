@@ -69,7 +69,16 @@ class ConnectAssets
         shortRoute += ext
       shortRoute
 
-    context.css = (route, routeOptions = {}) =>
+    parseAttributes = (routeOptions) ->
+      attrs = []
+      for name, value of routeOptions
+        switch typeof value
+          when 'boolean' then attrs.push(name) if value
+          when 'string' then attrs.push("#{name}=\"#{value}\"")
+          else continue
+      attrs
+
+    context.css = (route, routeOptions={}) =>
       attrs = []
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
@@ -80,16 +89,14 @@ class ConnectAssets
 
       attrs.push 'rel="stylesheet"'
       attrs.push "href=\"#{route}\""
+      attrs = attrs.concat parseAttributes(routeOptions)
 
-      if routeOptions.media
-        attrs.push "media=\"#{routeOptions.media}\""
-
-      return "<link #{attrs.join " "} />"
-
+      "<link #{attrs.join " "} />"
     context.css.root = 'css'
 
-    context.js = (route, routeOptions) =>
-      loadingKeyword = ''
+    context.js = (route, routeOptions={}) =>
+      attrs = []
+      scripts = []
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
@@ -99,11 +106,13 @@ class ConnectAssets
         routes = (@options.servePath + p for p in @compileJS route)
 
       return routes if @options.pathsOnly
-      if routeOptions? and @options.build
-        loadingKeyword = 'async ' if routeOptions.async?
-        loadingKeyword = 'defer ' if routeOptions.defer?
+      
+      attrs = attrs.concat parseAttributes(routeOptions)
 
-      ('<script ' + loadingKeyword + 'src="' + r + '"></script>' for r in routes).join '\n'
+      for r in routes 
+        scripts.push "<script #{attrs.concat("src=\"#{r}\"").join " "}></script>"
+
+      scripts.join "\n"
     context.js.root = 'js'
 
     context.img = (route) =>

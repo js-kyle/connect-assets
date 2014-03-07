@@ -201,13 +201,18 @@ exports['css helper function provides correct href'] = (test) ->
   test.equals css(url = '//raw.github.com/necolas/normalize.css/master/normalize.css'), '<link rel="stylesheet" href="'+url+'" />'
   test.done()
 
-exports['css helper function allows media tag'] = (test) ->
+exports['css helper function allows user attributes'] = (test) ->
   cssTag = '<link rel="stylesheet" href="/css/style.css" media="print" />'
   test.equals css('/css/style.css', media: "print"), cssTag
   test.equals css('style.css', media: "print"), cssTag
   test.equals css('style', media: "print"), cssTag
   test.done()
 
+exports['css helper function allows user attributes such as functions, objects and booleans'] = (test) ->
+  cssTag = '<link rel="stylesheet" href="/css/style.css" data-confirm="Are you sure to do this?" data-delete />'
+  test.equals css('style.css', { 'data-confirm': 'Are you sure to do this?', 'data-delete': true }), cssTag
+  test.done()
+  
 exports['js helper function provides correct src'] = (test) ->
   jsTag = '<script src="/js/script.js"></script>'
   test.equals js('/js/script.js'), jsTag
@@ -297,7 +302,6 @@ exports['The same dependency will not be loaded twice'] = (test) ->
   """
   test.equals js('c'), jsTags
   test.done()
-
 exports['An error is thrown if a script requires itself directly'] = (test) ->
   test.throws -> js('narcissist')
   test.done()
