@@ -65,6 +65,15 @@ describe("helper functions", function () {
       );
     });
 
+    it("should have additional attributes in result tag", function() {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var link = ctx.css("asset", { 'data-turbolinks-track': true });
+      expect(link).to.equal(
+        '<link rel="stylesheet" href="/assets/asset-20069ab163c070349198aa05124dcaa8.css" data-turbolinks-track />'
+      );
+    });
+
   });
 
   describe("js", function () {
@@ -86,6 +95,16 @@ describe("helper functions", function () {
 
       expect(script).to.equal(
         '<script src="/assets/asset-3d2afa4aef421f17310e48c12eb39145.js"></script>'
+      );
+    });
+
+    it("should have additional attributes in result tag", function() {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var script = ctx.js("asset.js", { async: true });
+
+      expect(script).to.equal(
+        '<script src="/assets/asset-3d2afa4aef421f17310e48c12eb39145.js" async></script>'
       );
     });
   });

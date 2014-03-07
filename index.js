@@ -64,8 +64,12 @@ var arrayify = module.exports._arrayify = function (target) {
   return (target instanceof Array) ? target : [ target ];
 };
 
+var pasteAttr = function(str) {
+  return !!str ? ' '+str : '';  
+};
+
 var tagWriters = {
-  css: function (url) { return '<link rel="stylesheet" href="' + url + '" />'; },
-  js: function (url) { return '<script src="' + url + '"></script>'; },
+  css: function (url, attr) { return '<link rel="stylesheet" href="' + url + '"' + pasteAttr(attr) + ' />'; },
+  js: function (url, attr) { return '<script src="' + url + '"' + pasteAttr(attr) + '></script>'; },
   noop: function (url) { return url; }
 };
