@@ -105,7 +105,10 @@ If you like, you can pass any of these options to the function returned by `requ
 * `src` (defaults to `'assets'`): The directory assets will be read from
 * `helperContext` (defaults to `global`): The object the `css` and `js` helper functions will attach to
 * `buildDir` (defaults to `builtAssets`): Writes built asset files to disk using this directory in `production` environment, set to `false` to disable
+* `servePath` (defaults to ""): Paths in generated tags will be prefixed by `servePath`.  Useful when working with reverse proxies.
 * ... see the source (`src/assets.coffee`) for more.
+
+### Using `helperContext` 
 
 You can also set the "root path" on the `css` and `js` helper functions (by default, `/css` and `/js`), e.g.
 
@@ -127,6 +130,24 @@ while
 gives you
 
     <link rel='stylesheet' href='/style.css'>
+    
+### Using `servePath`
+    
+In addition to setting the "root path" where assets can be found by the server, you can also "mount" your assets behind a base location path by setting `servePath`, so that path references are generated correctly for tags.  This is especially useful when working with reverse proxies, where the server may be receiving external requests for assets at a different path, e.g.
+
+    require('connect-assets')(
+      servePath: '/foo'
+    )
+   
+then,
+
+    css('/style.css')
+   
+gives you
+
+    <link rel='stylesheet' href='/foo/css/style.css'>
+
+While the server will still expect that external requests for `'/foo/css/style.css'` will be rewritten for `'/css/style.css'`  This only applies to absolute paths.
 
 ## Generated documentation 
 
