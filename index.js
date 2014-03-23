@@ -1,4 +1,5 @@
 var url = require("url");
+var mincer = require("mincer");
 var Assets = require("./lib/assets");
 
 var connectAssets = module.exports = function (options) {
@@ -73,3 +74,5 @@ var tagWriters = {
   js: function (url, attr) { return '<script src="' + url + '"' + pasteAttr(attr) + '></script>'; },
   noop: function (url) { return url; }
 };
+
+connectAssets.mincer = mincer;
