@@ -3,7 +3,7 @@ path = require 'path'
 request = require 'request'
 
 app = require('connect').createServer()
-assets = require('../lib/assets.js')
+assets = require('../src/assets.coffee')
 app.use assets src: path.join(__dirname, 'assets')
 app.listen 3590
 
@@ -53,3 +53,7 @@ exports['JS dependencies work from absolute options.src'] = (test) ->
     test.equals body, expectedBody
     test.done()
     app.close()
+
+exports['Single subresource file work from absolute options.src'] = (test) ->
+  test.equals sub('js-dependency'), '<link rel="subresource" href="/js/js-dependency.js" />'
+  test.done()
