@@ -120,7 +120,7 @@ class ConnectAssets
       [routes, attrs] = context._js(route, routeOptions)
       scripts = []
       for r in routes
-        scripts.push "<link #{attrs.concat("src=\"#{r}\"").join " "} />"
+        scripts.push "<link #{attrs.concat("href=\"#{r}\"").join " "} />"
       scripts.join "\n"
 
     context.img = (route) =>

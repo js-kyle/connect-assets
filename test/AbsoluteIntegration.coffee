@@ -55,5 +55,5 @@ exports['JS dependencies work from absolute options.src'] = (test) ->
     app.close()
 
 exports['Single subresource file work from absolute options.src'] = (test) ->
-  test.equals sub('js-dependency'), '<link rel="subresource" src="/js/js-dependency.js" />'
+  test.equals sub('js-dependency'), '<link rel="subresource" href="/js/js-dependency.js" />'
   test.done()
