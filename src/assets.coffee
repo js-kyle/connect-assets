@@ -57,6 +57,7 @@ class ConnectAssets
   # ## CSS and JS tag functions
   createHelpers: ->
     context = @options.helperContext
+    context.options = @options
     srcIsRemote = @options.src.match REMOTE_PATH
     expandRoute = (shortRoute, ext, rootDir) ->
       rootDir = rootDir[1..] if rootDir[0] is '/'
@@ -94,9 +95,7 @@ class ConnectAssets
       "<link #{attrs.join " "} />"
     context.css.root = 'css'
 
-    context.js = (route, routeOptions={}) =>
-      attrs = []
-      scripts = []
+    context._js = (route, routeOptions) =>
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
         routes = [route]
@@ -104,16 +103,25 @@ class ConnectAssets
         routes = ["#{@options.src}/#{route}"]
       else
         routes = (@options.servePath + p for p in @compileJS route)
+      attrs = if @options.pathsOnly then [] else parseAttributes(routeOptions)
+      [routes, attrs]
 
-      return routes if @options.pathsOnly
-      
-      attrs = attrs.concat parseAttributes(routeOptions)
-
-      for r in routes 
+    context.js = (route, routeOptions={}) =>
+      [routes, attrs] = context._js(route, routeOptions)
+      scripts = []
+      for r in routes
         scripts.push "<script #{attrs.concat("src=\"#{r}\"").join " "}></script>"
 
       scripts.join "\n"
     context.js.root = 'js'
+
+    context.sub = (route, routeOptions={}) =>
+      routeOptions['rel'] = 'subresource'
+      [routes, attrs] = context._js(route, routeOptions)
+      scripts = []
+      for r in routes
+        scripts.push "<link #{attrs.concat("src=\"#{r}\"").join " "} />"
+      scripts.join "\n"
 
     context.img = (route) =>
       route = expandRoute route, null, context.img.root
