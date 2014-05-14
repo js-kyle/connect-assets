@@ -31,6 +31,7 @@ module.exports = exports = (options = {}) ->
   options.detectChanges ?= process.env.NODE_ENV isnt 'production'
   options.minifyBuilds ?= true
   options.pathsOnly ?= false
+  options.gracefulMissingImages ?= false
   libs.stylusExtends = options.stylusExtends ?= () => {};
 
   jsCompilers = extend jsCompilers, options.jsCompilers || {}
@@ -161,7 +162,10 @@ class ConnectAssets
         return @cachedRoutePaths[route] = "/#{route}"
     catch e
       ''
-    throw new Error("No file found for route #{route}")
+    if @options.gracefulMissingImages
+      return "/__missing-image"
+    else
+      throw new Error("No file found for route #{route}")
 
   extractQueryAndHash = (path) ->
     parsedPath = parse(path)
