@@ -1,6 +1,6 @@
 {
   "name": "connect-assets",
-  "version": "3.0.0-beta2",
+  "version": "3.0.0",
   "author": "Andrew Dunkman <andrew@dunkman.org>",
   "description": "A Rails-like asset pipeline for Connect",
   "contributors": [
