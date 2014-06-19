@@ -68,4 +68,30 @@ describe("connect-assets command-line interface", function () {
       rmrf("builtAssets", done);
     });
   });
+
+  it("compiles with asset_path helper", function (done) {
+    var argv = process.argv;
+    process.argv = "node connect-assets -i test/assets/css -c asset-path-helper.css".split(" ");
+
+    bin.execute(this.logger, function () {
+      process.argv = argv;
+
+      var css = "builtAssets/asset-path-helper-c0a0370b5301dd15cb1eafc03ba78793.css";
+      expect(fs.readFileSync(css, "utf8")).to.equal("@import \"/assets/asset-20069ab163c070349198aa05124dcaa8.css\";");
+      rmrf("builtAssets", done);
+    });
+  });
+
+  it("compiles with asset_path helper with servePath option defined", function (done) {
+    var argv = process.argv;
+    process.argv = "node connect-assets -i test/assets/css -c asset-path-helper.css -s //cdn.example.com".split(" ");
+
+    bin.execute(this.logger, function () {
+      process.argv = argv;
+
+      var css = "builtAssets/asset-path-helper-954c8a140f34be3c86bc3f0a8c79e1ca.css";
+      expect(fs.readFileSync(css, "utf8")).to.equal("@import \"//cdn.example.com/asset-20069ab163c070349198aa05124dcaa8.css\";");
+      rmrf("builtAssets", done);
+    });
+  });
 });

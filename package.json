@@ -44,7 +44,8 @@
     "blanket": "1.1.6",
     "expect.js": "0.2.0",
     "travis-cov": "0.2.5",
-    "connect": "2.8.5"
+    "connect": "2.8.5",
+    "ejs": "1.0.0"
   },
   "config": {
     "travis-cov": {

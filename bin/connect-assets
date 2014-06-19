@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var ArgumentParser = require("argparse").ArgumentParser;
+var Assets = require("../lib/assets");
 var mincer = require("mincer");
 
 var initialize = exports.initialize = function () {
@@ -41,6 +42,13 @@ var initialize = exports.initialize = function () {
       "Defaults to 'builtAssets'.",
     metavar: "DIRECTORY",
     defaultValue: "builtAssets"
+  });
+
+  cli.addArgument(["-s", "--servePath"], {
+    help: "The virtual path in which assets will be served over HTTP. " +
+      "If hosting assets locally, supply a local path (say, \"assets\"). " +
+      "If hosting assets remotely on a CDN, supply a URL",
+    defaultValue: "assets"
   });
 
   return cli;
@@ -101,14 +109,16 @@ var compile = exports.compile = function (logger, args, callback) {
 };
 
 var _compile = exports._compile = function (args, callback) {
-  var environment = new mincer.Environment();
-  var manifest = new mincer.Manifest(environment, args.output);
+  var assets = new Assets({
+    paths: args.include,
+    compile: true,
+    compress: true,
+    buildDir: args.output,
+    servePath: args.servePath,
+    precompile: args.compile
+  });
 
-  environment.cssCompressor = "csso";
-  environment.jsCompressor = "uglify";
-
-  args.include.forEach(environment.appendPath, environment);
-  manifest.compile(args.compile, callback);
+  assets.compile(callback);
 };
 
 var flatten = function (arr) { return [].concat.apply([], arr); };

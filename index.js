@@ -9,7 +9,6 @@ var connectAssets = module.exports = function (options) {
   var compilationError;
   var waiting = [];
 
-  // TODO: environment.registerHelper asset_path?
   options.helperContext.css = assets.helper(tagWriters.css, "css");
   options.helperContext.js = assets.helper(tagWriters.js, "js");
   options.helperContext.assetPath = assets.helper(tagWriters.noop);
