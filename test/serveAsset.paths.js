@@ -63,13 +63,13 @@ describe("serveAsset paths", function () {
     });
   });
 
-  it("does not serve asset if fingerprint isn't supplied", function (done) {
+  it("does serve asset even if fingerprint isn't supplied", function (done) {
     createServer.call(this, {}, function () {
       var path = this.assetPath("blank.js").replace("-3d2afa4aef421f17310e48c12eb39145", "");
       var url = this.host + path;
 
       http.get(url, function (res) {
-        expect(res.statusCode).to.equal(404);
+        expect(res.statusCode).to.equal(200);
         done();
       });
     });
