@@ -29,10 +29,10 @@ describe("helper functions", function () {
     var ctx = {};
     var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: false });
     var files = ctx.assetPath("depends-on-blank.css");
-
+    
     expect(files).to.equal(
-      '/assets/blank-20069ab163c070349198aa05124dcaa8.css\n' +
-      '/assets/depends-on-blank-976b290d2657588f29e6f3c5a26611ee.css'
+      '/assets/blank-34cd1f67e8156bf27ba489aacd9acb1f.css\n' +
+      '/assets/depends-on-blank-74113ea02b8af3d466b7973dfbb60e66.css'
     );
   });
 
@@ -41,7 +41,7 @@ describe("helper functions", function () {
     var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: true });
     var files = ctx.assetPath("depends-on-blank.css");
 
-    expect(files).to.equal('/assets/depends-on-blank-9df23d3309e74402b1d69a0a08dcd9ee.css');
+    expect(files).to.equal('/assets/depends-on-blank-44cc8b38a5b3aeb6b195d5c32f4d3041.css');
   });
 
   describe("css", function () {
@@ -51,8 +51,8 @@ describe("helper functions", function () {
       var link = ctx.css("depends-on-blank.css");
 
       expect(link).to.equal(
-        '<link rel="stylesheet" href="/assets/blank-20069ab163c070349198aa05124dcaa8.css" />\n' +
-        '<link rel="stylesheet" href="/assets/depends-on-blank-976b290d2657588f29e6f3c5a26611ee.css" />'
+        '<link rel="stylesheet" href="/assets/blank-34cd1f67e8156bf27ba489aacd9acb1f.css" />\n' +
+        '<link rel="stylesheet" href="/assets/depends-on-blank-74113ea02b8af3d466b7973dfbb60e66.css" />'
       );
     });
 
@@ -61,7 +61,7 @@ describe("helper functions", function () {
       var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
       var link = ctx.css("asset");
       expect(link).to.equal(
-        '<link rel="stylesheet" href="/assets/asset-20069ab163c070349198aa05124dcaa8.css" />'
+        '<link rel="stylesheet" href="/assets/asset-34cd1f67e8156bf27ba489aacd9acb1f.css" />'
       );
     });
 
@@ -70,7 +70,7 @@ describe("helper functions", function () {
       var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
       var link = ctx.css("asset", { 'data-turbolinks-track': true });
       expect(link).to.equal(
-        '<link rel="stylesheet" href="/assets/asset-20069ab163c070349198aa05124dcaa8.css" data-turbolinks-track />'
+        '<link rel="stylesheet" href="/assets/asset-34cd1f67e8156bf27ba489aacd9acb1f.css" data-turbolinks-track />'
       );
     });
 
@@ -83,8 +83,8 @@ describe("helper functions", function () {
       var script = ctx.js("depends-on-blank.js");
 
       expect(script).to.equal(
-        '<script src="/assets/blank-3d2afa4aef421f17310e48c12eb39145.js"></script>\n' +
-        '<script src="/assets/depends-on-blank-3d2afa4aef421f17310e48c12eb39145.js"></script>'
+        '<script src="/assets/blank-ba932a4ee017ad276030f692a8fb3c9b.js"></script>\n' +
+        '<script src="/assets/depends-on-blank-28b95b57b48f7240976626def6afb016.js"></script>'
       );
     });
 
@@ -94,7 +94,7 @@ describe("helper functions", function () {
       var script = ctx.js("asset.js");
 
       expect(script).to.equal(
-        '<script src="/assets/asset-3d2afa4aef421f17310e48c12eb39145.js"></script>'
+        '<script src="/assets/asset-ba932a4ee017ad276030f692a8fb3c9b.js"></script>'
       );
     });
 
@@ -104,7 +104,7 @@ describe("helper functions", function () {
       var script = ctx.js("asset.js", { async: true });
 
       expect(script).to.equal(
-        '<script src="/assets/asset-3d2afa4aef421f17310e48c12eb39145.js" async></script>'
+        '<script src="/assets/asset-ba932a4ee017ad276030f692a8fb3c9b.js" async></script>'
       );
     });
   });
@@ -116,8 +116,8 @@ describe("helper functions", function () {
       var path = ctx.assetPath("depends-on-blank.js");
 
       expect(path).to.equal(
-        '/assets/blank-3d2afa4aef421f17310e48c12eb39145.js\n' +
-        '/assets/depends-on-blank-3d2afa4aef421f17310e48c12eb39145.js'
+        '/assets/blank-ba932a4ee017ad276030f692a8fb3c9b.js\n' +
+        '/assets/depends-on-blank-28b95b57b48f7240976626def6afb016.js'
       );
     });
 

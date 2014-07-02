@@ -6,4 +6,5 @@
       return aVeryLongVariableName;
     }
   };
+  var x = someFunctions.aLongKeyName();
 })();

@@ -53,7 +53,7 @@ describe("serveAsset paths", function () {
 
   it("does not serve asset if fingerprint doesn't match", function (done) {
     createServer.call(this, {}, function () {
-      var path = this.assetPath("blank.js").replace("3d2afa4aef421f17310e48c12eb39145", "436828974cd5282217fcbd406d41e9ca");
+      var path = this.assetPath("blank.js").replace("ba932a4ee017ad276030f692a8fb3c9b", "436828974cd5282217fcbd406d41e9ca");
       var url = this.host + path;
 
       http.get(url, function (res) {
@@ -65,7 +65,7 @@ describe("serveAsset paths", function () {
 
   it("does not serve asset if fingerprint isn't supplied", function (done) {
     createServer.call(this, {}, function () {
-      var path = this.assetPath("blank.js").replace("-3d2afa4aef421f17310e48c12eb39145", "");
+      var path = this.assetPath("blank.js").replace("-ba932a4ee017ad276030f692a8fb3c9b", "");
       var url = this.host + path;
 
       http.get(url, function (res) {

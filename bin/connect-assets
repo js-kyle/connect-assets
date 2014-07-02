@@ -101,10 +101,10 @@ var describe = exports.describe = function (logger, args) {
 var compile = exports.compile = function (logger, args, callback) {
   logger.log("Compiling...");
   logger.time("Completed compilation");
-  _compile(args, function (err) {
+  _compile(args, function (err, manifest) {
     if (err) { throw err; }
     logger.timeEnd("Completed compilation");
-    callback();
+    callback(manifest);
   });
 };
 
