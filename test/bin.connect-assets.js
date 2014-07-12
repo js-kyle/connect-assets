@@ -34,26 +34,10 @@ describe("connect-assets command-line interface", function () {
 
     bin.execute(this.logger, function (manifest) {
       process.argv = argv;
-
-      /* 
-        @NOTES
-        Using the returned manifest to get the files
-
-        Was: 
-          "/unminified-a92caa3439ab1d33f88573b44104154d.css"
-          "/unminified-c771058bc21c8e09279507dc9898c2a1.js"
-      */
       var css = dir + '/' + manifest.assets['unminified.css'];
       var js = dir + '/' + manifest.assets['unminified.js'];
 
       expect(fs.readFileSync(css, "utf8")).to.equal("body{background-color:#000;color:#fff}a{display:none}");
-      
-      /* 
-        @NOTES
-        assets/js/unminified.js had to be updated because uglify was removing the anonymous function
-
-        Was: expect(fs.readFileSync(js, "utf8")).to.equal('(function(){var n="A string";var r={aLongKeyName:function(){return n}}})();');
-      */
       expect(fs.readFileSync(js, "utf8")).to.equal('!function(){{var n="A string",a={aLongKeyName:function(){return n}};a.aLongKeyName()}}();');
       
       rmrf("builtAssets", done);
@@ -68,13 +52,6 @@ describe("connect-assets command-line interface", function () {
       process.argv = argv;
 
       var files = fs.readdirSync("builtAssets");
-       
-      /*
-        @NOTES
-        .gz file was not included shold it be?
-
-        Was: expect(files.length).to.equal(3); // blank.js, blank.js.gz, manifest.json
-      */
       expect(files.length).to.equal(2); // blank.js, manifest.json
       rmrf("builtAssets", done);
     });
@@ -101,7 +78,7 @@ describe("connect-assets command-line interface", function () {
       process.argv = argv;
 
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
-      // expect(fs.readFileSync(css, "utf8")).to.equal("@import \"/assets/asset-20069ab163c070349198aa05124dcaa8.css\";");
+      
       expect(fs.readFileSync(css, "utf8")).to.equal("@import \"/assets/asset-34cd1f67e8156bf27ba489aacd9acb1f.css\";");
       rmrf("builtAssets", done);
     });
@@ -114,10 +91,9 @@ describe("connect-assets command-line interface", function () {
 
     bin.execute(this.logger, function (manifest) {
       process.argv = argv;
-      // console.log(manifest)
+      
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
-      // var css = "builtAssets/asset-path-helper-954c8a140f34be3c86bc3f0a8c79e1ca.css";
-      // expect(fs.readFileSync(css, "utf8")).to.equal("@import \"//cdn.example.com/asset-20069ab163c070349198aa05124dcaa8.css\";");
+
       expect(fs.readFileSync(css, "utf8")).to.equal("@import \"//cdn.example.com/asset-34cd1f67e8156bf27ba489aacd9acb1f.css\";");
       rmrf("builtAssets", done);
     });

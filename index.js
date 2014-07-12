@@ -1,5 +1,6 @@
 var url = require("url");
 var Assets = require("./lib/assets");
+var fs = require('fs');
 
 var connectAssets = module.exports = function (options) {
   options = parseOptions(options || {});
@@ -12,6 +13,11 @@ var connectAssets = module.exports = function (options) {
   options.helperContext.css = assets.helper(tagWriters.css, "css");
   options.helperContext.js = assets.helper(tagWriters.js, "js");
   options.helperContext.assetPath = assets.helper(tagWriters.noop);
+
+  // If the manifest exists we don't want to recompile
+  if(fs.existsSync(options.buildDir+'/manifest.json')) {
+    options.compile = false;
+  }
 
   assets.compile(function (err) {
     if (err) { compilationError = err; }
