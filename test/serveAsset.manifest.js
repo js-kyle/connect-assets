@@ -30,7 +30,7 @@ describe("serveAsset manifest", function () {
     fs.mkdirSync(dir);
     fs.writeFileSync(dir + "/manifest.json", "{}");
 
-    createServer.call(this, { buildDir: dir }, function () {
+    createServer.call(this, { buildDir: dir, compile: false }, function () {
       expect(fs.readFileSync(dir + "/manifest.json", "utf8")).to.equal("{}");
       rmrf(dir, done);
     });
