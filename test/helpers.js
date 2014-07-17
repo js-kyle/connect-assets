@@ -29,7 +29,7 @@ describe("helper functions", function () {
     var ctx = {};
     var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: false });
     var files = ctx.assetPath("depends-on-blank.css");
-    
+
     expect(files).to.equal(
       '/assets/blank-30a04cf33ee91a3ecf4b75c71268f316.css\n' +
       '/assets/depends-on-blank-910b549848ab7a091568a0d6e3539a60.css'

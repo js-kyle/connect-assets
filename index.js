@@ -65,7 +65,7 @@ var arrayify = module.exports._arrayify = function (target) {
 };
 
 var pasteAttr = function(str) {
-  return !!str ? ' '+str : '';  
+  return !!str ? ' '+str : '';
 };
 
 var tagWriters = {
