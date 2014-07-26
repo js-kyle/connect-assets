@@ -52,7 +52,7 @@ describe("connect-assets command-line interface", function () {
       process.argv = argv;
 
       var files = fs.readdirSync("builtAssets");
-      expect(files.length).to.equal(2); // blank.js, manifest.json
+      expect(files.length).to.equal(3); // blank.js, blank.js.gz, manifest.json
       rmrf("builtAssets", done);
     });
   });
@@ -65,6 +65,20 @@ describe("connect-assets command-line interface", function () {
       process.argv = argv;
 
       fs.statSync("builtAssets/manifest.json");
+      rmrf("builtAssets", done);
+    });
+  });
+
+  it("generates gzipped files", function (done) {
+    var argv = process.argv;
+    var dir = "builtAssets";
+    process.argv = "node connect-assets -i test/assets/js -i test/assets/css".split(" ");
+
+    bin.execute(this.logger, function (manifest) {
+      process.argv = argv;
+
+      fs.statSync(dir + '/' + manifest.assets['unminified.js']);
+      fs.statSync(dir + '/' + manifest.assets['unminified.js'] + '.gz');
       rmrf("builtAssets", done);
     });
   });
