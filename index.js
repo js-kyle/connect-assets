@@ -23,7 +23,7 @@ var connectAssets = module.exports = function (options) {
     };
   });
 
-  var handle = function (req, res, next) {
+  var middleware = function (req, res, next) {
     var path = url.parse(req.url).pathname.replace(/^\//, "");
 
     if (path.toLowerCase().indexOf(options.servePath.toLowerCase()) === 0) {
@@ -40,8 +40,9 @@ var connectAssets = module.exports = function (options) {
     }
   };
 
-  handle.__proto__ = assets;
-  return handle;
+  middleware.__proto__ = assets;
+
+  return middleware;
 };
 
 var parseOptions = module.exports._parseOptions = function (options) {
@@ -67,8 +68,8 @@ var arrayify = module.exports._arrayify = function (target) {
   return (target instanceof Array) ? target : [ target ];
 };
 
-var pasteAttr = function(str) {
-  return !!str ? ' '+str : '';
+var pasteAttr = function (attributes) {
+  return !!attributes ? ' ' + attributes : '';
 };
 
 var tagWriters = {

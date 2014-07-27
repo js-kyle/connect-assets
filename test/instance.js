@@ -3,7 +3,7 @@ var mocha = require("mocha");
 var connectAssets = require("..");
 var Assets = require("../lib/assets");
 
-describe("connectAssets expose", function () {
+describe("instance", function () {
 
   it("should be Assets instance", function () {
     assets = connectAssets();
