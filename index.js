@@ -23,7 +23,7 @@ var connectAssets = module.exports = function (options) {
     };
   });
 
-  return function (req, res, next) {
+  var handle = function (req, res, next) {
     var path = url.parse(req.url).pathname.replace(/^\//, "");
 
     if (path.toLowerCase().indexOf(options.servePath.toLowerCase()) === 0) {
@@ -39,6 +39,9 @@ var connectAssets = module.exports = function (options) {
       next();
     }
   };
+
+  handle.__proto__ = assets;
+  return handle;
 };
 
 var parseOptions = module.exports._parseOptions = function (options) {
