@@ -1,6 +1,6 @@
 var url = require("url");
+var fs = require("fs");
 var Assets = require("./lib/assets");
-var fs = require('fs');
 
 var connectAssets = module.exports = function (options) {
   options = parseOptions(options || {});
@@ -58,8 +58,9 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.compile = options.compile != null ? options.compile : true;
   options.compress = options.compress != null ? options.compress : isProduction;
 
-  if (options.buildDir.replace)
+  if (options.buildDir.replace) {
     options.buildDir = options.buildDir.replace(/^\//, "").replace(/\/$/, "");
+  }
 
   return options;
 };
