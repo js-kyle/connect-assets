@@ -26,7 +26,7 @@ var connectAssets = module.exports = function (options) {
   var middleware = function (req, res, next) {
     var path = url.parse(req.url).pathname.replace(/^\//, "");
 
-    if (path.toLowerCase().indexOf(options.servePath.toLowerCase()) === 0) {
+    if (path.toLowerCase().indexOf(options.localServePath.toLowerCase()) === 0) {
       var serve = function (req, res, next) {
         if (compilationError) { next(compilationError); }
         else { assets.serveAsset(req, res, next); }
@@ -52,6 +52,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
   options.servePath = (options.servePath || "assets").replace(/^\//, "").replace(/\/$/, "");
+  options.localServePath = options.localServePath || url.parse(options.servePath).pathname.replace(/^\//, "");
   options.precompile = arrayify(options.precompile || ["*.*"]);
   options.build = options.build != null ? options.build : isProduction;
   options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
