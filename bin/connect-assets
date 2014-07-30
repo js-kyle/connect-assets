@@ -51,6 +51,12 @@ var initialize = exports.initialize = function () {
     defaultValue: "assets"
   });
 
+  cli.addArgument(["-gz", "--gzip"], {
+    help: "Enables gzip file generation, which is disabled by default.",
+    action: 'storeTrue',
+    defaultValue: false
+  });
+
   return cli;
 };
 
@@ -113,6 +119,7 @@ var _compile = exports._compile = function (args, callback) {
     paths: args.include,
     compile: true,
     compress: true,
+    gzip: args.gzip,
     buildDir: args.output,
     servePath: args.servePath,
     precompile: args.compile
