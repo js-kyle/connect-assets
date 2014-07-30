@@ -145,6 +145,11 @@ Optional arguments:
   -o DIRECTORY, --output DIRECTORY
                         Specifies the output directory to write compiled
                         assets to. Defaults to 'builtAssets'.
+  -s PATH, --servePath PATH
+                        The virtual path in which assets will be served
+                        over HTTP. If hosting assets locally, supply a
+                        local path (say, "assets"). If hosting assets
+                        remotely on a CDN, supply a URL
   -gz, --gzip
                         Enables gzip file generation, which is disabled by
                         default.
