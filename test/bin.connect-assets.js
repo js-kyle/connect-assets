@@ -69,6 +69,20 @@ describe("connect-assets command-line interface", function () {
     });
   });
 
+  it("generates gzipped files", function (done) {
+    var argv = process.argv;
+    var dir = "builtAssets";
+    process.argv = "node connect-assets -gz -i test/assets/js -i test/assets/css".split(" ");
+
+    bin.execute(this.logger, function (manifest) {
+      process.argv = argv;
+
+      fs.statSync(dir + '/' + manifest.assets['unminified.js']);
+      fs.statSync(dir + '/' + manifest.assets['unminified.js'] + '.gz');
+      rmrf("builtAssets", done);
+    });
+  });
+
   it("compiles with asset_path helper", function (done) {
     var argv = process.argv;
     var dir = "builtAssets";

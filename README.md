@@ -117,13 +117,14 @@ build         | dev: false; prod: true          | Should assets be saved to disk
 buildDir      | dev: false; prod: "builtAssets" | The directory to save (and load) compiled assets to/from.
 compile       | true                            | Should assets be compiled if they don’t already exist in the `buildDir`?
 compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csso`.
+gzip          | false                           | Should assets have gzipped copies in `buildDir`?
 
 ## Serving Assets from a CDN
 
 connect-assets includes a command-line utility, `connect-assets`, which can be used to precompile assets on your filesystem (which you can then upload to your CDN of choice). From your application directory, you can execute it with `./node_modules/.bin/connect-assets [options]`.
 
 ```
-Usage: connect-assets [-h] [-v] [-i [DIRECTORY [DIRECTORY ...]]]
+Usage: connect-assets [-h] [-v] [-gz] [-i [DIRECTORY [DIRECTORY ...]]]
                       [-c [FILE [FILE ...]]] [-o DIRECTORY]
 
 Precompiles assets supplied into their production-ready form, ready for
@@ -144,6 +145,14 @@ Optional arguments:
   -o DIRECTORY, --output DIRECTORY
                         Specifies the output directory to write compiled
                         assets to. Defaults to 'builtAssets'.
+  -s PATH, --servePath PATH
+                        The virtual path in which assets will be served
+                        over HTTP. If hosting assets locally, supply a
+                        local path (say, "assets"). If hosting assets
+                        remotely on a CDN, supply a URL
+  -gz, --gzip
+                        Enables gzip file generation, which is disabled by
+                        default.
 ```
 
 ## Credits
