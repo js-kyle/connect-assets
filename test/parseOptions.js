@@ -178,4 +178,16 @@ describe("parseOptions", function () {
       process.env.NODE_ENV = env;
     });
   });
+
+  describe("gzip", function () {
+    it("defaults to false", function () {
+      var opts = assets._parseOptions({});
+      expect(opts.gzip).to.equal(false);
+    });
+
+    it("can be overridden", function () {
+      var opts = assets._parseOptions({ gzip: true });
+      expect(opts.gzip).to.equal(true);
+    });
+  });
 });

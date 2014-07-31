@@ -58,6 +58,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
   options.compile = options.compile != null ? options.compile : true;
   options.compress = options.compress != null ? options.compress : isProduction;
+  options.gzip = options.gzip != null ? options.gzip : false;
 
   if (options.buildDir.replace) {
     options.buildDir = options.buildDir.replace(/^\//, "").replace(/\/$/, "");
