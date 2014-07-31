@@ -149,7 +149,7 @@ Optional arguments:
                         The virtual path in which assets will be served
                         over HTTP. If hosting assets locally, supply a
                         local path (say, "assets"). If hosting assets
-                        remotely on a CDN, supply a URL
+                        remotely on a CDN, supply a URL.
   -gz, --gzip
                         Enables gzip file generation, which is disabled by
                         default.
