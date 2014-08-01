@@ -39,7 +39,7 @@ describe("connect-assets command-line interface", function () {
 
       expect(fs.readFileSync(css, "utf8")).to.equal("body{background-color:#000;color:#fff}a{display:none}");
       expect(fs.readFileSync(js, "utf8")).to.equal('!function(){{var n="A string",a={aLongKeyName:function(){return n}};a.aLongKeyName()}}();');
-      
+
       rmrf("builtAssets", done);
     });
   });
@@ -105,7 +105,7 @@ describe("connect-assets command-line interface", function () {
 
     bin.execute(this.logger, function (manifest) {
       process.argv = argv;
-      
+
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
 
       expect(fs.readFileSync(css, "utf8")).to.equal("@import \"//cdn.example.com/asset-521e4431621444c7c6cabb98340aee25.css\";");
