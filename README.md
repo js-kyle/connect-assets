@@ -118,6 +118,7 @@ buildDir      | dev: false; prod: "builtAssets" | The directory to save (and loa
 compile       | true                            | Should assets be compiled if they don’t already exist in the `buildDir`?
 compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csso`.
 gzip          | false                           | Should assets have gzipped copies in `buildDir`?
+prefixCss     | false                           | Should stylesheets be autoprefixed by [autoprefixer](https://github.com/ai/autoprefixer)? If enabled, requires `autoprefixer`.
 
 ## Serving Assets from a CDN
 

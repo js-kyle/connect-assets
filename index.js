@@ -59,6 +59,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.compile = options.compile != null ? options.compile : true;
   options.compress = options.compress != null ? options.compress : isProduction;
   options.gzip = options.gzip != null ? options.gzip : false;
+  options.prefixCss = options.prefixCss != null ? options.prefixCss : false;
 
   if (options.buildDir.replace) {
     options.buildDir = options.buildDir.replace(/^\//, "").replace(/\/$/, "");
