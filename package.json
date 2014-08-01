@@ -35,11 +35,8 @@
   },
   "dependencies": {
     "argparse": "0.1.15",
-    "connect": "3.1.0",
     "csswring": "0.3.0",
-    "expect.js": "0.3.1",
     "mincer": "1.1.2",
-    "mocha": "1.21.3",
     "uglify-js": "2.4.15"
   },
   "devDependencies": {
