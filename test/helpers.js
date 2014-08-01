@@ -31,8 +31,8 @@ describe("helper functions", function () {
     var files = ctx.assetPath("depends-on-blank.css");
 
     expect(files).to.equal(
-      '/assets/blank-30a04cf33ee91a3ecf4b75c71268f316.css\n' +
-      '/assets/depends-on-blank-910b549848ab7a091568a0d6e3539a60.css'
+      '/assets/blank-521e4431621444c7c6cabb98340aee25.css\n' +
+      '/assets/depends-on-blank-66b89b263189e7f21205fd54e0552199.css'
     );
   });
 
@@ -41,7 +41,7 @@ describe("helper functions", function () {
     var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: true });
     var files = ctx.assetPath("depends-on-blank.css");
 
-    expect(files).to.equal('/assets/depends-on-blank-f0d853f497236b5204f8c66049cf1b22.css');
+    expect(files).to.equal('/assets/depends-on-blank-26c758c7db6d4dd5a9d4b683105a9af5.css');
   });
 
   describe("css", function () {
@@ -51,8 +51,8 @@ describe("helper functions", function () {
       var link = ctx.css("depends-on-blank.css");
 
       expect(link).to.equal(
-        '<link rel="stylesheet" href="/assets/blank-30a04cf33ee91a3ecf4b75c71268f316.css" />\n' +
-        '<link rel="stylesheet" href="/assets/depends-on-blank-910b549848ab7a091568a0d6e3539a60.css" />'
+        '<link rel="stylesheet" href="/assets/blank-521e4431621444c7c6cabb98340aee25.css" />\n' +
+        '<link rel="stylesheet" href="/assets/depends-on-blank-66b89b263189e7f21205fd54e0552199.css" />'
       );
     });
 
@@ -61,7 +61,7 @@ describe("helper functions", function () {
       var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
       var link = ctx.css("asset");
       expect(link).to.equal(
-        '<link rel="stylesheet" href="/assets/asset-30a04cf33ee91a3ecf4b75c71268f316.css" />'
+        '<link rel="stylesheet" href="/assets/asset-521e4431621444c7c6cabb98340aee25.css" />'
       );
     });
 
@@ -70,7 +70,7 @@ describe("helper functions", function () {
       var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
       var link = ctx.css("asset", { 'data-turbolinks-track': true });
       expect(link).to.equal(
-        '<link rel="stylesheet" href="/assets/asset-30a04cf33ee91a3ecf4b75c71268f316.css" data-turbolinks-track />'
+        '<link rel="stylesheet" href="/assets/asset-521e4431621444c7c6cabb98340aee25.css" data-turbolinks-track />'
       );
     });
 
@@ -83,8 +83,8 @@ describe("helper functions", function () {
       var script = ctx.js("depends-on-blank.js");
 
       expect(script).to.equal(
-        '<script src="/assets/blank-9ca4a0c29e1caabc3aa3fccef032d8e7.js"></script>\n' +
-        '<script src="/assets/depends-on-blank-921d8e1a2200dc527ece6aad146ebade.js"></script>'
+        '<script src="/assets/blank-90dc8429efe292706496a6ec42fb7d06.js"></script>\n' +
+        '<script src="/assets/depends-on-blank-590a78dcc5338ad76a95a7ab4fad7799.js"></script>'
       );
     });
 
@@ -94,7 +94,7 @@ describe("helper functions", function () {
       var script = ctx.js("asset.js");
 
       expect(script).to.equal(
-        '<script src="/assets/asset-9ca4a0c29e1caabc3aa3fccef032d8e7.js"></script>'
+        '<script src="/assets/asset-90dc8429efe292706496a6ec42fb7d06.js"></script>'
       );
     });
 
@@ -104,7 +104,7 @@ describe("helper functions", function () {
       var script = ctx.js("asset.js", { async: true });
 
       expect(script).to.equal(
-        '<script src="/assets/asset-9ca4a0c29e1caabc3aa3fccef032d8e7.js" async></script>'
+        '<script src="/assets/asset-90dc8429efe292706496a6ec42fb7d06.js" async></script>'
       );
     });
   });
@@ -116,8 +116,8 @@ describe("helper functions", function () {
       var path = ctx.assetPath("depends-on-blank.js");
 
       expect(path).to.equal(
-        '/assets/blank-9ca4a0c29e1caabc3aa3fccef032d8e7.js\n' +
-        '/assets/depends-on-blank-921d8e1a2200dc527ece6aad146ebade.js'
+        '/assets/blank-90dc8429efe292706496a6ec42fb7d06.js\n' +
+        '/assets/depends-on-blank-590a78dcc5338ad76a95a7ab4fad7799.js'
       );
     });
 

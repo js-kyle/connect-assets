@@ -14,7 +14,7 @@ describe("serveAsset minification", function () {
 
     createServer.call(this, { buildDir: dir }, function () {
       var path = this.assetPath("unminified.js");
-      var filename = dir + "/unminified-0ff32dbfa7c8070831d4124699c7dc55.js";
+      var filename = dir + "/unminified-ba37e3026d4fd9d510c39de6b6242f26.js";
       var url = this.host + path;
 
       http.get(url, function (res) {
@@ -36,7 +36,7 @@ describe("serveAsset minification", function () {
 
     createServer.call(this, { buildDir: dir }, function () {
       var path = this.assetPath("unminified.css");
-      var filename = dir + "/unminified-8aff1f1e1fc7dc6c678a01e223f10620.css";
+      var filename = dir + "/unminified-5b655009a346ed35b0786c0fbfb2bfaa.css";
       var url = this.host + path;
 
       http.get(url, function (res) {

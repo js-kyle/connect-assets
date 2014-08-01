@@ -99,7 +99,7 @@ describe("serveAsset headers", function () {
   });
 
   it("sends body if request method is GET", function (done) {
-    var path = this.assetPath("blank.js");
+    var path = this.assetPath("simple.js");
     var url = this.host + path;
     var body = "";
 
@@ -107,7 +107,7 @@ describe("serveAsset headers", function () {
       res.setEncoding("utf8");
       res.on("data", function (chunk) { body += chunk });
       res.on("end", function () {
-        expect(body).to.equal("\n;\n");
+        expect(body).to.equal("var a = true;");
         done();
       });
     });
