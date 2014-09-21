@@ -40,7 +40,13 @@ var connectAssets = module.exports = function (options) {
     }
   };
 
-  middleware.__proto__ = assets;
+  Object.keys(assets).forEach(function (method) {
+    middleware[method] = assets[method];
+  });
+
+  Object.keys(assets.__proto__).forEach(function (method) {
+    middleware.__proto__[method] = assets.__proto__[method];
+  });
 
   return middleware;
 };
