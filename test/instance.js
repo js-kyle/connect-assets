@@ -8,4 +8,16 @@ describe("instance", function () {
 
     expect(assets.environment).to.be.an("object");
   });
+
+  it("allows you to call .bind()", function () {
+    var assets = connectAssets();
+
+    expect(assets.bind).to.be.a("function");
+  });
+
+  it("allows you to call .apply()", function () {
+    var assets = connectAssets();
+
+    expect(assets.apply).to.be.an("function");
+  });
 });
