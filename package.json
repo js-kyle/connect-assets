@@ -35,16 +35,16 @@
   },
   "dependencies": {
     "argparse": "0.1.15",
-    "csswring": "0.3.0",
-    "mincer": "1.1.2",
+    "csswring": "1.3.0",
+    "mincer": "1.1.3",
     "uglify-js": "2.4.15"
   },
   "devDependencies": {
-    "mocha": "1.21.3",
+    "mocha": "1.21.4",
     "blanket": "1.1.6",
     "expect.js": "0.3.1",
     "travis-cov": "0.2.5",
-    "connect": "3.1.0",
+    "connect": "3.2.0",
     "ejs": "1.0.0"
   },
   "config": {
