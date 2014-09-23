@@ -140,4 +140,34 @@ describe("serveAsset manifest", function () {
     });
   });
 
+  it("serve files from servePath and existing manifest if compile is false", function (done) {
+    var dir = "testBuiltAssets";
+
+    rmrf(dir, function (err) {
+      if (err && err.code != "ENOENT") return done(err);
+
+      // Build the initial manifest.
+      createServer.call(this, { buildDir: dir, compile: true }, function () {
+        var path = this.assetPath("blank.css");
+        var url = this.host + path;
+
+        http.get(url, function (res) {
+          var nodePath = require('path');
+          //Clear require cache for mincer to force reload of manifest.json
+          delete require.cache[require.resolve(nodePath.join(nodePath.resolve(dir), 'manifest.json'))];
+
+          // Now, create a server using the existing manifest.
+          createServer.call(this, { buildDir: dir, compile: false, servePath: "http://cdn.example.com/assets" }, function () {
+            path = this.assetPath("blank.css");
+            url = this.host + path.replace("http://cdn.example.com", "");
+
+            expect(path.indexOf("http://cdn.example.com/assets/blank")).to.equal(0);
+
+            rmrf(dir, done);           
+          });
+        }.bind(this));
+      });
+    });
+  });
+
 });
