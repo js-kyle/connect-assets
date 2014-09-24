@@ -140,7 +140,7 @@ describe("serveAsset manifest", function () {
     });
   });
 
-  it("serve files from servePath and existing manifest if compile is false", function (done) {
+  it("serves files from servePath and existing manifest if compile is false", function (done) {
     var dir = "testBuiltAssets";
 
     rmrf(dir, function (err) {
@@ -153,7 +153,7 @@ describe("serveAsset manifest", function () {
 
         http.get(url, function (res) {
           var nodePath = require('path');
-          //Clear require cache for mincer to force reload of manifest.json
+          // Clear require cache for mincer to force reload of manifest.json
           delete require.cache[require.resolve(nodePath.join(nodePath.resolve(dir), 'manifest.json'))];
 
           // Now, create a server using the existing manifest.
@@ -163,7 +163,7 @@ describe("serveAsset manifest", function () {
 
             expect(path.indexOf("http://cdn.example.com/assets/blank")).to.equal(0);
 
-            rmrf(dir, done);           
+            rmrf(dir, done);
           });
         }.bind(this));
       });
