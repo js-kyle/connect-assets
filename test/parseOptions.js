@@ -190,4 +190,21 @@ describe("parseOptions", function () {
       expect(opts.gzip).to.equal(true);
     });
   });
+
+  describe("precompileCallback", function () {
+    it("defaults to null", function () {
+      var opts = assets._parseOptions({});
+      expect(opts.precompileCallback).to.equal(null);
+    });
+
+    it("can be overridden", function () {
+      var opts = assets._parseOptions({ precompileCallback: function () {} });
+      expect(opts.precompileCallback).to.be.a('function');
+    });
+
+    it("can be called as second parameter", function () {
+      var opts = assets._parseOptions({}, function () {});
+      expect(opts.precompileCallback).to.be.a('function');
+    })
+  });
 });

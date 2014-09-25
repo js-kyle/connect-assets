@@ -105,19 +105,49 @@ See [Mincer](https://github.com/nodeca/mincer) for more information.
 
 ## Options
 
-If you like, you can pass any of these options to the function returned by `require('connect-assets')`:
+If you like, you can pass any of these options as the first parameter to the function returned by `require('connect-assets')`:
 
-Option        | Default Value                   | Description
---------------|---------------------------------|-------------------------------
-paths         | ["assets/js", "assets/css"]     | The directories that assets will be read from, in order of preference.
-helperContext | global                          | The object that helper functions (css, js, assetPath) will be attached to.
-servePath     | "assets"                        | The virtual path in which assets will be served over HTTP. If hosting assets locally, supply a local path (say, "assets"). If hosting assets remotely on a CDN, supply a URL: "http://myassets.example.com/assets".
-precompile    | ["\*.\*"]                       | An array of assets to precompile while the server is initializing. Patterns should match the filename only, not including the directory.
-build         | dev: false; prod: true          | Should assets be saved to disk (true), or just served from memory (false)?
-buildDir      | dev: false; prod: "builtAssets" | The directory to save (and load) compiled assets to/from.
-compile       | true                            | Should assets be compiled if they don’t already exist in the `buildDir`?
-compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csso`.
-gzip          | false                           | Should assets have gzipped copies in `buildDir`?
+Option             | Default Value                   | Description
+-------------------|---------------------------------|-------------------------------
+paths              | ["assets/js", "assets/css"]     | The directories that assets will be read from, in order of preference.
+helperContext      | global                          | The object that helper functions (css, js, assetPath) will be attached to.
+servePath          | "assets"                        | The virtual path in which assets will be served over HTTP. If hosting assets locally, supply a local path (say, "assets"). If hosting assets remotely on a CDN, supply a URL: "http://myassets.example.com/assets".
+precompile         | ["\*.\*"]                       | An array of assets to precompile while the server is initializing. Patterns should match the filename only, not including the directory.
+build              | dev: false; prod: true          | Should assets be saved to disk (true), or just served from memory (false)?
+buildDir           | dev: false; prod: "builtAssets" | The directory to save (and load) compiled assets to/from.
+compile            | true                            | Should assets be compiled if they don’t already exist in the `buildDir`?
+compress           | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csso`.
+gzip               | false                           | Should assets have gzipped copies in `buildDir`?
+precompileCallback | null                            | A function to call when the assets haven't started compiling/serving yet. See descriptions below.
+
+## Configuring Mincer
+
+[Mincer](https://github.com/nodeca/mincer) is quite configurable by design. However, as [the asset compilation is forced on server boot](https://github.com/adunkman/connect-assets/issues/264#issue-39673594), all configurations made to the Mincer environment should be specified during initialization.
+
+You may use either:
+
+```javascript
+app.use(require("connect-assets")({
+  compile: true
+}, function (assets) {
+  // Configuration to mincer environment can be placed here
+  assets.environment.registerHelper(/* ... */);
+}));
+```
+
+Or:
+
+```javascript
+app.use(require("connect-assets")({
+  compile: true,
+  precompileCallback: function (assets) {
+    // Configuration to mincer environment can be placed here
+    assets.environment.registerHelper(/* ... */);
+  }
+}));
+```
+
+Be noted that `precompileCallback` is called only if compilation is required, i.e. `compile` is `true`.
 
 ## Serving Assets from a CDN
 
