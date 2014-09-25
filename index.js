@@ -51,9 +51,13 @@ var connectAssets = module.exports = function (options) {
   return middleware;
 };
 
-var parseOptions = module.exports._parseOptions = function (options) {
+var parseOptions = module.exports._parseOptions = function (options, precompileCallback) {
   var isProduction = process.env.NODE_ENV === "production";
   var isDevelopment = !isProduction;
+
+  if (precompileCallback != null) {
+    options.precompileCallback = precompileCallback;
+  }
 
   options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
@@ -65,6 +69,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.compile = options.compile != null ? options.compile : true;
   options.compress = options.compress != null ? options.compress : isProduction;
   options.gzip = options.gzip != null ? options.gzip : false;
+  options.precompileCallback = typeof(options.precompileCallback) == "function" ? options.precompileCallback : null;
 
   if (options.buildDir.replace) {
     options.buildDir = options.buildDir.replace(/^\//, "").replace(/\/$/, "");
