@@ -54,12 +54,12 @@ var connectAssets = module.exports = function (options) {
 var parseOptions = module.exports._parseOptions = function (options) {
   var isProduction = process.env.NODE_ENV === "production";
   var isDevelopment = !isProduction;
+  var servePath = (options.servePath || "assets");
 
   options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
-  options.servePath = (options.servePath || "assets");
-  options.localServePath = options.localServePath || parseUrl(options.servePath).pathname.replace(/^\//, "");
-  options.servePath = options.servePath.replace(/^\//, "").replace(/\/$/, "");
+  options.servePath = servePath.replace(/^\//, "").replace(/\/$/, "");
+  options.localServePath = options.localServePath || parseUrl(servePath).pathname.replace(/^\//, "");
   options.precompile = arrayify(options.precompile || ["*.*"]);
   options.build = options.build != null ? options.build : isProduction;
   options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
