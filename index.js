@@ -24,7 +24,7 @@ var connectAssets = module.exports = function (options) {
   });
 
   var middleware = function (req, res, next) {
-    var path = url.parse(req.url, false, true).pathname.replace(/^\//, "");
+    var path = parseUrl(req.url).pathname.replace(/^\//, "");
 
     if (path.toLowerCase().indexOf(options.localServePath.toLowerCase()) === 0) {
       var serve = function (req, res, next) {
@@ -58,7 +58,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
   options.servePath = (options.servePath || "assets");
-  options.localServePath = options.localServePath || url.parse(options.servePath, false, true).pathname.replace(/^\//, "");
+  options.localServePath = options.localServePath || parseUrl(options.servePath).pathname.replace(/^\//, "");
   options.servePath = options.servePath.replace(/^\//, "").replace(/\/$/, "");
   options.precompile = arrayify(options.precompile || ["*.*"]);
   options.build = options.build != null ? options.build : isProduction;
@@ -80,6 +80,12 @@ var arrayify = module.exports._arrayify = function (target) {
 
 var pasteAttr = function (attributes) {
   return !!attributes ? ' ' + attributes : '';
+};
+
+var parseUrl = function (string) {
+  var parseQueryString = false;
+  var allowUrlWithoutProtocol = true;
+  return url.parse(string, parseQueryString, allowUrlWithoutProtocol);
 };
 
 var tagWriters = {
