@@ -53,6 +53,20 @@ describe("serveAsset paths", function () {
     });
   });
 
+  it("serves assets at the pathname of servePath if servePath is a URL without a protocol", function (done) {
+    createServer.call(this, { servePath: "//cdn.example.com:2452/assets" }, function () {
+      var path = this.assetPath("blank.js");
+      var url = this.host + path.replace("//cdn.example.com:2452", "");
+
+      expect(path.indexOf("//cdn.example.com:2452/assets/")).to.equal(0);
+
+      http.get(url, function (res) {
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
   it("does not serve assets for URLs outside of serve path", function (done) {
     createServer.call(this, {}, function () {
       var path = this.assetPath("blank.js").replace("/assets", "");
