@@ -63,7 +63,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.precompile = arrayify(options.precompile || ["*.*"]);
   options.build = options.build != null ? options.build : isProduction;
   options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
-  options.compile = options.compile != null ? options.compile : !exists(options.buildDir);
+  options.compile = options.compile != null ? options.compile : isDevelopment ? true : !exists(options.buildDir);
   options.compress = options.compress != null ? options.compress : isProduction;
   options.gzip = options.gzip != null ? options.gzip : false;
 
