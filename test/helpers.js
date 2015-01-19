@@ -27,7 +27,7 @@ describe("helper functions", function () {
 
   it("returns many paths if options.build is false", function () {
     var ctx = {};
-    var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: false });
+    var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: false, fingerprints: true });
     var files = ctx.assetPath("depends-on-blank.css");
 
     expect(files).to.equal(
@@ -38,16 +38,24 @@ describe("helper functions", function () {
 
   it("returns a single path if options.build is true", function () {
     var ctx = {};
-    var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: true });
+    var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: true, fingerprints: true });
     var files = ctx.assetPath("depends-on-blank.css");
 
     expect(files).to.equal('/assets/depends-on-blank-20c863f1d9051886da2f5fdc3babb547.css');
   });
 
+  it("returns a path without fingerprints if option is set to false", function () {
+    var ctx = {};
+    var instance = assets({ helperContext: ctx, paths: "test/assets/css", fingerprints: false });
+    var files = ctx.assetPath("blank.css");
+
+    expect(files).to.equal('/assets/blank.css');
+  });
+
   describe("css", function () {
     it("returns a <link> tag for each asset found (separated by \\n)", function () {
       var ctx = {};
-      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css", fingerprints: true });
       var link = ctx.css("depends-on-blank.css");
 
       expect(link).to.equal(
@@ -58,7 +66,7 @@ describe("helper functions", function () {
 
     it("should serve correct asset even if extention is not supplied", function() {
       var ctx = {};
-      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css", fingerprints: true });
       var link = ctx.css("asset");
       expect(link).to.equal(
         '<link rel="stylesheet" href="/assets/asset-43cb29c66d0fd6194738cc0fb51afb22.css" />'
@@ -67,7 +75,7 @@ describe("helper functions", function () {
 
     it("should have additional attributes in result tag", function() {
       var ctx = {};
-      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css", fingerprints: true });
       var link = ctx.css("asset", { 'data-turbolinks-track': true });
       expect(link).to.equal(
         '<link rel="stylesheet" href="/assets/asset-43cb29c66d0fd6194738cc0fb51afb22.css" data-turbolinks-track />'
@@ -79,7 +87,7 @@ describe("helper functions", function () {
   describe("js", function () {
     it("returns a <script> tag for each asset found (separated by \\n)", function () {
       var ctx = {};
-      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js", fingerprints: true });
       var script = ctx.js("depends-on-blank.js");
 
       expect(script).to.equal(
@@ -90,7 +98,7 @@ describe("helper functions", function () {
 
     it("should serve correct asset even if extention is not supplied", function() {
       var ctx = {};
-      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js", fingerprints: true });
       var script = ctx.js("asset.js");
 
       expect(script).to.equal(
@@ -100,7 +108,7 @@ describe("helper functions", function () {
 
     it("should have additional attributes in result tag", function() {
       var ctx = {};
-      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js", fingerprints: true });
       var script = ctx.js("asset.js", { async: true });
 
       expect(script).to.equal(
@@ -112,7 +120,7 @@ describe("helper functions", function () {
   describe("assetPath", function () {
     it("returns a file path for each asset found (separated by \\n)", function () {
       var ctx = {};
-      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js", fingerprints: true });
       var path = ctx.assetPath("depends-on-blank.js");
 
       expect(path).to.equal(

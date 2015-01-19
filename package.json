@@ -56,7 +56,7 @@
     }
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec && ./node_modules/.bin/mocha --require blanket --reporter travis-cov",
+    "test": "./node_modules/mocha/bin/mocha --reporter spec && ./node_modules/mocha/bin/mocha --require blanket --reporter travis-cov",
     "test-watch": "./node_modules/.bin/mocha --reporter min --watch",
     "test-cov-report": "./node_modules/.bin/mocha --require blanket --reporter html-cov > coverage.html && open coverage.html"
   }
