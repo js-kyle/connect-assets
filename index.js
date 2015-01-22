@@ -24,7 +24,7 @@ var connectAssets = module.exports = function (options) {
   });
 
   var middleware = function (req, res, next) {
-    var path = url.parse(req.url).pathname.replace(/^\//, "");
+    var path = parseUrl(req.url).pathname.replace(/^\//, "");
 
     if (path.toLowerCase().indexOf(options.localServePath.toLowerCase()) === 0) {
       var serve = function (req, res, next) {
@@ -54,11 +54,12 @@ var connectAssets = module.exports = function (options) {
 var parseOptions = module.exports._parseOptions = function (options) {
   var isProduction = process.env.NODE_ENV === "production";
   var isDevelopment = !isProduction;
+  var servePath = (options.servePath || "assets");
 
   options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
-  options.servePath = (options.servePath || "assets").replace(/^\//, "").replace(/\/$/, "");
-  options.localServePath = options.localServePath || url.parse(options.servePath).pathname.replace(/^\//, "");
+  options.servePath = servePath.replace(/^\//, "").replace(/\/$/, "");
+  options.localServePath = options.localServePath || parseUrl(servePath).pathname.replace(/^\//, "");
   options.precompile = arrayify(options.precompile || ["*.*"]);
   options.build = options.build != null ? options.build : isProduction;
   options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
@@ -79,6 +80,12 @@ var arrayify = module.exports._arrayify = function (target) {
 
 var pasteAttr = function (attributes) {
   return !!attributes ? ' ' + attributes : '';
+};
+
+var parseUrl = function (string) {
+  var parseQueryString = false;
+  var allowUrlWithoutProtocol = true;
+  return url.parse(string, parseQueryString, allowUrlWithoutProtocol);
 };
 
 var tagWriters = {
