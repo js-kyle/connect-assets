@@ -116,7 +116,7 @@ precompile    | ["\*.\*"]                       | An array of assets to precompi
 build         | dev: false; prod: true          | Should assets be saved to disk (true), or just served from memory (false)?
 buildDir      | dev: false; prod: "builtAssets" | The directory to save (and load) compiled assets to/from.
 compile       | true                            | Should assets be compiled if they don’t already exist in the `buildDir`?
-compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csso`.
+compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csswring`.
 gzip          | false                           | Should assets have gzipped copies in `buildDir`?
 
 ## Serving Assets from a CDN
