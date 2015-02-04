@@ -89,8 +89,8 @@ describe("serveAsset paths", function () {
     });
   });
 
-  it("does not serve asset if fingerprint doesn't match", function (done) {
-    createServer.call(this, {fingerprints: true}, function () {
+  it("does not serve asset if fingerprint doesn't match when fingerprinting is enabled", function (done) {
+    createServer.call(this, { fingerprinting: true }, function () {
       var path = this.assetPath("blank.js").replace(/[a-f0-9]{32}/i, "436828974cd5282217fcbd406d41e9ca");
       var url = this.host + path;
 
@@ -101,8 +101,8 @@ describe("serveAsset paths", function () {
     });
   });
 
-  it("does not serve asset if fingerprint isn't supplied", function (done) {
-    createServer.call(this, {fingerprints: true}, function () {
+  it("does not serve asset if fingerprint isn't supplied and fingerprinting is enabled", function (done) {
+    createServer.call(this, { fingerprinting: true }, function () {
       var path = this.assetPath("blank.js").replace(/\-[a-f0-9]{32}/i, "");
       var url = this.host + path;
 
@@ -113,10 +113,12 @@ describe("serveAsset paths", function () {
     });
   });
 
-  it("serves asset if fingerprint isn't supplied and option to false", function (done) {
-    createServer.call(this, {fingerprints: false}, function () {
-      var path = this.assetPath("blank.js").replace(/\-[a-f0-9]{32}/i, "");
+  it("serves asset without a fingerprint if fingerprinting is disabled", function (done) {
+    createServer.call(this, { fingerprinting: false }, function () {
+      var path = this.assetPath("blank.js");
       var url = this.host + path;
+
+      expect(path).to.equal("/assets/blank.js");
 
       http.get(url, function (res) {
         expect(res.statusCode).to.equal(200);

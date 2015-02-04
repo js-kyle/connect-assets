@@ -38,15 +38,29 @@ describe("parseOptions", function () {
     });
   });
 
-  describe("fingerprints", function () {
-    it("defaults to false", function () {
+  describe("fingerprinting", function () {
+    it("defaults to false in development", function () {
+      var env = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
       var opts = assets._parseOptions({});
-      expect(opts.fingerprints).to.equal(false);
+      expect(opts.fingerprinting).to.equal(false);
+      process.env.NODE_ENV = env;
+    });
+
+    it("defaults to true in production", function () {
+      var env = process.env.NODE_ENV;
+      process.env.NODE_ENV = "production";
+      var opts = assets._parseOptions({});
+      expect(opts.fingerprinting).to.equal(true);
+      process.env.NODE_ENV = env;
     });
 
     it("can be overridden", function () {
-      var opts = assets._parseOptions({ fingerprints: true });
-      expect(opts.fingerprints).to.equal(true);
+      var env = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
+      var opts = assets._parseOptions({ fingerprinting: true });
+      expect(opts.fingerprinting).to.equal(true);
+      process.env.NODE_ENV = env;
     });
   });
 

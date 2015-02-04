@@ -11,7 +11,7 @@ describe("serveAsset asset_path environment helper", function () {
     var env = process.env.NODE_ENV;
     var dir = "testBuiltAssetsFoo";
 
-    createServer.call(this, { buildDir: dir, compile: true }, function () {
+    createServer.call(this, { buildDir: dir, compile: true, fingerprinting: true }, function () {
       var path = this.assetPath("asset-path-helper.css");
       var filename = dir + "/asset-path-helper-ff09bfa828f7671a5ef274a3060d5e06.css";
       var url = this.host + path;

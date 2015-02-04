@@ -10,7 +10,8 @@ describe("serveAsset headers", function () {
     var ctx = this;
     var app = this.app = connect().use(assets({
       paths: [ "test/assets/js", "test/assets/css" ],
-      helperContext: ctx
+      helperContext: ctx,
+      fingerprinting: true
     }));
 
     app.listen(function () {

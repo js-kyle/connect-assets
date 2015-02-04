@@ -122,7 +122,8 @@ var _compile = exports._compile = function (args, callback) {
     gzip: args.gzip,
     buildDir: args.output,
     servePath: args.servePath,
-    precompile: args.compile
+    precompile: args.compile,
+    fingerprinting: true
   });
 
   assets.compile(callback);

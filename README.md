@@ -118,7 +118,7 @@ buildDir      | dev: false; prod: "builtAssets" | The directory to save (and loa
 compile       | true                            | Should assets be compiled if they don’t already exist in the `buildDir`?
 compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csswring`.
 gzip          | false                           | Should assets have gzipped copies in `buildDir`?
-fingerprints  | dev: false; prod: true          | Should assets be suffixed by a fingerprints : index.js is served as index-3789dsf88fd.js
+fingerprinting| dev: false; prod: true          | Should fingerprints be appended to asset filenames?
 
 ## Serving Assets from a CDN
 
