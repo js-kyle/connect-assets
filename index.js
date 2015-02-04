@@ -1,5 +1,6 @@
 var url = require("url");
 var fs = require("fs");
+var path = require("path");
 var Assets = require("./lib/assets");
 
 var connectAssets = module.exports = function (options) {
@@ -64,7 +65,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.precompile = arrayify(options.precompile || ["*.*"]);
   options.build = options.build != null ? options.build : isProduction;
   options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
-  options.compile = options.compile != null ? options.compile : true;
+  options.compile = options.compile != null ? options.compile : isDevelopment ? true : !exists(options.buildDir);
   options.compress = options.compress != null ? options.compress : isProduction;
   options.gzip = options.gzip != null ? options.gzip : false;
   options.fingerprinting = options.fingerprinting != null ? options.fingerprinting : isProduction;
@@ -74,6 +75,19 @@ var parseOptions = module.exports._parseOptions = function (options) {
   }
 
   return options;
+};
+
+var exists = function (buildDir) {
+  if (!buildDir) return false;
+  var manifest = path.join(buildDir, 'manifest.json');
+  if (!fs.existsSync(manifest)) return false;
+  var assets = JSON.parse(fs.readFileSync(manifest)).assets;
+  var keys = Object.keys(assets);
+  for (var i = 0; i < keys.length; i++) {
+    if (!fs.existsSync(path.join(buildDir, assets[keys[i]])))
+      return false;
+  }
+  return true;
 };
 
 var arrayify = module.exports._arrayify = function (target) {
