@@ -38,6 +38,18 @@ describe("parseOptions", function () {
     });
   });
 
+  describe("fingerprints", function () {
+    it("defaults to false", function () {
+      var opts = assets._parseOptions({});
+      expect(opts.fingerprints).to.equal(false);
+    });
+
+    it("can be overridden", function () {
+      var opts = assets._parseOptions({ fingerprints: true });
+      expect(opts.fingerprints).to.equal(true);
+    });
+  });
+
   describe("servePath", function () {
     it("defaults to 'assets'", function () {
       var opts = assets._parseOptions({});
