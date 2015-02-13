@@ -13,12 +13,11 @@ connect-assets can:
 3. Serve `.css.styl` ([Stylus](http://learnboost.github.com/stylus/)) as compiled `.css`
 4. Serve `.css.less` ([Less](http://lesscss.org/)) as compiled `.css`
 5. Serve `.css.sass` or `.css.scss` ([SASS](http://sass-lang.com)) as compiled `.css`
-6. Serve `.jst.hamlc` ([Haml-Coffee templates](https://github.com/netzpirat/haml-coffee)) as compiled JavaScript functions.
-7. Serve `.jst.jade` ([Jade templates](https://github.com/visionmedia/jade)) as compiled JavaScript functions (be sure to include the Jade runtime — see below).
+6. Serve `.jst.jade` ([Jade templates](https://github.com/visionmedia/jade)) as compiled JavaScript functions (be sure to include the Jade runtime — see below).
 7. Serve `.jst.ejs` as compiled JavaScript functions.
 8. Preprocess `style.css.ejs` and `script.js.ejs` with [EJS](http://embeddedjs.com/) — just append `.ejs` to any file.
-8. Serve files with a cache-control token and use a far-future expires header for maximum efficiency.
-9. Avoid redundant git diffs by storing compiled `.js` and `.css` files in memory rather than writing them to the disk when in development.
+9. Serve files with a cache-control token and use a far-future expires header for maximum efficiency.
+10. Avoid redundant git diffs by storing compiled `.js` and `.css` files in memory rather than writing them to the disk when in development.
 
 ## How do I use it?
 
@@ -35,7 +34,6 @@ npm install coffee-script
 npm install stylus
 npm install less
 npm install node-sass
-npm install haml-coffee
 npm install jade
 npm install ejs
 ```
