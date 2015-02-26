@@ -28,7 +28,7 @@ var connectAssets = module.exports = function (options, configureCallback) {
   });
 
   var middleware = function (req, res, next) {
-    var path = parseUrl(req.url).pathname.replace(/^\//, "");
+    var path = url.parse(req.url).pathname.replace(/^\//, "");
 
     if (path.toLowerCase().indexOf(options.localServePath.toLowerCase()) === 0) {
       var serve = function (req, res, next) {
@@ -59,7 +59,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   var isProduction = process.env.NODE_ENV === "production";
   var isDevelopment = !isProduction;
   var servePath = (options.servePath || "assets");
-  var servePathPathname = parseUrl(servePath).pathname || "/";
+  var servePathPathname = url.parse(servePath, false, true).pathname || "/";
 
   options.paths = arrayify(options.paths || options.src || [ "assets/js", "assets/css" ]);
   options.helperContext = options.helperContext || global;
@@ -86,12 +86,6 @@ var arrayify = module.exports._arrayify = function (target) {
 
 var pasteAttr = function (attributes) {
   return !!attributes ? ' ' + attributes : '';
-};
-
-var parseUrl = function (string) {
-  var parseQueryString = false;
-  var allowUrlWithoutProtocol = true;
-  return url.parse(string, parseQueryString, allowUrlWithoutProtocol);
 };
 
 var tagWriters = {
