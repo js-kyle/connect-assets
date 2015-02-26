@@ -77,6 +77,17 @@ describe("serveAsset paths", function () {
     });
   });
 
+  it("correctly handles a req.url that begin with a double slash", function (done) {
+    createServer.call(this, {}, function () {
+      var url = this.host + '//foo';
+
+      http.get(url, function (res) {
+        expect(res.statusCode).to.equal(404);
+        done();
+      });
+    });
+  });
+
   it("does not serve assets for URLs outside of serve path", function (done) {
     createServer.call(this, {}, function () {
       var path = this.assetPath("blank.js").replace("/assets", "");
