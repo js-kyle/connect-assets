@@ -4,6 +4,7 @@ var http = require("http");
 var fs = require("fs");
 var createServer = require("./testHelpers/createServer");
 var rmrf = require("./testHelpers/rmrf");
+var bin = require("../bin/connect-assets");
 
 describe("serveAsset filesystem", function () {
   describe("development", function () {
@@ -70,6 +71,54 @@ describe("serveAsset filesystem", function () {
 
           process.env.NODE_ENV = env;
           rmrf(dir, done);
+        });
+      });
+    });
+
+    it("serves pre-generated assets from disk in production", function(done) {
+      var consoleStub = {
+        log: function (message) {},
+        time: function () {},
+        timeEnd: function (message) {}
+      };
+
+      var dir = "builtAssets";
+      var env = process.env.NODE_ENV;
+
+      var options = {
+        compile: false,
+        build: false,
+        buildDir: dir
+      };
+
+      var argv = process.argv;
+      process.argv = "node connect-assets -i test/assets/js -i test/assets/css -c unminified.css".split(" ");
+
+      bin.execute(consoleStub, function(manifest) {
+        process.argv = argv;
+
+        createServer.call(this, options, function () {
+          var path = manifest.assets["unminified.css"];
+          var url = this.host + "/assets/" + path;
+
+          http.get(url, function (res) {
+            expect(res.statusCode).to.equal(200);
+            expect(fs.statSync(dir).isDirectory()).to.equal(true);
+
+            var data = "";
+
+            res.on("data", function(chunk) {
+              data += chunk.toString();
+            });
+
+            res.on("end", function() {
+              var content = fs.readFileSync("builtAssets/" + path).toString();
+              expect(data).to.equal(content);
+              rmrf(dir, done);
+            });
+
+            process.env.NODE_ENV = env;
+          });
         });
       });
     });
