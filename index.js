@@ -28,7 +28,7 @@ var connectAssets = module.exports = function (options, configureCallback) {
   });
 
   var middleware = function (req, res, next) {
-    var path = parseUrl(req.url).pathname.replace(/^\//, "");
+    var path = url.parse(req.url).pathname.replace(/^\//, "");
 
     if (path.toLowerCase().indexOf(options.localServePath.toLowerCase()) === 0) {
       var serve = function (req, res, next) {
