@@ -104,6 +104,7 @@ describe("serveAsset filesystem", function () {
           http.get(url, function (res) {
             expect(res.statusCode).to.equal(200);
             expect(fs.statSync(dir).isDirectory()).to.equal(true);
+            expect(res.headers).to.have.property("content-type");
 
             var data = "";
 
