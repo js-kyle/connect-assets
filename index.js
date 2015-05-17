@@ -11,7 +11,9 @@ var connectAssets = module.exports = function (options, configureCallback) {
   var waiting = [];
 
   options.helperContext.css = assets.helper(tagWriters.css, "css");
+  options.helperContext.css_inline = assets.helper(tagWriters.css_inline, "css");
   options.helperContext.js = assets.helper(tagWriters.js, "js");
+  options.helperContext.js_inline = assets.helper(tagWriters.js_inline, "js");
   options.helperContext.assetPath = assets.helper(tagWriters.noop);
 
   if (configureCallback) {
@@ -96,6 +98,8 @@ var parseUrl = function (string) {
 
 var tagWriters = {
   css: function (url, attr) { return '<link rel="stylesheet" href="' + url + '"' + pasteAttr(attr) + ' />'; },
+  css_inline: function(url, attr, asset) { return '<style>' + asset.toString().trim() + '</style>'; },
   js: function (url, attr) { return '<script src="' + url + '"' + pasteAttr(attr) + '></script>'; },
+  js_inline: function(url, attr, asset) { return '<script>' + asset.toString().trim() + '</script>'; },
   noop: function (url) { return url; }
 };

@@ -1,6 +1,7 @@
 var expect = require("expect.js");
 var mocha = require("mocha");
 var assets = require("..");
+var fs = require("fs");
 
 describe("helper functions", function () {
   it("do not pollute global scope if helperContext is passed", function () {
@@ -90,6 +91,17 @@ describe("helper functions", function () {
       );
     });
 
+    it("should return a <style> tag with inline css", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var styleContents = fs.readFileSync('test/assets/css/unminified.css', 'UTF-8');
+      var style = ctx.css_inline("unminified");
+
+      expect(style).to.equal(
+        '<style>' + styleContents.trim() + '</style>'
+      );
+    });
+
   });
 
   describe("js", function () {
@@ -123,6 +135,18 @@ describe("helper functions", function () {
         '<script src="/assets/asset.js" async></script>'
       );
     });
+
+    it("should return a <script> tag with inine js", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var scriptContent = fs.readFileSync("test/assets/js/unminified.js", "UTF-8");
+      var script = ctx.js_inline("unminified.js");
+
+      expect(script).to.equal(
+        '<script>' + scriptContent.trim() + '</script>'
+      );
+    });
+
   });
 
   describe("assetPath", function () {
