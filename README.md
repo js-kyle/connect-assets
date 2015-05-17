@@ -48,7 +48,7 @@ Finally, create an `assets` directory in your project and throw all assets compi
 
 ### Markup functions
 
-connect-assets provides three global functions named `js`, `css`, and `assetPath`. Use them in your views. They return the HTML markup needed to include the most recent version of your assets (or, the path to the asset), taking advantage of caching when available. For instance, in a [Jade template](http://jade-lang.com/), the code
+connect-assets provides five global functions named `js`, `js_inline`, `css`, `css_inline`, and `assetPath`. Use them in your views. They return the HTML markup needed to include the most recent version of your assets (or, the path to the asset), taking advantage of caching when available. For instance, in a [Jade template](http://jade-lang.com/), the code
 
 ```
 != css("normalize")
@@ -74,6 +74,20 @@ Results in:
 ```html
 <link rel="stylesheet" href="/css/normalize-[hash].css" data-turbolinks-track />
 <script src="/js/jquery-[hash].js" async></script>
+```
+
+You can also use the inline helpers to include the bundle contents directly.
+
+```
+!= css_inline("critical-path")
+!= js_inline("critical-path")
+```
+
+Results in:
+
+```html
+<style>/* contents of critical-path.css */</style>
+<script>/* contents of critical-path.js */</script>
 ```
 
 ### Sprockets-style concatenation
