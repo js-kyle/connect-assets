@@ -1,6 +1,7 @@
 var expect = require("expect.js");
 var mocha = require("mocha");
 var assets = require("..");
+var fs = require("fs");
 
 describe("helper functions", function () {
   it("do not pollute global scope if helperContext is passed", function () {
@@ -90,6 +91,28 @@ describe("helper functions", function () {
       );
     });
 
+    it("should return a <style> tag with inline css", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var styleContents = fs.readFileSync('test/assets/css/unminified.css', 'UTF-8');
+      var style = ctx.css("unminified", true);
+
+      expect(style).to.equal(
+        '<style>' + styleContents.trim() + '</style>'
+      );
+    });
+
+    it("should return a <style> tag with inline css and attributes", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var styleContents = fs.readFileSync('test/assets/css/unminified.css', 'UTF-8');
+      var style = ctx.css("unminified", { type: 'text/css' }, true);
+
+      expect(style).to.equal(
+        '<style type="text/css">' + styleContents.trim() + '</style>'
+      );
+    });
+
   });
 
   describe("js", function () {
@@ -123,6 +146,29 @@ describe("helper functions", function () {
         '<script src="/assets/asset.js" async></script>'
       );
     });
+
+    it("should return a <script> tag with inine js", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var scriptContent = fs.readFileSync("test/assets/js/unminified.js", "UTF-8");
+      var script = ctx.js("unminified.js", true);
+
+      expect(script).to.equal(
+        '<script>' + scriptContent.trim() + '</script>'
+      );
+    });
+
+    it("should return a <script> tag with inine js and attributes", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var scriptContent = fs.readFileSync("test/assets/js/unminified.js", "UTF-8");
+      var script = ctx.js("unminified.js", { type: "text/javascript" }, true);
+
+      expect(script).to.equal(
+        '<script type="text/javascript">' + scriptContent.trim() + '</script>'
+      );
+    });
+
   });
 
   describe("assetPath", function () {
