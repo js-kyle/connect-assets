@@ -76,7 +76,7 @@ Results in:
 <script src="/js/jquery-[hash].js" async></script>
 ```
 
-You can also use include the bundle contents directly.  This still supports an option attributes Hash.
+You can also use include the bundle contents directly.  This still supports an optional attributes Hash.
 
 ```
 != css("critical-path", { type: 'text/css' }, true)
