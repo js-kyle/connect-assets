@@ -38,7 +38,7 @@ describe("connect-assets command-line interface", function () {
       var js = dir + '/' + manifest.assets['unminified.js'];
 
       expect(fs.readFileSync(css, "utf8")).to.equal("body{background-color:#000;color:#fff}a{display:none}");
-      expect(fs.readFileSync(js, "utf8")).to.equal('!function(){{var n="A string",a={aLongKeyName:function(){return n}};a.aLongKeyName()}}();');
+      expect(fs.readFileSync(js, "utf8")).to.equal('!function(){var n="A string",a={aLongKeyName:function(){return n}};a.aLongKeyName()}();');
 
       rmrf("builtAssets", done);
     });
@@ -93,7 +93,7 @@ describe("connect-assets command-line interface", function () {
 
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
 
-      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"/assets/asset-730852c545ad888d07333a229acd5ed0.css\"");
+      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"/assets/asset-0589f66713bc44029a1a720b9a0d850d.css\"");
       rmrf("builtAssets", done);
     });
   });
@@ -108,7 +108,7 @@ describe("connect-assets command-line interface", function () {
 
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
 
-      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"//cdn.example.com/asset-730852c545ad888d07333a229acd5ed0.css\"");
+      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"//cdn.example.com/asset-0589f66713bc44029a1a720b9a0d850d.css\"");
       rmrf("builtAssets", done);
     });
   });
