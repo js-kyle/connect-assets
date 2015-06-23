@@ -37,7 +37,7 @@
     "argparse": "0.1.16",
     "csswring": "3.0.0",
     "mime": "1.3.4",
-    "mincer": "1.2.4",
+    "mincer": "1.2.5",
     "uglify-js": "2.4.16"
   },
   "devDependencies": {
