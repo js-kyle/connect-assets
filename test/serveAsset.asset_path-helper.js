@@ -13,7 +13,7 @@ describe("serveAsset asset_path environment helper", function () {
 
     createServer.call(this, { buildDir: dir, compile: true, fingerprinting: true }, function () {
       var path = this.assetPath("asset-path-helper.css");
-      var filename = dir + "/asset-path-helper-d93cbe4ed480b3859eefe53f37ed8e55.css";
+      var filename = dir + "/asset-path-helper-1bc19a6c95312dbc3865d6e3db3d87dc.css";
       var url = this.host + path;
 
       http.get(url, function (res) {
