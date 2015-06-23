@@ -20,7 +20,7 @@ describe("serveAsset asset_path environment helper", function () {
         expect(res.statusCode).to.equal(200);
         expect(fs.statSync(dir).isDirectory()).to.equal(true);
         expect(fs.statSync(filename).isFile()).to.equal(true);
-        expect(fs.readFileSync(filename, "utf8")).to.equal("@import \"/assets/asset-730852c545ad888d07333a229acd5ed0.css\";\n\n");
+        expect(fs.readFileSync(filename, "utf8")).to.equal("@import \"/assets/asset-87e33054948f724fc6ef9369fdee378a.css\";\n\n");
 
         process.env.NODE_ENV = env;
         rmrf(dir, done);

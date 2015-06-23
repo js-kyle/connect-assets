@@ -93,7 +93,7 @@ describe("connect-assets command-line interface", function () {
 
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
 
-      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"/assets/asset-730852c545ad888d07333a229acd5ed0.css\"");
+      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"/assets/asset-87e33054948f724fc6ef9369fdee378a.css\"");
       rmrf("builtAssets", done);
     });
   });
@@ -108,7 +108,7 @@ describe("connect-assets command-line interface", function () {
 
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
 
-      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"//cdn.example.com/asset-730852c545ad888d07333a229acd5ed0.css\"");
+      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"//cdn.example.com/asset-87e33054948f724fc6ef9369fdee378a.css\"");
       rmrf("builtAssets", done);
     });
   });
