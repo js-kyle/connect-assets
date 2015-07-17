@@ -15,8 +15,7 @@ describe("serveAsset headers", function () {
     }));
 
     app.listen(function () {
-      var address = this.address();
-      ctx.host = "http://" + address.address + ":" + address.port;
+      ctx.host = "http://localhost:" + this.address().port;
       done();
     });
   });

@@ -9,8 +9,7 @@ var createServer = module.exports = function (opts, done) {
   var scope = this;
 
   app.listen(function () {
-    var address = this.address();
-    opts.helperContext.host = "http://" + address.address + ":" + address.port;
+    opts.helperContext.host = "http://localhost:" + this.address().port;
     done.call(scope);
   });
 };
