@@ -7,7 +7,21 @@ var rmrf = require("./testHelpers/rmrf");
 
 describe("serveAsset sourcemaps", function () {
 
-  it.only("serves source map", function (done) {
+  it("adds source map header to asset", function (done) {
+    createServer.call(this, { build: true, compress: true, sourceMaps: true }, function () {
+      var path = this.assetPath("unminified.js");
+      var url = this.host + path;
+      var sourceMapPath = path + ".map";
+
+      http.get(url, function (res) {
+        expect(res.statusCode).to.equal(200);
+        expect(res.headers["x-sourcemap"]).to.equal(sourceMapPath);
+        done();
+      });
+    });
+  });
+
+  it("serves source map", function (done) {
     createServer.call(this, { build: true, compress: true, sourceMaps: true }, function () {
       var path = this.assetPath("unminified.js");
       var url = this.host + path + ".map";
