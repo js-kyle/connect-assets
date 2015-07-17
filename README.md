@@ -117,6 +117,7 @@ compile       | true                            | Should assets be compiled if t
 compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csswring`.
 gzip          | false                           | Should assets have gzipped copies in `buildDir`?
 fingerprinting| dev: false; prod: true          | Should fingerprints be appended to asset filenames?
+sourceMaps    | false                           | Should source maps be served?
 
 ## Custom Configuration of Mincer
 
