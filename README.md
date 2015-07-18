@@ -99,6 +99,14 @@ When you do so, and point the `js` function at that file, two things can happen:
 
 If you want to bring in a whole folder of scripts, use `//= require_tree dir` instead of `//= require file`.
 
+You can also indicate dependencies in your `.css` files using the Sprockets-style syntax.
+
+```css
+/*= require reset.css */
+
+body { margin: 0; }
+```
+
 See [Mincer](https://github.com/nodeca/mincer) for more information.
 
 ## Options
