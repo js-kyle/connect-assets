@@ -70,7 +70,7 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
   options.compile = options.compile != null ? options.compile : true;
   options.compress = options.compress != null ? options.compress : isProduction;
-  options.sourceMaps = options.sourceMaps != null ? options.sourceMaps : false;
+  options.sourceMaps = options.sourceMaps != null ? options.sourceMaps : isDevelopment;
   options.gzip = options.gzip != null ? options.gzip : false;
   options.fingerprinting = options.fingerprinting != null ? options.fingerprinting : isProduction;
 

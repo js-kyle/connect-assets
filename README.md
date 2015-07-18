@@ -117,11 +117,11 @@ compile       | true                            | Should assets be compiled if t
 compress      | dev: false; prod: true          | Should assets be minified? If enabled, requires `uglify-js` and `csswring`.
 gzip          | false                           | Should assets have gzipped copies in `buildDir`?
 fingerprinting| dev: false; prod: true          | Should fingerprints be appended to asset filenames?
-sourceMaps    | false                           | Should source maps be served?
+sourceMaps    | dev: true; prod: false          | Should source maps be served?
 
 ## Custom Configuration of Mincer
 
-This package depends on [mincer](https://github.com/nodeca/mincer), which quite configurable by design. Many options from mincer are not exposed through connect-assets in the name of simplicity.
+This package depends on [mincer](https://github.com/nodeca/mincer), which is quite configurable by design. Many options from mincer are not exposed through connect-assets in the name of simplicity.
 
 As asset compliation happens immediately after connect-assets is initialized, any changes that affect the way mincer compiles assets should be made during initialization. A custom initialization function can be passed to connect-assets as a second argument to the function returned by `require("connect-assets")`:
 
