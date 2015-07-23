@@ -57,6 +57,12 @@ var initialize = exports.initialize = function () {
     defaultValue: false
   });
 
+  cli.addArgument(["-ap", "--autoprefixer"], {
+    help: "Enables autoprefixer during compilation.",
+    action: 'storeTrue',
+    defaultValue: false
+  });
+
   return cli;
 };
 
@@ -125,6 +131,8 @@ var _compile = exports._compile = function (args, callback) {
     precompile: args.compile,
     fingerprinting: true
   });
+
+  if (args.autoprefixer) { assets.environment.enable('autoprefixer'); }
 
   assets.compile(callback);
 };

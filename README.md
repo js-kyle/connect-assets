@@ -136,7 +136,7 @@ app.use(require("connect-assets")(options, function (instance) {
 connect-assets includes a command-line utility, `connect-assets`, which can be used to precompile assets on your filesystem (which you can then upload to your CDN of choice). From your application directory, you can execute it with `./node_modules/.bin/connect-assets [options]`.
 
 ```
-Usage: connect-assets [-h] [-v] [-gz] [-i [DIRECTORY [DIRECTORY ...]]]
+Usage: connect-assets [-h] [-v] [-gz] [-ap] [-i [DIRECTORY [DIRECTORY ...]]]
                       [-c [FILE [FILE ...]]] [-o DIRECTORY]
 
 Precompiles assets supplied into their production-ready form, ready for
@@ -165,6 +165,7 @@ Optional arguments:
   -gz, --gzip
                         Enables gzip file generation, which is disabled by
                         default.
+  -ap, --autoprefixer   Enables autoprefixer during compilation.
 ```
 
 ## Credits
