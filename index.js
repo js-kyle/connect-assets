@@ -96,7 +96,13 @@ var parseUrl = function (string) {
 };
 
 var tagWriters = {
-  css: function (url, attr) { return '<link rel="stylesheet" href="' + url + '"' + pasteAttr(attr) + ' />'; },
-  js: function (url, attr) { return '<script src="' + url + '"' + pasteAttr(attr) + '></script>'; },
+  css: function (url, attr, asset) {
+    if (!asset) return '<link rel="stylesheet" href="' + url + '"' + pasteAttr(attr) + ' />';
+    else return '<style' +  pasteAttr(attr) + '>' + asset.toString().trim() + '</style>';
+  },
+  js: function (url, attr, asset) {
+    if (!asset) return '<script src="' + url + '"' + pasteAttr(attr) + '></script>';
+    else return '<script' + pasteAttr(attr) + '>' + asset.toString().trim() + '</script>';
+  },
   noop: function (url) { return url; }
 };

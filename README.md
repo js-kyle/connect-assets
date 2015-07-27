@@ -76,6 +76,20 @@ Results in:
 <script src="/js/jquery-[hash].js" async></script>
 ```
 
+You can also use include the bundle contents directly.  This still supports an optional attributes Hash.
+
+```
+!= css("critical-path", { type: 'text/css' }, true)
+!= js("critical-path", true)
+```
+
+Results in:
+
+```html
+<style>/* contents of critical-path.css */</style>
+<script>/* contents of critical-path.js */</script>
+```
+
 ### Sprockets-style concatenation
 
 You can indicate dependencies in your `.js.coffee` and `.js` files using the Sprockets-style syntax.
