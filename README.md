@@ -76,6 +76,31 @@ Results in:
 <script src="/js/jquery-[hash].js" async></script>
 ```
 
+You can also reference image paths via the `assetPath` helper. First, you must specify the
+path to your images via the `paths` option e.g:
+```javascript
+...
+
+var assets = require('connect-assets');
+
+app.use(assets({
+  paths: [
+    'assets/css',
+    'assets/js',
+    'assets/img'
+  ]
+}));
+```
+You can then use the `assetPath` helper in your Jade like so:
+```
+img(src="#{assetPath('image-name.png')}") 
+```
+
+Would result in:
+```html
+<img src="/assets/img/image-name-[hash].png">
+```
+
 ### Sprockets-style concatenation
 
 You can indicate dependencies in your `.js.coffee` and `.js` files using the Sprockets-style syntax.
