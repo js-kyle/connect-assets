@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/adunkman/connect-assets.png)](https://travis-ci.org/adunkman/connect-assets)
 
-Transparent file compilation and dependency management for Node’s [connect](https://github.com/senchalabs/connect) framework in the spirit of the Rails 3.1 asset pipeline.
+Transparent file compilation and dependency management for Node’s [connect](https://github.com/senchalabs/connect) framework in the spirit of the Rails asset pipeline.
 
 ## What can it do?
 
