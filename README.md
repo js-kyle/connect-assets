@@ -55,7 +55,7 @@ connect-assets provides three global functions named `js`, `css`, and `assetPath
 != js("jquery")
 ```
 
-(where `!= is Jade's syntax for running JS and displaying its output) results in the markup
+(where `!=` is Jade's syntax for running JS and displaying its output) results in the markup
 
 ```html
 <link rel="stylesheet" href="/css/normalize-[hash].css" />
@@ -120,7 +120,7 @@ In JavaScript:
 When you do so, and point the `js` function at that file, two things can happen:
 
 1. By default, you'll get multiple `<script>` tags out, in an order that gives you all of your dependencies.
-2. If you passed the `build: true` option to connect-assets (enabled by default when `env == 'production'`), you'll just get a single tag, wich will point to a JavaScript file that encompasses the target's entire dependency graph—compiled, concatenated, and minified (with [UglifyJS](https://github.com/mishoo/UglifyJS)).
+2. If you passed the `build: true` option to connect-assets (enabled by default when `env == 'production'`, so when you run server with `NODE_ENV=production`), you'll just get a single tag, wich will point to a JavaScript file that encompasses the target's entire dependency graph—compiled, concatenated, and minified (with [UglifyJS](https://github.com/mishoo/UglifyJS)).
 
 If you want to bring in a whole folder of scripts, use `//= require_tree dir` instead of `//= require file`.
 
