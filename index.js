@@ -2,10 +2,10 @@ var url = require("url");
 var fs = require("fs");
 var Assets = require("./lib/assets");
 
-var connectAssets = module.exports = function (options, configureCallback) {
+var connectAssets = module.exports = function (options, configureCallback, preInitMincerSetup) {
   options = parseOptions(options || {});
 
-  var assets = new Assets(options);
+  var assets = new Assets(options, preInitMincerSetup);
   var compilationComplete = false;
   var compilationError;
   var waiting = [];
