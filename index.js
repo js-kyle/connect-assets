@@ -1,11 +1,12 @@
 var url = require("url");
 var fs = require("fs");
+var Mincer = require("mincer");
 var Assets = require("./lib/assets");
 
 var connectAssets = module.exports = function (options, configureCallback) {
   options = parseOptions(options || {});
 
-  var assets = new Assets(options);
+  var assets = new Assets(Mincer, options);
   var compilationComplete = false;
   var compilationError;
   var waiting = [];
@@ -54,6 +55,8 @@ var connectAssets = module.exports = function (options, configureCallback) {
 
   return middleware;
 };
+
+module.exports.Mincer = Mincer
 
 var parseOptions = module.exports._parseOptions = function (options) {
   var isProduction = process.env.NODE_ENV === "production";
