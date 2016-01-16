@@ -3,6 +3,10 @@ var mocha = require("mocha");
 var connectAssets = require("..");
 
 describe("instance", function () {
+  it("exposes mincer to allow for registering engines", function () {
+    expect(connectAssets.Mincer).to.be.an("object");
+  });
+
   it("exposes the mincer environment", function () {
     var assets = connectAssets();
 
