@@ -1,6 +1,6 @@
 {
   "name": "connect-assets",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "author": "Andrew Dunkman <andrew@dunkman.org>",
   "description": "A Rails-like asset pipeline for Connect",
   "license": "MIT",
@@ -38,7 +38,8 @@
     "argparse": "1.0.2",
     "csswring": "3.0.5",
     "mime": "1.3.4",
-    "mincer": "1.3.0",
+    "mincer": "1.4.1",
+    "postcss": "^5.0.19",
     "uglify-js": "2.4.23"
   },
   "devDependencies": {
