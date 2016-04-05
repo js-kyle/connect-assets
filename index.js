@@ -15,6 +15,9 @@ var connectAssets = module.exports = function (options, configureCallback) {
   options.helperContext.js = assets.helper(tagWriters.js, "js");
   options.helperContext.assetPath = assets.helper(tagWriters.noop);
 
+  options.helperContext.css_inline = assets.helperInline(tagWriters.css_inline);
+  options.helperContext.js_inline  = assets.helperInline(tagWriters.js_inline);
+
   if (configureCallback) {
     configureCallback(assets);
   }
@@ -101,5 +104,8 @@ var parseUrl = function (string) {
 var tagWriters = {
   css: function (url, attr) { return '<link rel="stylesheet" href="' + url + '"' + pasteAttr(attr) + ' />'; },
   js: function (url, attr) { return '<script src="' + url + '"' + pasteAttr(attr) + '></script>'; },
-  noop: function (url) { return url; }
+  noop: function (url) { return url; },
+
+  css_inline: function (buffer, attr) { return '<style'  + pasteAttr(attr) + '>' + buffer + '</style>';  },
+  js_inline : function (buffer, attr) { return '<script' + pasteAttr(attr) + '>' + buffer + '</script>'; },
 };
