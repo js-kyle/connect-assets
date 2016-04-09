@@ -36,6 +36,29 @@ describe("serveAsset manifest", function () {
     });
   });
 
+  it("serves files from manifest if compile is true", function (done) {
+    var dir = "testBuiltAssets";
+    var file = "test/assets/css/will-change.css";
+    var contents = "html {}";
+    fs.writeFileSync(file, contents);
+
+    createServer.call(this, { buildDir: dir, compile: true }, function () {
+      var path = this.assetPath("will-change.css");
+      var url = this.host + path;
+      fs.writeFileSync(file, "body {}");
+
+      http.get(url, function (res) {
+        var receivedContent = "";
+        res.on("data", function (chunk) { receivedContent += chunk });
+        res.on("end", function () {
+          expect(receivedContent).to.equal(contents + "\n");
+          fs.unlinkSync(file);
+          rmrf(dir, done);
+        });
+      });
+    });
+  });
+
   it("serves files outside of the manifest if compile is true", function (done) {
     var dir = "testBuiltAssets";
 
