@@ -1,6 +1,7 @@
 var expect = require("expect.js");
 var mocha = require("mocha");
 var assets = require("..");
+var rmrf = require("./testHelpers/rmrf");
 
 describe("helper functions", function () {
   it("do not pollute global scope if helperContext is passed", function () {
@@ -8,11 +9,15 @@ describe("helper functions", function () {
     var instance = assets({ helperContext: ctx });
 
     expect(ctx.css).to.be.a("function");
+    expect(ctx.cssInline).to.be.a("function");
     expect(ctx.js).to.be.a("function");
+    expect(ctx.jsInline).to.be.a("function");
     expect(ctx.assetPath).to.be.a("function");
 
     expect(global.css).to.equal(undefined);
+    expect(global.cssInline).to.equal(undefined);
     expect(global.js).to.equal(undefined);
+    expect(global.jsInline).to.equal(undefined);
     expect(global.assetPath).to.equal(undefined);
   });
 
@@ -89,7 +94,49 @@ describe("helper functions", function () {
         '<link rel="stylesheet" href="/assets/asset.css" data-turbolinks-track />'
       );
     });
+  });
 
+  describe("cssInline", function () {
+    it("returns a <style> tag for each asset found (separated by \\n)", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var tag = ctx.cssInline("depends-on-blank.css");
+      expect(tag).to.equal(
+        "<style>\n</style>\n" +
+        "<style>/*(=) require blank */\n\n</style>"
+      );
+    });
+
+    it("should serve correct asset even if extention is not supplied", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var tag = ctx.cssInline("unminified");
+      expect(tag).to.equal("<style>body\n{\n  background-color: #000000;\n  color: #ffffff;\n}\n\na\n{\n  display: none;\n}\n\n</style>");
+    });
+
+    it("should have additional attributes in result tag", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css" });
+      var tag = ctx.cssInline("asset.css", { 'data-turbolinks-track': true });
+      expect(tag).to.equal("<style data-turbolinks-track>\n</style>");
+    });
+
+    it("returns a single <style> tag containing the bundled asset when bundle=true", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css", bundle: true });
+      var tag = ctx.cssInline("depends-on-blank.css");
+      expect(tag).to.equal("<style>\n/*(=) require blank */\n\n</style>");
+    });
+
+    it("should serve asset from manifest", function (done) {
+      var dir = "testBuiltAssets";
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: true, buildDir: dir, compile: true });
+      var tag = ctx.cssInline("unminified");
+
+      expect(tag).to.equal("<style>body\n{\n  background-color: #000000;\n  color: #ffffff;\n}\n\na\n{\n  display: none;\n}\n\n</style>");
+      rmrf(dir, done);
+    });
   });
 
   describe("js", function () {
@@ -122,6 +169,52 @@ describe("helper functions", function () {
       expect(script).to.equal(
         '<script src="/assets/asset.js" async></script>'
       );
+    });
+  });
+
+  describe("jsInline", function () {
+    it("returns a <script> tag for each asset found (separated by \\n)", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var script = ctx.jsInline("depends-on-blank.js");
+
+      expect(script).to.equal(
+        "<script>\n;\n</script>\n" +
+        "<script>//(=) require blank\n;\n</script>"
+      );
+    });
+
+    it("should serve correct asset even if extention is not supplied", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var script = ctx.jsInline("asset.js");
+
+      expect(script).to.equal("<script>\n;\n</script>");
+    });
+
+    it("should have additional attributes in result tag", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js" });
+      var script = ctx.jsInline("asset.js", { async: true });
+
+      expect(script).to.equal("<script async>\n;\n</script>");
+    });
+
+    it("returns a single <script> tag containing the bundled asset when bundle=true", function () {
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js", bundle: true });
+      var tag = ctx.jsInline("depends-on-blank.js");
+      expect(tag).to.equal("<script>\n;\n//(=) require blank\n;\n</script>");
+    });
+    
+    it("should serve asset from manifest", function (done) {
+      var dir = "testBuiltAssets";
+      var ctx = {};
+      var instance = assets({ helperContext: ctx, paths: "test/assets/js", build: true, buildDir: dir, compile: true });
+      var tag = ctx.jsInline("depends-on-blank.js");
+
+      expect(tag).to.equal("<script>\n;\n//(=) require blank\n;\n</script>");
+      rmrf(dir, done);
     });
   });
 
