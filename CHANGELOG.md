@@ -9,6 +9,7 @@
   * `postcss`: `5.0.19` (new dependency)
 * Changes `build` option to correctly manage whether the assets are saved to disk
 * Adds `bundle` option to manage whether the assets are bundled under a single tag (used to actually be controlled by the `build` option)
+* Adds support for inline styles and scripts (`jsInline` and `cssInline`), thanks to @iamjochem
 
 ### Upgrade Notes
 For the majority of people, the changes to `build` option and the addition of `bundle` option should "just work". However, just providing a `buildDir` will no longer start saving assets to disk; the `build` option must also be enabled.
