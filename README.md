@@ -48,7 +48,7 @@ Finally, create an `assets` directory in your project and throw all assets compi
 
 ### Markup functions
 
-connect-assets provides three global functions named `js`, `css`, and `assetPath`. Use them in your views. They return the HTML markup needed to include the most recent version of your assets (or, the path to the asset), taking advantage of caching when available. For instance, in a [Jade template](http://jade-lang.com/), the code
+connect-assets provides five global functions named `js`, `jsInline`, `css`, `cssInline` and `assetPath`. Use them in your views. They return the HTML markup needed to include the most recent version of your assets (or, the path to the asset), taking advantage of caching when available. For instance, in a [Jade template](http://jade-lang.com/), the code
 
 ```
 != css("normalize")
@@ -74,6 +74,20 @@ Results in:
 ```html
 <link rel="stylesheet" href="/css/normalize-[hash].css" data-turbolinks-track />
 <script src="/js/jquery-[hash].js" async></script>
+```
+
+The inline variants `jsInline` and `cssInline` write the contents straight into the tags, instead of linking. For example,
+
+```
+!= cssInline("normalize")
+!= jsInline("jquery")
+```
+
+(where `!=` is Jade's syntax for running JS and displaying its output) results in the markup
+
+```html
+<style>[contents]</style>
+<script>[contents]</script>
 ```
 
 You can also reference image paths via the `assetPath` helper. First, you must specify the
