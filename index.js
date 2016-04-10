@@ -73,8 +73,9 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.localServePath = options.localServePath || servePathPathname.replace(/^\//, "");
   options.precompile = arrayify(options.precompile || ["*.*"]);
   options.build = options.build != null ? options.build : isProduction;
-  options.buildDir = options.buildDir != null ? options.buildDir : isDevelopment ? false : "builtAssets";
+  options.buildDir = options.buildDir != null ? options.buildDir : "builtAssets";
   options.compile = options.compile != null ? options.compile : true;
+  options.bundle = options.bundle != null ? options.bundle : isProduction;
   options.compress = options.compress != null ? options.compress : isProduction;
   options.sourceMaps = options.sourceMaps != null ? options.sourceMaps : isDevelopment;
   options.gzip = options.gzip != null ? options.gzip : false;
