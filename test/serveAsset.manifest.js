@@ -10,7 +10,7 @@ describe("serveAsset manifest", function () {
   it("outputs a manifest if it does not exist", function (done) {
     var dir = "testBuiltAssets";
 
-    createServer.call(this, { buildDir: dir }, function () {
+    createServer.call(this, { build: true, buildDir: dir }, function () {
       var path = this.assetPath("blank.css");
       var url = this.host + path;
 
@@ -30,7 +30,7 @@ describe("serveAsset manifest", function () {
     fs.mkdirSync(dir);
     fs.writeFileSync(dir + "/manifest.json", "{}");
 
-    createServer.call(this, { buildDir: dir, compile: false }, function () {
+    createServer.call(this, { build: true, buildDir: dir, compile: false }, function () {
       expect(fs.readFileSync(dir + "/manifest.json", "utf8")).to.equal("{}");
       rmrf(dir, done);
     });
@@ -42,7 +42,7 @@ describe("serveAsset manifest", function () {
     var contents = "html {}";
     fs.writeFileSync(file, contents);
 
-    createServer.call(this, { buildDir: dir, compile: true }, function () {
+    createServer.call(this, { build: true, buildDir: dir, compile: true }, function () {
       var path = this.assetPath("will-change.css");
       var url = this.host + path;
       fs.writeFileSync(file, "body {}");
@@ -62,7 +62,7 @@ describe("serveAsset manifest", function () {
   it("serves files outside of the manifest if compile is true", function (done) {
     var dir = "testBuiltAssets";
 
-    createServer.call(this, { buildDir: dir, compile: true }, function () {
+    createServer.call(this, { build: true, buildDir: dir, compile: true }, function () {
       var path = this.assetPath("blank.css");
       var url = this.host + path;
 
@@ -102,7 +102,7 @@ describe("serveAsset manifest", function () {
       try { fs.unlinkSync(file); }
       catch (e) { if (e.code != "ENOENT") throw e; }
 
-      createServer.call(this, { buildDir: dir, compile: true }, function () {
+      createServer.call(this, { build: true, buildDir: dir, compile: true }, function () {
         var path = this.assetPath("blank.css");
         var url = this.host + path;
 
@@ -140,14 +140,14 @@ describe("serveAsset manifest", function () {
       if (err && err.code != "ENOENT") return done(err);
 
       // Build the initial manifest.
-      createServer.call(this, { buildDir: dir, compile: true }, function () {
+      createServer.call(this, { build: true, buildDir: dir, compile: true }, function () {
         var path = this.assetPath("blank.css");
         var url = this.host + path;
 
         http.get(url, function (res) {
 
           // Now, create a server using the existing manifest.
-          createServer.call(this, { buildDir: dir, compile: false }, function () {
+          createServer.call(this, { build: true, buildDir: dir, compile: false }, function () {
             var file = "test/assets/css/new-file-manifest-no-compile.css";
             fs.writeFileSync(file, "");
 
@@ -170,7 +170,7 @@ describe("serveAsset manifest", function () {
       if (err && err.code != "ENOENT") return done(err);
 
       // Build the initial manifest.
-      createServer.call(this, { buildDir: dir, compile: true }, function () {
+      createServer.call(this, { build: true,  buildDir: dir, compile: true }, function () {
         var path = this.assetPath("blank.css");
         var url = this.host + path;
 
@@ -180,7 +180,7 @@ describe("serveAsset manifest", function () {
           delete require.cache[require.resolve(nodePath.join(nodePath.resolve(dir), 'manifest.json'))];
 
           // Now, create a server using the existing manifest.
-          createServer.call(this, { buildDir: dir, compile: false, servePath: "http://cdn.example.com/assets" }, function () {
+          createServer.call(this, { build: true, buildDir: dir, compile: false, servePath: "http://cdn.example.com/assets" }, function () {
             path = this.assetPath("blank.css");
             url = this.host + path.replace("http://cdn.example.com", "");
 

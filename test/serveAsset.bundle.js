@@ -5,7 +5,7 @@ var fs = require("fs");
 var createServer = require("./testHelpers/createServer");
 var rmrf = require("./testHelpers/rmrf");
 
-describe("serveAsset build", function () {
+describe("serveAsset bundle", function () {
 
   before(function () {
     this.env = process.env.NODE_ENV;

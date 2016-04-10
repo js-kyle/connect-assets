@@ -8,7 +8,7 @@ var rmrf = require("./testHelpers/rmrf");
 describe("serveAsset sourcemaps", function () {
 
   it("adds source map header to asset", function (done) {
-    createServer.call(this, { build: true, compress: true, sourceMaps: true }, function () {
+    createServer.call(this, { bundle: true, compress: true, sourceMaps: true }, function () {
       var path = this.assetPath("unminified.js");
       var url = this.host + path;
       var sourceMapPath = path + ".map";
@@ -22,7 +22,7 @@ describe("serveAsset sourcemaps", function () {
   });
 
   it("serves source map", function (done) {
-    createServer.call(this, { build: true, compress: true, sourceMaps: true }, function () {
+    createServer.call(this, { bundle: true, compress: true, sourceMaps: true }, function () {
       var path = this.assetPath("unminified.js");
       var url = this.host + path + ".map";
       
