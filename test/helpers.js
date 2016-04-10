@@ -25,9 +25,9 @@ describe("helper functions", function () {
     }).to.throwError(/'non-existant-asset.js' not found/i);
   });
 
-  it("returns many paths if options.build is false", function () {
+  it("returns many paths if options.bundle is false", function () {
     var ctx = {};
-    var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: false });
+    var instance = assets({ helperContext: ctx, paths: "test/assets/css", bundle: false });
     var files = ctx.assetPath("depends-on-blank.css");
 
     expect(files).to.equal(
@@ -36,9 +36,9 @@ describe("helper functions", function () {
     );
   });
 
-  it("returns a single path if options.build is true", function () {
+  it("returns a single path if options.bundle is true", function () {
     var ctx = {};
-    var instance = assets({ helperContext: ctx, paths: "test/assets/css", build: true });
+    var instance = assets({ helperContext: ctx, paths: "test/assets/css", bundle: true });
     var files = ctx.assetPath("depends-on-blank.css");
 
     expect(files).to.equal('/assets/depends-on-blank.css');
