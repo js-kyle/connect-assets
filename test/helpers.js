@@ -57,7 +57,7 @@ describe("helper functions", function () {
     var instance = assets({ helperContext: ctx, paths: "test/assets/css", fingerprinting: true });
     var files = ctx.assetPath("blank.css");
 
-    expect(files).to.equal("/assets/blank-0589f66713bc44029a1a720b9a0d850d.css");
+    expect(files).to.equal("/assets/blank-e89e45b0019f8d3feb5341de6b815cdb.css");
   });
 
   describe("css", function () {

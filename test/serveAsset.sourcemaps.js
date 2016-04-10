@@ -32,7 +32,7 @@ describe("serveAsset sourcemaps", function () {
         res.on("data", function (chunk) { body += chunk });
         res.on("end", function () {
           expect(res.statusCode).to.equal(200);
-          expect(body).to.equal("{\"version\":3,\"file\":null,\"sources\":[\"test/assets/js/unminified.js\"],\"names\":[\"aVeryLongVariableName\",\"someFunctions\",\"aLongKeyName\"],\"mappings\":\"AAAA,CAAA,WACA,GAAAA,GAAA,WAEAC,GACAC,aAAA,WACA,MAAAF,IAGAC,GAAAC;AAPA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA\",\"sourcesContent\":[\"(function () {\\n  var aVeryLongVariableName = \\\"A string\\\";\\n\\n  var someFunctions = {\\n    aLongKeyName: function () {\\n      return aVeryLongVariableName;\\n    }\\n  };\\n  var x = someFunctions.aLongKeyName();\\n})();\"],\"sourceRoot\":\"/\"}")
+          expect(body).to.equal("{\"version\":3,\"sources\":[\"test/assets/js/unminified.js\"],\"names\":[\"aVeryLongVariableName\",\"someFunctions\",\"aLongKeyName\"],\"mappings\":\"CAAA,WACA,GAAAA,GAAA,WAEAC,GACAC,aAAA,WACA,MAAAF,IAGAC,GAAAC\",\"file\":\"unminified.js\",\"sourcesContent\":[\"(function () {\\n  var aVeryLongVariableName = \\\"A string\\\";\\n\\n  var someFunctions = {\\n    aLongKeyName: function () {\\n      return aVeryLongVariableName;\\n    }\\n  };\\n  var x = someFunctions.aLongKeyName();\\n})();\"],\"sourceRoot\":\"/\"}");
           done();
         });
       });
