@@ -1,5 +1,8 @@
 # Changes By Release
 
+## 5.2.1
+* Added more explanation for using the compile option from the CLI.
+
 ## 5.2.0
 * Updates all core dependencies to the latest:
   * `argparse`: `1.0.2` -> `1.0.7`

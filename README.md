@@ -201,8 +201,9 @@ Optional arguments:
                         assets will be read from, in order of preference.
                         Defaults to 'assets/js' and 'assets/css'.
   -c [FILE [FILE ...]], --compile [FILE [FILE ...]]
-                        Adds the file (or pattern) to a list of files to
-                        compile. Defaults to all files.
+                        Adds the file (or pattern) to a list of files to 
+                        compile. Defaults to all files with extensions. Only 
+                        include the left most extension (ex. main.css).
   -o DIRECTORY, --output DIRECTORY
                         Specifies the output directory to write compiled
                         assets to. Defaults to 'builtAssets'.
