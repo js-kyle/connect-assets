@@ -1,6 +1,6 @@
 {
   "name": "connect-assets",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "author": "Andrew Dunkman <andrew@dunkman.org>",
   "description": "A Rails-like asset pipeline for Connect",
   "license": "MIT",
