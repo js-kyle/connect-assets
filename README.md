@@ -216,6 +216,7 @@ Optional arguments:
                         Enables gzip file generation, which is disabled by
                         default.
   -ap, --autoprefixer   Enables autoprefixer during compilation.
+  -sm, --sourceMaps     Enables source map generation for all files.
 ```
 
 ## Credits

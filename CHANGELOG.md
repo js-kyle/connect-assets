@@ -1,5 +1,8 @@
 # Changes By Release
 
+## 5.3.0
+* Added support for generating source maps with the CLI.
+
 ## 5.2.1
 * Added more explanation for using the compile option from the CLI.
 
