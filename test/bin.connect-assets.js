@@ -112,4 +112,18 @@ describe("connect-assets command-line interface", function () {
       rmrf("builtAssets", done);
     });
   });
+
+  it("generates source maps", function (done) {
+    var argv = process.argv;
+    var dir = "builtAssets";
+    process.argv = "node connect-assets -sm -i test/assets/js".split(" ");
+
+    bin.execute(this.logger, function (manifest) {
+      process.argv = argv;
+
+      var map = dir + '/' + manifest.assets['unminified.js'] + '.map';
+      expect(fs.readFileSync(map, "utf8")).to.equal(")]}\'\n{\"version\":3,\"sources\":[\"test/assets/js/unminified.js\"],\"names\":[\"aVeryLongVariableName\",\"someFunctions\",\"aLongKeyName\"],\"mappings\":\"CAAA,WACA,GAAAA,GAAA,WAEAC,GACAC,aAAA,WACA,MAAAF,IAGAC,GAAAC\",\"file\":\"unminified.js\",\"sourcesContent\":[\"(function () {\\n  var aVeryLongVariableName = \\\"A string\\\";\\n\\n  var someFunctions = {\\n    aLongKeyName: function () {\\n      return aVeryLongVariableName;\\n    }\\n  };\\n  var x = someFunctions.aLongKeyName();\\n})();\"],\"sourceRoot\":\"/\"}");
+      rmrf("builtAssets", done);
+    });
+  });
 });

@@ -63,6 +63,12 @@ var initialize = exports.initialize = function () {
     defaultValue: false
   });
 
+  cli.addArgument(["-sm", "--sourceMaps"], {
+    help: "Enables source map generation for all files.",
+    action: 'storeTrue',
+    defaultValue: false
+  });
+
   return cli;
 };
 
@@ -130,7 +136,8 @@ var _compile = exports._compile = function (args, callback) {
     buildDir: args.output,
     servePath: args.servePath,
     precompile: args.compile,
-    fingerprinting: true
+    fingerprinting: true,
+    sourceMaps: args.sourceMaps
   });
 
   if (args.autoprefixer) { assets.environment.enable('autoprefixer'); }
