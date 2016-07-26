@@ -107,7 +107,7 @@ app.use(assets({
 ```
 You can then use the `assetPath` helper in your Jade like so:
 ```
-img(src="#{assetPath('image-name.png')}") 
+img(src="#{assetPath('image-name.png')}")
 ```
 
 Would result in:
@@ -201,8 +201,8 @@ Optional arguments:
                         assets will be read from, in order of preference.
                         Defaults to 'assets/js' and 'assets/css'.
   -c [FILE [FILE ...]], --compile [FILE [FILE ...]]
-                        Adds the file (or pattern) to a list of files to 
-                        compile. Defaults to all files with extensions. Only 
+                        Adds the file (or pattern) to a list of files to
+                        compile. Defaults to all files with extensions. Only
                         include the left most extension (ex. main.css).
   -o DIRECTORY, --output DIRECTORY
                         Specifies the output directory to write compiled
@@ -217,6 +217,8 @@ Optional arguments:
                         default.
   -ap, --autoprefixer   Enables autoprefixer during compilation.
   -sm, --sourceMaps     Enables source map generation for all files.
+  -emc, --embedMappingComments
+                        Embed source map url into compiled files
 ```
 
 ## Credits
