@@ -1,5 +1,8 @@
 # Changes By Release
 
+## 5.3.1
+* Add embedMappingComments option to CLI for generating source maps with the CLI.
+
 ## 5.3.0
 * Added support for generating source maps with the CLI.
 
