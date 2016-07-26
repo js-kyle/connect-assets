@@ -126,4 +126,20 @@ describe("connect-assets command-line interface", function () {
       rmrf("builtAssets", done);
     });
   });
+
+  it("embeds mapping comments in compiled files", function (done) {
+    var argv = process.argv;
+    var dir = "builtAssets";
+    process.argv = "node connect-assets -sm -emc -i test/assets/js".split(" ");
+
+    bin.execute(this.logger, function (manifest) {
+      process.argv = argv;
+
+      var js = dir + '/' + manifest.assets['unminified.js'];
+      var mapping = "//# sourceMappingURL=" +  manifest.assets['unminified.js'] + ".map"
+
+      expect(fs.readFileSync(js, "utf8")).to.contain(mapping);
+      rmrf("builtAssets", done);
+    });
+  });
 });
