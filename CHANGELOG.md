@@ -1,7 +1,10 @@
 # Changes By Release
 
+## 5.3.2
+* Add noSourceMapProtection option to CLI for generating source maps without the XSSI protection header (the string )]}'\n), thanks to @codynguyen
+
 ## 5.3.1
-* Add embedMappingComments option to CLI for generating source maps with the CLI.
+* Add embedMappingComments option to CLI for generating source maps with the CLI, thanks to @codynguyen
 
 ## 5.3.0
 * Added support for generating source maps with the CLI.
