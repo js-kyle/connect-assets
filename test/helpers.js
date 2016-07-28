@@ -62,7 +62,7 @@ describe("helper functions", function () {
     var instance = assets({ helperContext: ctx, paths: "test/assets/css", fingerprinting: true });
     var files = ctx.assetPath("blank.css");
 
-    expect(files).to.equal("/assets/blank-e89e45b0019f8d3feb5341de6b815cdb.css");
+    expect(files).to.equal("/assets/blank-8f0b23b09147d215614e46ea1922e0c3.css");
   });
 
   describe("css", function () {
@@ -206,7 +206,7 @@ describe("helper functions", function () {
       var tag = ctx.jsInline("depends-on-blank.js");
       expect(tag).to.equal("<script>\n;\n//(=) require blank\n;\n</script>");
     });
-    
+
     it("should serve asset from manifest", function (done) {
       var dir = "testBuiltAssets";
       var ctx = {};

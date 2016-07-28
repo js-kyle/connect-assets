@@ -93,7 +93,7 @@ describe("connect-assets command-line interface", function () {
 
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
 
-      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"/assets/asset-e89e45b0019f8d3feb5341de6b815cdb.css\"");
+      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"/assets/asset-8f0b23b09147d215614e46ea1922e0c3.css\"");
       rmrf("builtAssets", done);
     });
   });
@@ -108,7 +108,7 @@ describe("connect-assets command-line interface", function () {
 
       var css = dir + '/' + manifest.assets['asset-path-helper.css'];
 
-      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"//cdn.example.com/asset-e89e45b0019f8d3feb5341de6b815cdb.css\"");
+      expect(fs.readFileSync(css, "utf8")).to.equal("@import\"//cdn.example.com/asset-8f0b23b09147d215614e46ea1922e0c3.css\"");
       rmrf("builtAssets", done);
     });
   });
@@ -123,6 +123,20 @@ describe("connect-assets command-line interface", function () {
 
       var map = dir + '/' + manifest.assets['unminified.js'] + '.map';
       expect(fs.readFileSync(map, "utf8")).to.equal(")]}\'\n{\"version\":3,\"sources\":[\"test/assets/js/unminified.js\"],\"names\":[\"aVeryLongVariableName\",\"someFunctions\",\"aLongKeyName\"],\"mappings\":\"CAAA,WACA,GAAAA,GAAA,WAEAC,GACAC,aAAA,WACA,MAAAF,IAGAC,GAAAC\",\"file\":\"unminified.js\",\"sourcesContent\":[\"(function () {\\n  var aVeryLongVariableName = \\\"A string\\\";\\n\\n  var someFunctions = {\\n    aLongKeyName: function () {\\n      return aVeryLongVariableName;\\n    }\\n  };\\n  var x = someFunctions.aLongKeyName();\\n})();\"],\"sourceRoot\":\"/\"}");
+      rmrf("builtAssets", done);
+    });
+  });
+
+  it("generates source maps without XSSI protection header when noSourceMapProtection option defined", function (done) {
+    var argv = process.argv;
+    var dir = "builtAssets";
+    process.argv = "node connect-assets -sm -nsmp -i test/assets/js".split(" ");
+
+    bin.execute(this.logger, function (manifest) {
+      process.argv = argv;
+
+      var map = dir + '/' + manifest.assets['unminified.js'] + '.map';
+      expect(fs.readFileSync(map, "utf8")).to.equal("{\"version\":3,\"sources\":[\"test/assets/js/unminified.js\"],\"names\":[\"aVeryLongVariableName\",\"someFunctions\",\"aLongKeyName\"],\"mappings\":\"CAAA,WACA,GAAAA,GAAA,WAEAC,GACAC,aAAA,WACA,MAAAF,IAGAC,GAAAC\",\"file\":\"unminified.js\",\"sourcesContent\":[\"(function () {\\n  var aVeryLongVariableName = \\\"A string\\\";\\n\\n  var someFunctions = {\\n    aLongKeyName: function () {\\n      return aVeryLongVariableName;\\n    }\\n  };\\n  var x = someFunctions.aLongKeyName();\\n})();\"],\"sourceRoot\":\"/\"}");
       rmrf("builtAssets", done);
     });
   });
