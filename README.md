@@ -218,7 +218,10 @@ Optional arguments:
   -ap, --autoprefixer   Enables autoprefixer during compilation.
   -sm, --sourceMaps     Enables source map generation for all files.
   -emc, --embedMappingComments
-                        Embed source map url into compiled files
+                        Embed source map url into compiled files.
+  -nsmp, --noSourceMapProtection
+                        Do not add XSSI protection header to source map files.
+                        https://github.com/adunkman/connect-assets/issues/345#issuecomment-235246691
 ```
 
 ## Credits

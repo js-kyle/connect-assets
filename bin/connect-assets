@@ -75,6 +75,12 @@ var initialize = exports.initialize = function () {
     defaultValue: false
   });
 
+  cli.addArgument(["-nsmp", "--noSourceMapProtection"], {
+    help: "Do not add XSSI protection header to source map files",
+    action: 'storeTrue',
+    defaultValue: false
+  });
+
   return cli;
 };
 
@@ -144,7 +150,8 @@ var _compile = exports._compile = function (args, callback) {
     precompile: args.compile,
     fingerprinting: true,
     sourceMaps: args.sourceMaps,
-    embedMappingComments: args.embedMappingComments
+    embedMappingComments: args.embedMappingComments,
+    noSourceMapProtection: args.noSourceMapProtection
   });
 
   if (args.autoprefixer) { assets.environment.enable('autoprefixer'); }
