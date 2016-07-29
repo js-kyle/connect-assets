@@ -79,6 +79,8 @@ var parseOptions = module.exports._parseOptions = function (options) {
   options.sourceMaps = options.sourceMaps != null ? options.sourceMaps : isDevelopment;
   options.gzip = options.gzip != null ? options.gzip : false;
   options.fingerprinting = options.fingerprinting != null ? options.fingerprinting : isProduction;
+  options.embedMappingComments = options.embedMappingComments != null ? options.embedMappingComments : false;
+  options.noSourceMapProtection = options.noSourceMapProtection != null ? options.noSourceMapProtection : false;
 
   if (options.buildDir.replace) {
     options.buildDir = options.buildDir.replace(/^\//, "").replace(/\/$/, "");

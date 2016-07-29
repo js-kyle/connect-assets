@@ -231,4 +231,28 @@ describe("parseOptions", function () {
       expect(opts.gzip).to.equal(true);
     });
   });
+
+  describe("embedMappingComments", function () {
+    it("defaults to false", function () {
+      var opts = assets._parseOptions({});
+      expect(opts.embedMappingComments).to.equal(false);
+    });
+
+    it("can be overridden", function () {
+      var opts = assets._parseOptions({ embedMappingComments: true });
+      expect(opts.embedMappingComments).to.equal(true);
+    });
+  });
+
+  describe("noSourceMapProtection", function () {
+    it("defaults to false", function () {
+      var opts = assets._parseOptions({});
+      expect(opts.noSourceMapProtection).to.equal(false);
+    });
+
+    it("can be overridden", function () {
+      var opts = assets._parseOptions({ noSourceMapProtection: true });
+      expect(opts.noSourceMapProtection).to.equal(true);
+    });
+  });
 });
