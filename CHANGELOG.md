@@ -1,5 +1,8 @@
 # Changes By Release
 
+## 5.4.0
+* Updates mincer to latest: `1.4.2` -> `1.5.0`
+
 ## 5.3.2
 * Add noSourceMapProtection option to CLI for generating source maps without the XSSI protection header (the string )]}'\n), thanks to @codynguyen
 
