@@ -1,5 +1,8 @@
 # Changes By Release
 
+## 5.4.1
+* Fix denial of service in mime: `1.3.4` -> `1.4.1`
+
 ## 5.4.0
 * Updates mincer to latest: `1.4.2` -> `1.5.0`
 
