@@ -180,18 +180,12 @@ app.use(require("connect-assets")(options, function (instance) {
 }));
 ```
 
-## Serving Assets from a CDN
+## CLI
 
 connect-assets includes a command-line utility, `connect-assets`, which can be used to precompile assets on your filesystem (which you can then upload to your CDN of choice). From your application directory, you can execute it with `./node_modules/.bin/connect-assets [options]`.
-
 ```
 Usage: connect-assets [-h] [-v] [-gz] [-ap] [-i [DIRECTORY [DIRECTORY ...]]]
                       [-c [FILE [FILE ...]]] [-o DIRECTORY]
-
-Precompiles assets supplied into their production-ready form, ready for
-upload to a CDN or static file server. The generated manifest.json is all
-that is required on your application server if connect-assets is properly
-configured.
 
 Optional arguments:
   -h, --help            Show this help message and exit.
@@ -223,6 +217,55 @@ Optional arguments:
                         Do not add XSSI protection header to source map files.
                         https://github.com/adunkman/connect-assets/issues/345#issuecomment-235246691
 ```
+### CLI examples
+**Basic use case:**
+Compile contents of public/javascripts folder, saving to a the cdn directory.
+`connect-assets -i public/javascripts -o cdnassets`
+
+**Advanced use case (nested directories):**
+When compiling files which use Sprockets style concatenation e.g. `//= require dependency`, the path to the dependency must also be passed using the `--include` flag.
+Consider this project structure:
+```
+Simple App
+│   README.md
+│   app.js
+└─── public
+│   │   robots.txt
+│   └─── javascripts
+│       │   bundle.js
+│       │   sw.js
+|       |   client.js
+│       └───  app
+|               └───  users
+│                   |  users.controller.js
+│                   |  users.routes.js
+└─── test
+    │   users.spec.js
+```
+Contents of bundle.js:
+```
+//= require users/users.controller.js
+//= require users/users.routes.js
+```
+In the above scenario `connect-assets -i public/javascripts -o cdnassets` will fail to compile `bundle.js` as connect-assets will fail to find the file on the provided path.
+To remove errors, ensure that the paths (the same paths as what are defined in your connect-assets options).
+For example, `connect-assets -i public/javascripts -i public/javascripts/app -o cdnassets` will successfully pre-compile `bundle.js`.
+    
+## Serving Assets from a CDN
+
+The CLI utility precompiles assets supplied into their production-ready form, ready for
+upload to a CDN or static file server. The generated `manifest.json` is all
+that is required on your application server if connect-assets is properly
+configured. Once assets have been precompiled and uploaded to CDN (perhaps as part of your build process), you can pass the Mincer environment your manifest file like so:
+
+```
+const assetManifest = require('./manifest.json');
+
+app.use(require("connect-assets")(options, function (instance) {
+  instance.manifest = assetManifest;
+}));
+```
+Your CDN url will also need to be passed to the `servePath` option of connect-assets.
 
 ## Credits
 
