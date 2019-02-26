@@ -1,7 +1,8 @@
 # Changes By Release
 
-## 6.0.0 (coming soon)
+## 6.0.0
 - drop support for Node.js versions older than 6
+- mincer upgrade to 2.0.0. (fixes connect-assets security warnings)
 
 ## 5.4.1
 * Fix denial of service in mime: `1.3.4` -> `1.4.1`
