@@ -1,6 +1,7 @@
 # connect-assets
 
 [![Build Status](https://travis-ci.org/js-kyle/connect-assets.png)](https://travis-ci.org/js-kyle/connect-assets)
+![Node version](https://img.shields.io/node/v/connect-assets.png)
 
 Transparent file compilation and dependency management for Node’s [connect](https://github.com/senchalabs/connect) framework in the spirit of the Rails asset pipeline.
 

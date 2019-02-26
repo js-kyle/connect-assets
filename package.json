@@ -28,7 +28,7 @@
     "url": "https://github.com/adunkman/connect-assets.git"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=6.0.0"
   },
   "main": "index.js",
   "bin": {
