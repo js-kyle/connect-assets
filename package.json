@@ -38,7 +38,7 @@
     "argparse": "1.0.7",
     "csswring": "5.0.0",
     "mime": "1.4.1",
-    "mincer": "nodeca/mincer#master",
+    "mincer": "2.0.0",
     "postcss": "5.0.21",
     "uglify-js": "2.6.2"
   },
