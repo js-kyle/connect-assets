@@ -13,14 +13,14 @@ describe("serveAsset asset_path environment helper", function () {
 
     createServer.call(this, { build: true, buildDir: dir, compile: true, fingerprinting: true }, function () {
       var path = this.assetPath("asset-path-helper.css");
-      var filename = dir + "/asset-path-helper-666ddf2ad0d86c0d850f5b814b8bd95d.css";
+      var filename = dir + "/asset-path-helper-be6f36ded7f50aa8d41b9cbaa845f947.css";
       var url = this.host + path;
 
       http.get(url, function (res) {
         expect(res.statusCode).to.equal(200);
         expect(fs.statSync(dir).isDirectory()).to.equal(true);
         expect(fs.statSync(filename).isFile()).to.equal(true);
-        expect(fs.readFileSync(filename, "utf8")).to.equal("@import \"/assets/asset-803e3564c7d54bc317c74860da9cb559.css\";\n\n");
+        expect(fs.readFileSync(filename, "utf8")).to.equal("@import \"/assets/asset-56556c1dc82a2b1cb6b202d639294580.css\";\n\n");
         process.env.NODE_ENV = env;
         rmrf(dir, done);
       });
