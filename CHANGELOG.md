@@ -1,4 +1,6 @@
 # Changes By Release
+## 6.0.1
+- mincer upgrade to 2.0.1. (fixes connect-assets security warnings)
 
 ## 6.0.0
 - drop support for Node.js versions older than 6
