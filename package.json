@@ -43,12 +43,10 @@
     "uglify-js": "2.6.2"
   },
   "devDependencies": {
-    "mocha": "2.5.3",
-    "blanket": "1.2.3",
-    "expect.js": "0.3.1",
-    "travis-cov": "0.2.5",
     "connect": "3.4.1",
-    "ejs": "2.4.2"
+    "ejs": "2.4.2",
+    "expect.js": "0.3.1",
+    "mocha": "^6.2.0"
   },
   "config": {
     "travis-cov": {
@@ -59,9 +57,8 @@
     }
   },
   "scripts": {
-    "test": "npm run test-unit && npm run test-cov",
-    "test-unit": "./node_modules/.bin/mocha --reporter spec",
-    "test-cov": "./node_modules/.bin/mocha --require blanket --reporter travis-cov",
+    "test": "npm run test-unit",
+    "test-unit": "./node_modules/.bin/mocha --reporter spec --exit",
     "test-watch": "./node_modules/.bin/mocha --reporter min --watch",
     "test-cov-report": "./node_modules/.bin/mocha --require blanket --reporter html-cov > coverage.html && open coverage.html"
   }
