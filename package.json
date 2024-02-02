@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "argparse": "1.0.7",
-    "csswring": "5.0.0",
+    "csswring": "7.0.0",
     "mime": "1.4.1",
     "mincer": "2.0.1",
     "postcss": "5.0.21",
